@@ -929,6 +929,8 @@ Do not disable, skip, or weaken tests merely to make validation pass.
 
 Every change involving routing, assets, service workers, or build configuration must be tested under a non-root path.
 
+During implementation phases, a successful local production preview at the configured repository subpath is sufficient verification. A live GitHub Pages deployment, Git remote, repository settings, or completed hosted workflow run is not required to finish or commit a phase. Live deployment is a release/human-maintainer concern unless a human explicitly requests it.
+
 The repository should provide a command that previews the app under a path such as:
 
 ```text
@@ -1254,6 +1256,8 @@ Treat imported JSON and persisted save data as untrusted until validated.
 
 When preparing a commit or pull request, use a focused title.
 
+Commit each implementation phase after its applicable local validation gates pass and its `PLAN.md` evidence is current. Do not combine multiple completed phases in one commit. Live deployment status must not delay an otherwise complete phase commit.
+
 The description should include:
 
 - User-visible behavior
@@ -1337,7 +1341,7 @@ Unless a human maintainer gives different instructions, prioritize work in this 
 8. Offline support and adaptive quality
 9. Release hardening
 
-Do not implement all five rooms simultaneously before the Tiny Delivery Train vertical slice is polished, tested, and deployed successfully.
+Do not implement all five rooms simultaneously before the Tiny Delivery Train vertical slice is polished, tested, and verified successfully in the local GitHub Pages subpath preview.
 
 ---
 

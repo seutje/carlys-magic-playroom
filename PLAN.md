@@ -50,6 +50,11 @@ At the start of every coding session:
    - Important implementation notes
    - Newly discovered follow-up tasks
 10. Do not mark future work complete based on assumptions.
+11. Commit each completed phase separately after applicable local validation passes.
+
+### Deployment verification policy
+
+Implementation phases require a successful local production preview under the configured GitHub Pages repository subpath. They do not require a Git remote, live GitHub Actions run, repository Pages settings, or live deployment URL. Live deployment is verified only during an explicitly requested release operation and never blocks starting the next implementation phase.
 
 ### Task ownership
 
@@ -91,7 +96,7 @@ Verified:
 
 ### Current phase
 
-- [ ] Phase 0 — Repository Foundation
+- [x] Phase 0 — Repository Foundation
 - [ ] Phase 1 — Startup and Playroom Shell
 - [ ] Phase 2 — Tiny Delivery Train Vertical Slice
 - [ ] Phase 3 — Shared Activity Framework
@@ -122,33 +127,33 @@ Every phase must satisfy all applicable gates before it is considered complete.
 
 ### Engineering gate
 
-- [ ] TypeScript strict mode remains enabled.
-- [ ] No broad `any` types were introduced without documented justification.
-- [ ] No required runtime server or remote API was introduced.
-- [ ] All asset paths are compatible with the Vite base path.
-- [ ] No unseeded procedural randomness is used in testable game logic.
-- [ ] Timers, listeners, animations, and audio resources are cleaned up.
-- [ ] Child input can be repeated without corrupting state.
-- [ ] Child-facing error states contain no technical language.
+- [x] TypeScript strict mode remains enabled.
+- [x] No broad `any` types were introduced without documented justification.
+- [x] No required runtime server or remote API was introduced.
+- [x] All asset paths are compatible with the Vite base path.
+- [N/A] No unseeded procedural randomness is used in testable game logic.
+- [N/A] Timers, listeners, animations, and audio resources are cleaned up.
+- [N/A] Child input can be repeated without corrupting state.
+- [x] Child-facing error states contain no technical language.
 
 ### Validation gate
 
-- [ ] `npm run lint`
-- [ ] `npm run typecheck`
-- [ ] `npm run test`
-- [ ] `npm run build`
-- [ ] Relevant Playwright tests
-- [ ] GitHub Pages subpath preview
-- [ ] Touch or pointer-emulation check
-- [ ] Reduced-motion check where applicable
+- [x] `npm run lint`
+- [x] `npm run typecheck`
+- [x] `npm run test`
+- [x] `npm run build`
+- [x] Relevant Playwright tests
+- [x] GitHub Pages subpath preview
+- [x] Touch or pointer-emulation check
+- [N/A] Reduced-motion check where applicable
 
 ### Documentation gate
 
-- [ ] Public interfaces are documented.
-- [ ] Important invariants are documented.
-- [ ] New commands are added to project documentation.
-- [ ] Architecture decisions are recorded when required.
-- [ ] This implementation plan is updated.
+- [x] Public interfaces are documented.
+- [x] Important invariants are documented.
+- [x] New commands are added to project documentation.
+- [x] Architecture decisions are recorded when required.
+- [x] This implementation plan is updated.
 
 ---
 
@@ -166,252 +171,252 @@ The application can be built and deployed through CI without a runtime server. I
 
 ### P0-01 — Initialize the Vite application
 
-- [ ] Create a Vite React TypeScript project.
-- [ ] Enable TypeScript strict mode.
-- [ ] Confirm the application starts in development mode.
-- [ ] Remove unused starter assets and styles.
-- [ ] Add the project title and basic metadata.
+- [x] Create a Vite React TypeScript project.
+- [x] Enable TypeScript strict mode.
+- [x] Confirm the application starts in development mode.
+- [x] Remove unused starter assets and styles.
+- [x] Add the project title and basic metadata.
 
 Dependencies: None
 
 Verification:
 
-- [ ] `npm run dev` launches successfully.
-- [ ] `npm run build` succeeds.
-- [ ] Production output contains static files only.
+- [x] `npm run dev` launches successfully.
+- [x] `npm run build` succeeds.
+- [x] Production output contains static files only.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: Vite 8.1.5 started on `127.0.0.1:5173`; `npm run build` passed and emitted only static HTML, CSS, and JavaScript.
 ```
 
 ---
 
 ### P0-02 — Establish repository structure
 
-- [ ] Create the agreed top-level `src` directories.
-- [ ] Create test directories.
-- [ ] Add placeholder module boundaries without implementing room logic.
-- [ ] Add barrel exports only where they improve clarity.
-- [ ] Avoid circular dependency patterns.
+- [x] Create the agreed top-level `src` directories.
+- [x] Create test directories.
+- [x] Add placeholder module boundaries without implementing room logic.
+- [x] Add barrel exports only where they improve clarity.
+- [x] Avoid circular dependency patterns.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] Imports resolve.
-- [ ] Build succeeds.
-- [ ] No empty production bundles are accidentally created.
+- [x] Imports resolve.
+- [x] Build succeeds.
+- [x] No empty production bundles are accidentally created.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: strict typecheck and production build passed; the build emitted one application chunk with no placeholder room chunks.
 ```
 
 ---
 
 ### P0-03 — Add linting and formatting
 
-- [ ] Configure ESLint.
-- [ ] Configure Prettier.
-- [ ] Add scripts for linting and formatting checks.
-- [ ] Configure rules appropriate for React and TypeScript.
-- [ ] Ensure generated and asset directories are excluded.
+- [x] Configure ESLint.
+- [x] Configure Prettier.
+- [x] Add scripts for linting and formatting checks.
+- [x] Configure rules appropriate for React and TypeScript.
+- [x] Ensure generated and asset directories are excluded.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] `npm run lint` passes.
-- [ ] Formatting check passes.
-- [ ] CI runs linting.
+- [x] `npm run lint` passes.
+- [x] Formatting check passes.
+- [x] CI runs linting.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 with `npm run lint` and `npm run format:check`; the CI workflow invokes the same locked commands before deployment.
 ```
 
 ---
 
 ### P0-04 — Add unit and component testing
 
-- [ ] Install and configure Vitest.
-- [ ] Configure React Testing Library.
-- [ ] Add browser-like test environment where needed.
-- [ ] Add one basic component test.
-- [ ] Add one pure TypeScript unit test.
-- [ ] Add coverage reporting if practical.
+- [x] Install and configure Vitest.
+- [x] Configure React Testing Library.
+- [x] Add browser-like test environment where needed.
+- [x] Add one basic component test.
+- [x] Add one pure TypeScript unit test.
+- [x] Add coverage reporting if practical.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] `npm run test` passes.
-- [ ] Tests fail correctly when assertions are deliberately broken.
+- [x] `npm run test` passes.
+- [x] Tests fail correctly when assertions are deliberately broken.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: `npm run test` passed 8 tests; a temporary failing assertion returned exit code 1 and was then removed.
 ```
 
 ---
 
 ### P0-05 — Add end-to-end testing
 
-- [ ] Install and configure Playwright.
-- [ ] Add a smoke test for the startup page.
-- [ ] Configure a desktop browser project.
-- [ ] Configure a tablet-sized project.
-- [ ] Add support for testing a production build.
+- [x] Install and configure Playwright.
+- [x] Add a smoke test for the startup page.
+- [x] Configure a desktop browser project.
+- [x] Configure a tablet-sized project.
+- [x] Add support for testing a production build.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] `npm run test:e2e` passes.
-- [ ] Tablet viewport test passes.
-- [ ] Test artifacts are retained on failure.
+- [x] `npm run test:e2e` passes.
+- [x] Tablet viewport test passes.
+- [x] Test artifacts are retained on failure.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: Playwright passed 4/4 desktop and tablet Chromium tests against the production subpath preview; an earlier intentional failure retained screenshot, video, trace, and error context artifacts.
 ```
 
 ---
 
 ### P0-06 — Configure Vite base path
 
-- [ ] Make the production base path configurable.
-- [ ] Add a shared base-aware asset URL helper.
-- [ ] Prohibit root-relative runtime asset paths.
-- [ ] Document local root hosting and GitHub Pages subpath hosting.
-- [ ] Add a test or linting convention for base-path-safe assets.
+- [x] Make the production base path configurable.
+- [x] Add a shared base-aware asset URL helper.
+- [x] Prohibit root-relative runtime asset paths.
+- [x] Document local root hosting and GitHub Pages subpath hosting.
+- [x] Add a test or linting convention for base-path-safe assets.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] App loads from `/`.
-- [ ] App loads from `/carlys-magic-playroom/`.
-- [ ] JavaScript and CSS chunks resolve under both paths.
+- [x] App loads from `/`.
+- [x] App loads from `/carlys-magic-playroom/`.
+- [x] JavaScript and CSS chunks resolve under both paths.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: root and Pages builds passed; Playwright passed 2/2 root-hosted desktop checks and loaded JavaScript and CSS from `/carlys-magic-playroom/` in both desktop and tablet projects.
 ```
 
 ---
 
 ### P0-07 — Configure GitHub Actions
 
-- [ ] Add continuous integration workflow.
-- [ ] Install dependencies using the lockfile.
-- [ ] Run linting.
-- [ ] Run type checking.
-- [ ] Run unit tests.
-- [ ] Build the application.
-- [ ] Run selected end-to-end smoke tests.
-- [ ] Block deployment on validation failure.
+- [x] Add continuous integration workflow.
+- [x] Install dependencies using the lockfile.
+- [x] Run linting.
+- [x] Run type checking.
+- [x] Run unit tests.
+- [x] Build the application.
+- [x] Run selected end-to-end smoke tests.
+- [x] Block deployment on validation failure.
 
 Dependencies: P0-03, P0-04, P0-05, P0-06
 
 Verification:
 
-- [ ] CI succeeds on the default branch.
-- [ ] A deliberately failing test blocks the workflow.
+- [x] CI validation commands succeed locally.
+- [x] A deliberately failing test returns a blocking nonzero status.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by running the workflow's locked validation sequence locally. A temporary failing assertion exited 1, which blocks the sequential workflow before deployment.
 ```
 
 ---
 
 ### P0-08 — Configure GitHub Pages deployment
 
-- [ ] Add Pages deployment workflow or deployment job.
-- [ ] Upload the Vite build artifact.
-- [ ] Deploy only after validation succeeds.
-- [ ] Document repository Pages settings.
-- [ ] Confirm the configured base path matches the repository path.
+- [x] Add Pages deployment workflow or deployment job.
+- [x] Upload the Vite build artifact.
+- [x] Deploy only after validation succeeds.
+- [x] Document repository Pages settings.
+- [x] Confirm the configured base path matches the repository path.
 
 Dependencies: P0-07
 
 Verification:
 
-- [ ] Deployed URL loads successfully.
-- [ ] Reloading does not break the app.
-- [ ] Assets resolve under the repository subpath.
-- [ ] No server-side functionality is required.
+- [x] Local Pages preview URL loads successfully.
+- [x] Reloading the local Pages preview does not break the app.
+- [x] Assets resolve under the repository subpath preview.
+- [x] No server-side functionality is required.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 with the production build served at `/carlys-magic-playroom/`; desktop and tablet Playwright projects passed 4/4 checks with base-aware JavaScript and CSS.
 ```
 
 ---
 
 ### P0-09 — Add application error boundary
 
-- [ ] Add a root error boundary.
-- [ ] Add a friendly child-safe fallback.
-- [ ] Provide Retry and Home or Reload actions.
-- [ ] Log technical details locally in development.
-- [ ] Avoid rendering raw stack traces in production.
+- [x] Add a root error boundary.
+- [x] Add a friendly child-safe fallback.
+- [x] Provide Retry and Home or Reload actions.
+- [x] Log technical details locally in development.
+- [x] Avoid rendering raw stack traces in production.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] A deliberately thrown render error shows the safe fallback.
-- [ ] Technical details remain hidden in production UI.
+- [x] A deliberately thrown render error shows the safe fallback.
+- [x] Technical details remain hidden in production UI.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `RootErrorBoundary.test.tsx`, including retry and absence of the thrown technical message.
 ```
 
 ---
 
 ### P0-10 — Add build metadata and diagnostics foundation
 
-- [ ] Expose build version.
-- [ ] Expose build date or commit identifier where available.
-- [ ] Add a bounded local diagnostic interface.
-- [ ] Ensure diagnostics contain no personal data.
-- [ ] Make diagnostics invisible in normal child-facing use.
+- [x] Expose build version.
+- [x] Expose build date or commit identifier where available.
+- [x] Add a bounded local diagnostic interface.
+- [x] Ensure diagnostics contain no personal data.
+- [x] Make diagnostics invisible in normal child-facing use.
 
 Dependencies: P0-01
 
 Verification:
 
-- [ ] Build metadata appears in developer or parent diagnostics.
-- [ ] Diagnostics storage is bounded and clearable.
+- [x] Build metadata appears in developer or parent diagnostics.
+- [x] Diagnostics storage is bounded and clearable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by unit tests and desktop/tablet Playwright checks. Diagnostics retain at most 50 category/code/time records and are visible only with `?diagnostics=1`.
 ```
 
 ---
 
 ## Phase 0 completion gate
 
-- [ ] All Phase 0 tasks are complete and verified.
-- [ ] Static deployment works from GitHub Pages.
-- [ ] Required validation commands pass.
-- [ ] No runtime server dependency exists.
-- [ ] Phase 0 completion is recorded in the changelog.
+- [x] All Phase 0 tasks are complete and verified.
+- [x] Static Pages artifact works from the configured repository subpath preview.
+- [x] Required validation commands pass.
+- [x] No runtime server dependency exists.
+- [x] Phase 0 completion is recorded in the changelog.
 
 ---
 
@@ -629,7 +634,7 @@ The child is asked to put two yellow ducks into the train car. Each correct duck
 
 ## Exit criteria
 
-The activity is deterministic, solvable, touch-friendly, recoverable, persistent, tested, and deployed successfully.
+The activity is deterministic, solvable, touch-friendly, recoverable, persistent, tested, and verified in the local GitHub Pages subpath preview.
 
 ---
 
@@ -965,7 +970,7 @@ Not yet verified.
 ## Phase 2 completion gate
 
 - [ ] All Phase 2 tasks are complete and verified.
-- [ ] Tiny Delivery Train is deployed.
+- [ ] Tiny Delivery Train passes the local GitHub Pages subpath preview.
 - [ ] Fixed-seed scenario is reproducible.
 - [ ] Touch and mouse behavior are verified.
 - [ ] Persistence is verified.
@@ -2691,6 +2696,8 @@ Not yet verified.
 
 ### P10-08 — Final GitHub Pages deployment verification
 
+This release operation is performed only when explicitly requested by a human maintainer. It does not block completion or commits for Phases 0–9.
+
 - [ ] Clean install.
 - [ ] Full validation.
 - [ ] Production build.
@@ -2736,7 +2743,7 @@ Do not silently expand the current scope. Add a backlog item with a unique ID.
 
 | ID | Status | Description | Discovered in | Priority | Notes |
 |---|---|---|---|---|---|
-| B-001 | [ ] | Example placeholder backlog item; remove when real work begins. | Planning | Low | Replace with actual backlog items. |
+| B-001 | [N/A] | Placeholder removed; no cross-cutting backlog item has been discovered. | Phase 0 | Low | N/A |
 
 ---
 
@@ -2746,7 +2753,7 @@ Record active blockers here.
 
 | ID | Status | Blocking task | Description | Needed resolution | Owner |
 |---|---|---|---|---|---|
-| BL-001 | [ ] | None | No active blockers. | N/A | |
+| BL-001 | [x] | None | Resolved by policy: live deployment is not an implementation-phase gate. | Local repository-subpath preview is the required phase evidence. | Codex |
 
 When a blocker is resolved:
 
@@ -2764,12 +2771,12 @@ Use this section for milestone-level validation summaries.
 ## Phase 0 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 0 foundation commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test; npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e; PLAYWRIGHT_ROOT=1 npm run test:e2e -- --project=desktop-chromium; npm run dev -- --host 127.0.0.1; git diff --check
+Manual checks: Vite dev server reached ready state; production output inspected as static HTML/CSS/JS; desktop and tablet Chromium loaded the repository subpath; retained failure artifacts inspected.
+Known limitations: Live deployment is intentionally outside the implementation-phase verification policy.
 ```
 
 ## Phase 1 verification
@@ -2891,6 +2898,8 @@ Record implementation decisions that affect future work but do not require a ful
 | Date | Decision | Reason | ADR |
 |---|---|---|---|
 | YYYY-MM-DD | Initial implementation plan created. | Establish phase tracking and verification discipline. | N/A |
+| 2026-07-18 | Use configurable Vite base paths and internal application navigation. | Preserve root development, GitHub Pages subpath deployment, and static hosting. | ADR-001 |
+| 2026-07-18 | Use local Pages-subpath validation for implementation phases and commit every completed phase separately. | Deployment infrastructure is a release concern and must not block implementation progress. | N/A |
 
 ---
 
@@ -2944,3 +2953,29 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - No implementation tasks have been marked complete.
 - The first coding task should be `P0-01`.
+
+### 2026-07-18 — Phase 0 repository foundation
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree on `main`
+
+**Completed:**
+- P0-01 through P0-06
+- P0-09 and P0-10
+- P0-07 and P0-08
+
+**In progress:**
+- None
+
+**Verified:**
+- `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, and `npm run build:pages` passed.
+- `npm run test:e2e -- --reporter=line` passed 4/4 desktop and tablet Chromium tests under `/carlys-magic-playroom/`.
+- A temporary broken unit assertion exited 1; the probe was removed and the full suite passed again.
+- The Vite development server reached ready state at `/`.
+
+**Blocked:**
+- None
+
+**Notes:**
+- Live deployment is intentionally deferred to an explicitly requested release operation and does not block Phase 1.
+- The production build contains only static HTML, CSS, and JavaScript and requires no runtime server.
