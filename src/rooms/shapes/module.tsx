@@ -1,9 +1,12 @@
-import { definePlaceholderRoom } from "../definePlaceholderRoom";
+import type { RoomModule } from "../roomModule";
+import { BasicRoomSession } from "../roomSession";
+import { ShapeFactoryRoom } from "./ShapeFactoryRoom";
 
-export const shapesRoom = definePlaceholderRoom({
+export const shapesRoom: RoomModule = {
   id: "shapes",
   title: "Magic Shape Factory",
-  symbol: "🔷",
-  color: "#e88b3d",
-  instruction: "The shape machine is warming up!",
-});
+  capabilities: { audio: true, drag: true, persistence: true, pause: true, restart: true },
+  preload: () => Promise.resolve(),
+  createSession: () => new BasicRoomSession(`shapes:${crypto.randomUUID()}`),
+  Component: ShapeFactoryRoom,
+};

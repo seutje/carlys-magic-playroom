@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Completed Phase 6 Magic Shape Factory with deterministic validated puzzles, forgiving conveyor drag, bounded hints, watchdog recovery, local Ava speech, progress migration, and desktop/tablet visual coverage.
+
 - Establish the strict Vite, React, testing, diagnostics, and GitHub Pages foundation, verified through root and repository-subpath production previews.
 - Add the gesture-safe startup flow, lazy 3D playroom, five accessible room portals, guarded transitions, global controls, reduced-motion behavior, and lazy placeholder rooms.
 - Complete the deterministic Tiny Delivery Train vertical slice with forgiving 3D/DOM dragging, escalating hints, celebration, idempotent IndexedDB progress, and serialized offline voice instructions/counting from approved build-time neural TTS assets.

@@ -102,7 +102,7 @@ Verified:
 - [x] Phase 3 — Shared Activity Framework
 - [x] Phase 4 — Build-a-Critter Lab
 - [x] Phase 5 — Little Garden
-- [ ] Phase 6 — Magic Shape Factory
+- [x] Phase 6 — Magic Shape Factory
 - [ ] Phase 7 — Musical Corner
 - [ ] Phase 8 — Parent Controls and Accessibility
 - [ ] Phase 9 — Offline Support and Performance
@@ -1622,217 +1622,217 @@ Every generated puzzle is solvable, child input is forgiving, and machine animat
 
 ### P6-01 — Define shape content model
 
-- [ ] Define shape kinds.
-- [ ] Define sizes.
-- [ ] Define colors.
-- [ ] Define item IDs.
-- [ ] Define target rules.
-- [ ] Define distractor rules.
-- [ ] Define serialized puzzle format.
+- [x] Define shape kinds.
+- [x] Define sizes.
+- [x] Define colors.
+- [x] Define item IDs.
+- [x] Define target rules.
+- [x] Define distractor rules.
+- [x] Define serialized puzzle format.
 
 Dependencies: Phase 3
 
 Verification:
 
-- [ ] Model is rendering-independent.
-- [ ] Definitions serialize safely.
-- [ ] Invalid definitions are rejected.
+- [x] Model is rendering-independent.
+- [x] Definitions serialize safely.
+- [x] Invalid definitions are rejected.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `shapeFactory.test.ts`. The rendering-independent schema uses closed shape/size/color unions, stable item IDs, one explicit target rule, JSON-safe data, and rejects malformed, duplicate, or ambiguous definitions.
 ```
 
 ---
 
 ### P6-02 — Implement shape puzzle generator
 
-- [ ] Select learning target.
-- [ ] Generate correct target.
-- [ ] Add distractors.
-- [ ] Validate requested count.
-- [ ] Reject ambiguity unless explicitly allowed.
-- [ ] Add bounded regeneration.
-- [ ] Record seed.
+- [x] Select learning target.
+- [x] Generate correct target.
+- [x] Add distractors.
+- [x] Validate requested count.
+- [x] Reject ambiguity unless explicitly allowed.
+- [x] Add bounded regeneration.
+- [x] Record seed.
 
 Dependencies: P6-01, P2-02
 
 Verification:
 
-- [ ] Property tests confirm solvability.
-- [ ] No unavailable shape is requested.
-- [ ] No unintended ambiguity is generated.
-- [ ] Failing seeds can be reproduced.
+- [x] Property tests confirm solvability.
+- [x] No unavailable shape is requested.
+- [x] No unintended ambiguity is generated.
+- [x] Failing seeds can be reproduced.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 across 250 deterministic property seeds. Each bounded generation records its seed, draws only available vocabulary, emits one achievable target plus three distinct distractors, and reproduces exactly.
 ```
 
 ---
 
 ### P6-03 — Create factory scene
 
-- [ ] Add input tray.
-- [ ] Add conveyor.
-- [ ] Add machine face.
-- [ ] Add shape openings.
-- [ ] Add processing sequence.
-- [ ] Add output chute.
-- [ ] Add large hidden drop colliders.
+- [x] Add input tray.
+- [x] Add conveyor.
+- [x] Add machine face.
+- [x] Add shape openings.
+- [x] Add processing sequence.
+- [x] Add output chute.
+- [x] Add large hidden drop colliders.
 
 Dependencies: P6-01
 
 Verification:
 
-- [ ] Scene performs within budget.
-- [ ] Drop colliders exceed visible opening sizes.
-- [ ] Missing decoration has a fallback.
+- [x] Scene performs within budget.
+- [x] Drop colliders exceed visible opening sizes.
+- [x] Missing decoration has a fallback.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in desktop/tablet Chromium and production builds. Shared low-poly primitives render the tray, conveyor, friendly machine, opening, processing light, chute/output, enlarged DOM drop target, and child-safe WebGL fallback.
 ```
 
 ---
 
 ### P6-04 — Implement conveyor and dragging behavior
 
-- [ ] Add slow conveyor movement.
-- [ ] Pause conveyor while dragging.
-- [ ] Resume after drop.
-- [ ] Handle canceled drag.
-- [ ] Avoid position desynchronization.
-- [ ] Add safe return animation.
-- [ ] Bound repeated input.
+- [x] Add slow conveyor movement.
+- [x] Pause conveyor while dragging.
+- [x] Resume after drop.
+- [x] Handle canceled drag.
+- [x] Avoid position desynchronization.
+- [x] Add safe return animation.
+- [x] Bound repeated input.
 
 Dependencies: P6-03, P3-05
 
 Verification:
 
-- [ ] Conveyor pauses during drag.
-- [ ] Drag cancellation restores stable state.
-- [ ] Touch emulation works.
+- [x] Conveyor pauses during drag.
+- [x] Drag cancellation restores stable state.
+- [x] Touch emulation works.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by reducer and desktop/tablet pointer-drag tests. Pointer capture pauses the conveyor, the generous opening accepts near drops, cancel/outside paths restore stable waiting, and locked phases bound repeated input without render-position authority.
 ```
 
 ---
 
 ### P6-05 — Implement factory activity state machine
 
-- [ ] Add instruction.
-- [ ] Add waiting.
-- [ ] Add evaluation.
-- [ ] Add machine processing.
-- [ ] Add output.
-- [ ] Add hint.
-- [ ] Add celebration.
-- [ ] Add watchdog recovery.
-- [ ] Prevent deadlock.
+- [x] Add instruction.
+- [x] Add waiting.
+- [x] Add evaluation.
+- [x] Add machine processing.
+- [x] Add output.
+- [x] Add hint.
+- [x] Add celebration.
+- [x] Add watchdog recovery.
+- [x] Prevent deadlock.
 
 Dependencies: P6-02, P6-04
 
 Verification:
 
-- [ ] All transitions are tested.
-- [ ] Processing sequence cannot execute twice.
-- [ ] Watchdog restores safe state.
+- [x] All transitions are tested.
+- [x] Processing sequence cannot execute twice.
+- [x] Watchdog restores safe state.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by exhaustive reducer flow tests. Typed instruction/waiting/processing/output/hint/celebration transitions are idempotent; duplicate processing is ignored, and owned processing/output watchdogs advance or explicit recovery returns to waiting.
 ```
 
 ---
 
 ### P6-06 — Add shape instructions and hints
 
-- [ ] Add shape vocabulary.
-- [ ] Add size vocabulary.
-- [ ] Add color vocabulary.
-- [ ] Add spoken instructions.
-- [ ] Add replay.
-- [ ] Add target wiggle or glow.
-- [ ] Reduce choices after repeated mismatch.
+- [x] Add shape vocabulary.
+- [x] Add size vocabulary.
+- [x] Add color vocabulary.
+- [x] Add spoken instructions.
+- [x] Add replay.
+- [x] Add target wiggle or glow.
+- [x] Reduce choices after repeated mismatch.
 
 Dependencies: P6-05, P3-03, P3-04
 
 Verification:
 
-- [ ] Muted mode remains playable.
-- [ ] Hints cancel on interaction.
-- [ ] Reduced motion changes animation behavior.
+- [x] Muted mode remains playable.
+- [x] Hints cancel on interaction.
+- [x] Reduced motion changes animation behavior.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by local Ava instruction/success assets, DOM vocabulary and target glyphs, Replay, glow escalation, and two-mismatch choice reduction. Muted play retains exact visual guidance and reduced motion shortens/removes conveyor and processing movement.
 ```
 
 ---
 
 ### P6-07 — Persist shape progress
 
-- [ ] Save completed activities.
-- [ ] Save skill outcomes.
-- [ ] Save last-played timestamp.
-- [ ] Add migration coverage.
+- [x] Save completed activities.
+- [x] Save skill outcomes.
+- [x] Save last-played timestamp.
+- [x] Add migration coverage.
 
 Dependencies: P6-06, P3-07
 
 Verification:
 
-- [ ] Progress survives reload.
-- [ ] Invalid saved subsection recovers.
+- [x] Progress survives reload.
+- [x] Invalid saved subsection recovers.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `shapePersistence.test.ts` and E2E reload. Root progress stores bounded totals, attempts/successes, completion IDs, and ISO last-played time; schema 0 migrates and invalid fields recover independently.
 ```
 
 ---
 
 ### P6-08 — Add shape E2E and visual tests
 
-- [ ] Complete fixed-seed puzzle.
-- [ ] Test an incorrect drop.
-- [ ] Trigger hint reduction.
-- [ ] Simulate animation interruption.
-- [ ] Verify recovery.
-- [ ] Capture stable screenshot.
+- [x] Complete fixed-seed puzzle.
+- [x] Test an incorrect drop.
+- [x] Trigger hint reduction.
+- [x] Simulate animation interruption.
+- [x] Verify recovery.
+- [x] Capture stable screenshot.
 
 Dependencies: P6-01 through P6-07
 
 Verification:
 
-- [ ] E2E suite passes.
-- [ ] Property tests pass.
-- [ ] Visual baseline is stable.
+- [x] E2E suite passes.
+- [x] Property tests pass.
+- [x] Visual baseline is stable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by 67 unit/integration tests and the fixed desktop/tablet Pages-path flow. Two wrong choices reduce the tray, a real pointer drag pauses the conveyor and completes through watchdog-owned processing, progress reloads, recovery is unit-tested, and per-viewport screenshots are stable.
 ```
 
 ---
 
 ## Phase 6 completion gate
 
-- [ ] All Phase 6 tasks are complete and verified.
-- [ ] Generated puzzles are always solvable.
-- [ ] Conveyor interaction is stable.
-- [ ] Machine state cannot deadlock.
-- [ ] Phase 6 completion is recorded in the changelog.
+- [x] All Phase 6 tasks are complete and verified.
+- [x] Generated puzzles are always solvable.
+- [x] Conveyor interaction is stable.
+- [x] Machine state cannot deadlock.
+- [x] Phase 6 completion is recorded in the changelog.
 
 ---
 
@@ -2838,12 +2838,12 @@ Known limitations: The approved neural voice remains replaceable interim artwork
 ## Phase 6 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 6 Magic Shape Factory commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (67 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "shape factory" --update-snapshots=all --reporter=line; npm run test:e2e -- --reporter=line; git diff --check
+Manual checks: Desktop and touch-tablet Chromium reduced choices after two safe mismatches, completed with a real pointer drag while the conveyor paused, advanced through watchdog-owned processing, requested instruction/success audio, persisted/reloaded progress, and matched per-viewport baselines. Four audio files were decoded and inspected.
+Known limitations: The approved Ava neural TTS remains replaceable interim voice artwork. Child-facing curriculum stays on the reviewed small-red-square target until additional matching local prompts are approved; the generator itself supports the full vocabulary.
 ```
 
 ## Phase 7 verification
@@ -3077,7 +3077,7 @@ Every agent session that changes implementation status should add an entry.
 ### 2026-07-18 — Phase 5 Little Garden
 
 **Agent or developer:** Codex
-**Commit or branch:** Phase 5 commit (this commit)
+**Commit or branch:** `62ba8dc`
 
 **Completed:**
 - P5-01 through P5-07
@@ -3096,3 +3096,27 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-006 records deterministic positive-outcome simulation and transient-state persistence boundaries.
 - Three guided lines use approved bundled Ava OGG/MP3 assets; no runtime speech/network dependency was added.
+
+
+### 2026-07-18 — Phase 6 Magic Shape Factory
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 6 commit (this commit)
+
+**Completed:**
+- P6-01 through P6-08
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 67 unit/integration tests, coverage, root/Pages builds, and desktop/tablet Playwright passed.
+- Property coverage proves one unambiguous solution across 250 seeds; reducer tests cover cancellation, duplicate processing, hints, and recovery.
+- The fixed reduced-motion E2E flow performs two safe mismatches, reduces choices, pauses during a real drag, completes, persists, reloads, and matches per-viewport baselines.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-007 records the deterministic puzzle/render adapter boundary and watchdog-owned processing sequence.
+- Two guided lines use approved bundled Ava OGG/MP3 assets; no runtime speech or network dependency was added.

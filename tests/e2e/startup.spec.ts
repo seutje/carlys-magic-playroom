@@ -179,6 +179,56 @@ test("completes one-step and two-step garden tasks safely", async ({ page }) => 
   await expect(page.getByText("Garden games: 2")).toBeVisible();
 });
 
+test("reduces choices and completes the fixed shape factory puzzle", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const voiceRequests: string[] = [];
+  page.on("request", (request) => {
+    const match = /audio\/shapes\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
+    if (match?.[1]) voiceRequests.push(match[1]);
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Visit the shape factory" }).click();
+
+  const correct = page.getByRole("button", { name: "small red square" });
+  await expect(correct).toBeEnabled();
+  const wrong = page.locator('.shape-tray button:not([aria-label="small red square"])').first();
+  await wrong.click();
+  await wrong.click();
+  await expect(page.getByText("Only the matching shape is left.")).toBeVisible();
+  await expect(page.locator(".shape-tray button")).toHaveCount(1);
+  await expect(page).toHaveScreenshot("shape-factory-hint.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
+
+  const shapeBounds = await correct.boundingBox();
+  const openingBounds = await page.getByTestId("shape-opening").boundingBox();
+  expect(shapeBounds).not.toBeNull();
+  expect(openingBounds).not.toBeNull();
+  if (!shapeBounds || !openingBounds) return;
+  await page.mouse.move(
+    shapeBounds.x + shapeBounds.width / 2,
+    shapeBounds.y + shapeBounds.height / 2,
+  );
+  await page.mouse.down();
+  await expect(page.locator(".shape-tray")).toHaveClass(/paused/);
+  await page.mouse.move(
+    openingBounds.x + openingBounds.width / 2,
+    openingBounds.y + openingBounds.height / 2,
+    { steps: 8 },
+  );
+  await page.mouse.up();
+  await expect(page.getByRole("button", { name: "Make another" })).toBeVisible();
+  await expect(page.getByText("Shapes made: 1")).toBeVisible();
+  await expect.poll(() => [...new Set(voiceRequests)]).toEqual(["instruction", "success"]);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Visit the shape factory" }).click();
+  await expect(page.getByText("Shapes made: 1")).toBeVisible();
+});
+
 async function expectedGardenHelper(page: Page) {
   await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
