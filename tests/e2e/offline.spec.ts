@@ -124,5 +124,5 @@ test("reports a diagnostics-only low-quality profile and bounded frame metrics",
     timeout: 4_000,
   });
   await page.getByRole("button", { name: "Reset performance metrics" }).click();
-  await expect(page.getByText("No frame samples yet.")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Performance metrics reset.");
 });

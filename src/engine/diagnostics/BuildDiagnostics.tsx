@@ -8,6 +8,7 @@ export function BuildDiagnostics() {
   const isVisible = new URLSearchParams(window.location.search).has("diagnostics");
   const quality = useQuality();
   const [performanceSummary, setPerformanceSummary] = useState(() => performanceDiagnostics.read());
+  const [resetConfirmed, setResetConfirmed] = useState(false);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -55,11 +56,13 @@ export function BuildDiagnostics() {
           {performanceSummary.roomLoads.at(-1)?.durationMs.toFixed(0)} ms
         </p>
       ) : null}
+      {resetConfirmed ? <p role="status">Performance metrics reset.</p> : null}
       <button
         type="button"
         onClick={() => {
           performanceDiagnostics.clear();
           setPerformanceSummary(performanceDiagnostics.read());
+          setResetConfirmed(true);
         }}
       >
         Reset performance metrics
