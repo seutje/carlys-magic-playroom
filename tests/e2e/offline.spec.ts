@@ -57,6 +57,7 @@ test("exposes a valid base-aware install manifest", async ({ page, context }) =>
   expect(workerSource).not.toContain("skipWaiting");
   expect(workerSource).toContain("ignoreVary: true");
   expect(workerSource).toContain("caches.delete");
+  expect(workerSource).toContain("/carlys-magic-playroom/models/train/locomotive.glb");
 });
 
 test("loads every room and saved progress offline with partial audio loss", async ({

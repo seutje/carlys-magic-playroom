@@ -40,6 +40,20 @@ test("starts, enters the train room, replays, and returns home", async ({ page }
   await expect(page.getByRole("heading", { name: "Where shall we play?" })).toBeVisible();
 });
 
+test("keeps the train activity playable when its locomotive model is unavailable", async ({
+  page,
+}) => {
+  await page.route("**/models/train/locomotive.glb", (route) => route.abort("failed"));
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Play with the train" }).click();
+
+  await expect(page.getByRole("heading", { name: "Tiny Delivery Train" })).toBeVisible();
+  await page.getByRole("button", { name: "Load yellow duck" }).first().click();
+  await page.getByRole("button", { name: "Load yellow duck" }).first().click();
+  await expect(page.getByText("Trips: 1")).toBeVisible();
+});
+
 test("supports keyboard settings and reduced-motion room transitions", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");

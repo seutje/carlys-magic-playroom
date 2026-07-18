@@ -766,7 +766,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 in the lazy train chunk using shared low-poly primitives only. The train module is 21.38kB minified/7.45kB gzip excluding the shared R3F runtime.
+Verified 2026-07-18 with the base-aware, offline-cached `models/train/locomotive.glb` asset at desktop and tablet viewports. The room owns and disposes loaded GPU resources, retains an immediate primitive fallback when loading fails, and keeps the educational cargo car independent of model object names. The train room is 19.05kB minified; the lazy GLTF loader is 44.27kB and the reported GLB asset is 511,748 bytes.
 ```
 
 ---

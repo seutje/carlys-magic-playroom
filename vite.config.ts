@@ -20,7 +20,9 @@ function offlineAssetsPlugin(base: string, version: string): Plugin {
       const publicDirectory = resolve("public");
       const publicAssets = listFiles(publicDirectory)
         .map((path) => relative(publicDirectory, path).replaceAll("\\", "/"))
-        .filter((path) => /^(audio\/.*\.(?:mp3|ogg)|icons\/.*\.(?:png|svg))$/.test(path));
+        .filter((path) =>
+          /^(audio\/.*\.(?:mp3|ogg)|icons\/.*\.(?:png|svg)|models\/.*\.glb)$/.test(path),
+        );
       const urls = ["index.html", "manifest.webmanifest", ...Object.keys(bundle), ...publicAssets]
         .filter((path, index, paths) => paths.indexOf(path) === index)
         .map((path) => `${base}${path}`);

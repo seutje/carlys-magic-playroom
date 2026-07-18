@@ -1,8 +1,9 @@
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Plane, Vector3, type Group, type Mesh } from "three";
 
 import { COLOR_HEX } from "../../content/colors";
+import { diagnostics } from "../../engine/diagnostics/diagnostics";
 import {
   isInsideTarget,
   PointerDragTracker,
@@ -11,6 +12,7 @@ import {
 } from "../../engine/input/pointerDrag";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
+import { disposeTrainModel, loadTrainModel } from "./train.model";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -103,14 +105,7 @@ function TrainWorld({
         <meshStandardMaterial color="#e9bd82" roughness={0.9} />
       </mesh>
       <group ref={train}>
-        <mesh position={[4.4, -0.25, 0]}>
-          <boxGeometry args={[1.5, 1.8, 1.5]} />
-          <meshStandardMaterial color="#db4f55" roughness={0.7} />
-        </mesh>
-        <mesh position={[4.55, 0.95, 0]}>
-          <cylinderGeometry args={[0.35, 0.5, 1.1, 20]} />
-          <meshStandardMaterial color="#5b4772" roughness={0.7} />
-        </mesh>
+        <TrainEngine />
         <mesh position={[2.8, -0.2, 0]}>
           <boxGeometry args={[2.6, 1.4, 1.8]} />
           <meshStandardMaterial
@@ -120,7 +115,7 @@ function TrainWorld({
             roughness={0.7}
           />
         </mesh>
-        {[2.1, 3.5, 4.05, 4.8].map((x) => (
+        {[2.1, 3.5].map((x) => (
           <mesh key={x} position={[x, -1.1, 0.65]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.42, 0.42, 0.25, 20]} />
             <meshStandardMaterial color="#493b5e" roughness={0.8} />
@@ -136,6 +131,63 @@ function TrainWorld({
         <meshStandardMaterial color="#9c65b5" roughness={1} />
       </mesh>
     </group>
+  );
+}
+
+function TrainEngine() {
+  const [model, setModel] = useState<Group>();
+
+  useEffect(() => {
+    let disposed = false;
+    let ownedModel: Group | undefined;
+
+    void loadTrainModel().then(
+      (loadedModel) => {
+        if (disposed) {
+          disposeTrainModel(loadedModel);
+          return;
+        }
+        ownedModel = loadedModel;
+        setModel(loadedModel);
+      },
+      () => {
+        if (!disposed) {
+          diagnostics.record({ category: "asset", code: "train-model-load-failed" });
+        }
+      },
+    );
+
+    return () => {
+      disposed = true;
+      if (ownedModel) disposeTrainModel(ownedModel);
+    };
+  }, []);
+
+  return (
+    <group position={[4.85, -1.48, 0]} rotation={[0, Math.PI, 0]} scale={0.55}>
+      {model ? <primitive object={model} /> : <TrainEngineFallback />}
+    </group>
+  );
+}
+
+function TrainEngineFallback() {
+  return (
+    <>
+      <mesh position={[0, 2.24, 0]} scale={[1.36, 1.64, 1.36]}>
+        <boxGeometry />
+        <meshStandardMaterial color="#db4f55" roughness={0.7} />
+      </mesh>
+      <mesh position={[-0.25, 4.42, 0]} scale={[0.64, 1, 0.64]}>
+        <cylinderGeometry args={[0.35, 0.5, 1.1, 20]} />
+        <meshStandardMaterial color="#5b4772" roughness={0.7} />
+      </mesh>
+      {[-0.72, 0.72].map((x) => (
+        <mesh key={x} position={[x, 0.69, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.76, 0.76, 0.45, 20]} />
+          <meshStandardMaterial color="#493b5e" roughness={0.8} />
+        </mesh>
+      ))}
+    </>
   );
 }
 

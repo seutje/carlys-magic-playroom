@@ -49,8 +49,11 @@ const rooms = Object.entries(manifest)
 const audioBytes = measurements
   .filter((item) => item.file.startsWith("audio/") && /\.(?:mp3|ogg)$/.test(item.file))
   .reduce((total, item) => total + item.bytes, 0);
+const modelBytes = measurements
+  .filter((item) => item.file.startsWith("models/") && item.file.endsWith(".glb"))
+  .reduce((total, item) => total + item.bytes, 0);
 const majorAssets = measurements
-  .filter((item) => /^(?:audio|icons)\//.test(item.file) && item.bytes >= 10_000)
+  .filter((item) => /^(?:audio|icons|models)\//.test(item.file) && item.bytes >= 10_000)
   .map(({ file, bytes }) => ({ file, bytes }))
   .sort((left, right) => right.bytes - left.bytes);
 const sharedThreeManifestEntry = Object.values(manifest).find(
@@ -68,6 +71,7 @@ const limits = {
   initialGzipBytes: 100_000,
   roomBytes: 40_000,
   audioBytes: 600_000,
+  modelBytes: 2_000_000,
   sharedThreeExceptionBytes: 900_000,
 };
 const violations = [
@@ -77,6 +81,7 @@ const violations = [
     .filter((room) => room.bytes > limits.roomBytes)
     .map((room) => `${room.room} chunk ${room.bytes}`),
   audioBytes > limits.audioBytes ? `audio bytes ${audioBytes}` : null,
+  modelBytes > limits.modelBytes ? `model bytes ${modelBytes}` : null,
   sharedThree && sharedThree.bytes > limits.sharedThreeExceptionBytes
     ? `shared 3D exception ${sharedThree.bytes}`
     : null,
@@ -92,6 +97,7 @@ const report = {
   rooms,
   assets: {
     audioBytes,
+    modelBytes,
     majorAssets,
     duplicateGroups: duplicateGroups.map((group) => group.map((item) => item.file)),
   },
