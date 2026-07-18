@@ -70,8 +70,8 @@ export function TrainScene({
           <ToyVisual
             key={object.id}
             object={object}
-            position={[2.35 + index * 0.75, 0.1, 0.75]}
-            scale={0.62}
+            position={[2.45 + index * 0.55, -0.62, 0.2]}
+            scale={0.48}
           />
         ))}
       </Canvas>
@@ -135,12 +135,12 @@ function CargoCar({ hinting }: { readonly hinting: boolean }) {
 
   return (
     <>
-      <group position={[2.7, -1.48, 0]} scale={[0.78, 0.85, 0.9]}>
+      <group position={[3, -1.48, 0]} scale={0.55}>
         {model ? <primitive object={model} /> : <CargoCarFallback />}
       </group>
       {hinting ? (
-        <mesh position={[2.7, -0.65, 0]}>
-          <boxGeometry args={[2.85, 1.55, 1.75]} />
+        <mesh position={[3, -0.92, 0]}>
+          <boxGeometry args={[2.05, 1.15, 1.15]} />
           <meshStandardMaterial
             color="#ffd45e"
             emissive="#6c4c00"
