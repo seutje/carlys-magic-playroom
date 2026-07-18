@@ -66,6 +66,20 @@ test("keeps critter assembly playable when its component models are unavailable"
   await expect(page.getByText("Your critter is ready!")).toBeVisible();
 });
 
+test("keeps musical matching playable when its instrument models are unavailable", async ({
+  page,
+}) => {
+  await page.route("**/models/music/*.glb", (route) => route.abort("failed"));
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Make some music" }).click();
+
+  const target = page.locator('.music-choices button[data-target="true"]');
+  await expect(target).toBeEnabled();
+  await target.click();
+  await expect(page.getByText("Songs matched: 1")).toBeVisible();
+});
+
 test("supports keyboard settings and reduced-motion room transitions", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");

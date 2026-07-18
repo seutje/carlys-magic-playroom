@@ -1,7 +1,17 @@
 import { Canvas } from "@react-three/fiber";
+import { useEffect, useMemo, useState } from "react";
+import type { Group } from "three";
 
+import { diagnostics } from "../../engine/diagnostics/diagnostics";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
+import {
+  createMusicModelInstance,
+  disposeMusicModelInstance,
+  disposeMusicModelSources,
+  loadMusicModels,
+  type MusicModelSources,
+} from "./music.model";
 import type { InstrumentId, MusicState } from "./music.types";
 
 export function MusicScene({
@@ -12,6 +22,7 @@ export function MusicScene({
   readonly reducedEffects: boolean;
 }) {
   const quality = useQuality();
+  const models = useOwnedMusicModels();
   return (
     <div className="music-canvas" aria-label="A stage with a drum, bell, and xylophone">
       <Canvas
@@ -33,16 +44,19 @@ export function MusicScene({
           instrument="drum"
           position={[-3, -0.8, 0]}
           active={Boolean(state.selectedChoiceId?.startsWith("drum"))}
+          source={models.drum}
         />
         <Instrument
           instrument="bell"
           position={[0, -0.6, 0]}
           active={Boolean(state.selectedChoiceId?.startsWith("bell"))}
+          source={models.bell}
         />
         <Instrument
           instrument="xylophone"
           position={[3, -0.8, 0]}
           active={Boolean(state.selectedChoiceId?.startsWith("xylophone"))}
+          source={models.xylophone}
         />
         {!reducedEffects &&
           [-4, -2, 0, 2, 4]
@@ -65,14 +79,39 @@ function Instrument({
   instrument,
   position,
   active,
+  source,
 }: {
   readonly instrument: InstrumentId;
   readonly position: [number, number, number];
   readonly active: boolean;
+  readonly source: Group | undefined;
 }) {
+  const baseScale = instrument === "xylophone" ? 0.9 : instrument === "bell" ? 0.94 : 1;
+  return (
+    <group
+      position={position}
+      scale={baseScale * (active ? 1.08 : 1)}
+      rotation={instrument === "xylophone" ? [0, 0, -0.12] : [0, 0, 0]}
+    >
+      {source ? (
+        <MusicInstrumentModel source={source} />
+      ) : (
+        <InstrumentFallback instrument={instrument} />
+      )}
+    </group>
+  );
+}
+
+function MusicInstrumentModel({ source }: { readonly source: Group }) {
+  const instance = useMemo(() => createMusicModelInstance(source), [source]);
+  useEffect(() => () => disposeMusicModelInstance(instance), [instance]);
+  return <primitive object={instance} />;
+}
+
+function InstrumentFallback({ instrument }: { readonly instrument: InstrumentId }) {
   if (instrument === "drum")
     return (
-      <group position={position} scale={active ? 1.08 : 1}>
+      <>
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[1, 1, 1.15, 24]} />
           <meshStandardMaterial color="#e56c70" />
@@ -81,11 +120,11 @@ function Instrument({
           <cylinderGeometry args={[0.06, 0.06, 1.7, 8]} />
           <meshStandardMaterial color="#f5d5a0" />
         </mesh>
-      </group>
+      </>
     );
   if (instrument === "bell")
     return (
-      <group position={position} scale={active ? 1.08 : 1}>
+      <>
         <mesh>
           <coneGeometry args={[1, 1.7, 24, 1, true]} />
           <meshStandardMaterial color="#f4ca4b" metalness={0.35} />
@@ -94,16 +133,43 @@ function Instrument({
           <sphereGeometry args={[0.22, 12, 8]} />
           <meshStandardMaterial color="#9d6c28" />
         </mesh>
-      </group>
+      </>
     );
   return (
-    <group position={position} scale={active ? 1.08 : 1} rotation={[0, 0, -0.12]}>
+    <>
       {["#ef6d72", "#f2a44d", "#efd65d", "#72c57a", "#62b8df"].map((color, index) => (
         <mesh key={color} position={[index * 0.38 - 0.75, 0, 0]}>
           <boxGeometry args={[0.32, 1.8 - index * 0.16, 0.38]} />
           <meshStandardMaterial color={color} />
         </mesh>
       ))}
-    </group>
+    </>
   );
+}
+
+function useOwnedMusicModels(): MusicModelSources {
+  const [models, setModels] = useState<MusicModelSources>({});
+
+  useEffect(() => {
+    let disposed = false;
+    let ownedModels: MusicModelSources = {};
+    void loadMusicModels().then(({ models: loadedModels, failedIds }) => {
+      if (disposed) {
+        disposeMusicModelSources(loadedModels);
+        return;
+      }
+      ownedModels = loadedModels;
+      failedIds.forEach((id) => {
+        diagnostics.record({ category: "asset", code: `music-model-load-failed:${id}` });
+      });
+      setModels(loadedModels);
+    });
+
+    return () => {
+      disposed = true;
+      disposeMusicModelSources(ownedModels);
+    };
+  }, []);
+
+  return models;
 }

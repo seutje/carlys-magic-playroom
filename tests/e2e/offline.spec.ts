@@ -73,6 +73,9 @@ test("exposes a valid base-aware install manifest", async ({ page, context }) =>
   ]) {
     expect(workerSource).toContain(`/carlys-magic-playroom/models/critter/${model}.glb`);
   }
+  for (const model of ["drum", "bell", "xylophone"]) {
+    expect(workerSource).toContain(`/carlys-magic-playroom/models/music/${model}.glb`);
+  }
 });
 
 test("loads every room and saved progress offline with partial audio loss", async ({

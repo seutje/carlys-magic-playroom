@@ -1919,7 +1919,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 by desktop/tablet Chromium baselines. Low-poly drum/bell/xylophone props, stage lights, target pulse, exact visual patterns, replay, and 80+ CSS-pixel DOM choices remain distinct with reduced effects.
+Verified 2026-07-18 by desktop/tablet Chromium baselines. Independently loaded Blender drum, bell, and xylophone GLBs preserve stage lights, target pulse, exact visual patterns, replay, and 80+ CSS-pixel DOM choices, while per-instrument primitive fallbacks keep the stage playable during partial or complete model loss. Reused Blender geometry keeps the three assets to 347,076 bytes; the music chunk is 10.83kB minified and all project models total 1,858,608 bytes against the 2MB budget.
 ```
 
 ---
@@ -2044,7 +2044,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 with 74 unit/integration tests and the desktop/tablet Pages-path flow. Target/replay, mute, rapid replay, selection locking, two mismatches, choice reduction, correct match, audio requests, persistence, and stable screenshots pass. The maintainer recorded the required physical tablet listening approval.
+Verified 2026-07-18 with unit/integration coverage and the desktop/tablet Pages-path flow. Target/replay, mute, rapid replay, selection locking, two mismatches, choice reduction, correct match, audio requests, persistence, complete GLB loss recovery, and stable screenshots pass. The maintainer recorded the required physical tablet listening approval.
 ```
 
 ---
