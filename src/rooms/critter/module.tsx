@@ -1,9 +1,12 @@
-import { definePlaceholderRoom } from "../definePlaceholderRoom";
+import type { RoomModule } from "../roomModule";
+import { BasicRoomSession } from "../roomSession";
+import { CritterRoom } from "./CritterRoom";
 
-export const critterRoom = definePlaceholderRoom({
+export const critterRoom: RoomModule = {
   id: "critter",
   title: "Build-a-Critter Lab",
-  symbol: "🐾",
-  color: "#8268c8",
-  instruction: "The critters are gathering their parts!",
-});
+  capabilities: { audio: true, drag: false, persistence: true, pause: true, restart: true },
+  preload: () => Promise.resolve(),
+  createSession: () => new BasicRoomSession(`critter:${crypto.randomUUID()}`),
+  Component: CritterRoom,
+};

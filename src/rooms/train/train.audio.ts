@@ -1,4 +1,5 @@
 import type { AudioSettings } from "../../engine/audio/audioService";
+import { createHtmlAudioPlayer } from "../../engine/audio/htmlAudioPlayer";
 import { AudioCoordinator, type AudioClipPlayer } from "../../engine/audio/audioCoordinator";
 import { assetUrl } from "../../engine/assets/assetUrl";
 
@@ -60,40 +61,5 @@ const TRAIN_AUDIO_OWNER = "train";
 const COUNT_NAMES = { 1: "one", 2: "two", 3: "three" } as const;
 
 export function createBrowserTrainClipPlayer(): TrainClipPlayer {
-  let current: HTMLAudioElement | undefined;
-  let settleCurrent: (() => void) | undefined;
-  const format = selectAudioFormat();
-
-  return {
-    play(cue, volume) {
-      return new Promise<void>((resolve) => {
-        const audio = new Audio(assetUrl(`audio/train/${cue}.${format}`));
-        current = audio;
-        audio.preload = "auto";
-        audio.volume = volume;
-        const settle = () => {
-          if (current === audio) current = undefined;
-          if (settleCurrent === settle) settleCurrent = undefined;
-          audio.removeEventListener("ended", settle);
-          audio.removeEventListener("error", settle);
-          resolve();
-        };
-        settleCurrent = settle;
-        audio.addEventListener("ended", settle, { once: true });
-        audio.addEventListener("error", settle, { once: true });
-        void audio.play().catch(settle);
-      });
-    },
-    stop() {
-      current?.pause();
-      current = undefined;
-      settleCurrent?.();
-      settleCurrent = undefined;
-    },
-  };
-}
-
-function selectAudioFormat(): "ogg" | "mp3" {
-  const probe = document.createElement("audio");
-  return probe.canPlayType('audio/ogg; codecs="vorbis"') ? "ogg" : "mp3";
+  return createHtmlAudioPlayer((cue, format) => assetUrl(`audio/train/${cue}.${format}`));
 }

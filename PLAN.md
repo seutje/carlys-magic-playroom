@@ -100,7 +100,7 @@ Verified:
 - [x] Phase 1 — Startup and Playroom Shell
 - [x] Phase 2 — Tiny Delivery Train Vertical Slice
 - [x] Phase 3 — Shared Activity Framework
-- [ ] Phase 4 — Build-a-Critter Lab
+- [x] Phase 4 — Build-a-Critter Lab
 - [ ] Phase 5 — Little Garden
 - [ ] Phase 6 — Magic Shape Factory
 - [ ] Phase 7 — Musical Corner
@@ -1220,188 +1220,188 @@ The child can assemble, animate, save, reload, and replace a creature without ev
 
 ### P4-01 — Define critter data model
 
-- [ ] Define bodies.
-- [ ] Define socket IDs.
-- [ ] Define compatible parts.
-- [ ] Define colors and patterns.
-- [ ] Define reactions.
-- [ ] Define serialized saved creature format.
-- [ ] Define versioning.
+- [x] Define bodies.
+- [x] Define socket IDs.
+- [x] Define compatible parts.
+- [x] Define colors and patterns.
+- [x] Define reactions.
+- [x] Define serialized saved creature format.
+- [x] Define versioning.
 
 Dependencies: Phase 3
 
 Verification:
 
-- [ ] Model is serializable.
-- [ ] Socket IDs are exhaustive.
-- [ ] Invalid part compatibility is rejected.
+- [x] Model is serializable.
+- [x] Socket IDs are exhaustive.
+- [x] Invalid part compatibility is rejected.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `critterModel.test.ts`. Two bodies, three exhaustive sockets, seven compatible parts, three colors/patterns/reactions, and schema-1 saves validate after JSON; incompatible and cross-socket parts are rejected.
 ```
 
 ---
 
 ### P4-02 — Implement critter assembly rules
 
-- [ ] Add one active body.
-- [ ] Add eye placement.
-- [ ] Add mouth placement.
-- [ ] Add leg placement.
-- [ ] Add part replacement.
-- [ ] Add automatic snapping.
-- [ ] Prevent invalid creature state.
-- [ ] Ensure every selection produces a valid creature.
+- [x] Add one active body.
+- [x] Add eye placement.
+- [x] Add mouth placement.
+- [x] Add leg placement.
+- [x] Add part replacement.
+- [x] Add automatic snapping.
+- [x] Prevent invalid creature state.
+- [x] Ensure every selection produces a valid creature.
 
 Dependencies: P4-01
 
 Verification:
 
-- [ ] All allowed combinations assemble.
-- [ ] Replacement works.
-- [ ] Invalid socket combinations fail safely.
-- [ ] No alignment precision is required.
+- [x] All allowed combinations assemble.
+- [x] Replacement works.
+- [x] Invalid socket combinations fail safely.
+- [x] No alignment precision is required.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 across every declared body/part compatibility. Typed selections snap by socket ID, replace atomically, remove incompatibilities on body changes, and lock assembly during celebration.
 ```
 
 ---
 
 ### P4-03 — Create critter lab scene
 
-- [ ] Add assembly platform.
-- [ ] Add part trays.
-- [ ] Add attachment indicators.
-- [ ] Add preview or mirror area.
-- [ ] Add celebration stage.
-- [ ] Add large interaction targets.
+- [x] Add assembly platform.
+- [x] Add part trays.
+- [x] Add attachment indicators.
+- [x] Add preview or mirror area.
+- [x] Add celebration stage.
+- [x] Add large interaction targets.
 
 Dependencies: P4-01
 
 Verification:
 
-- [ ] Scene performs within budget.
-- [ ] Missing decorative assets do not break assembly.
-- [ ] Targets work with touch.
+- [x] Scene performs within budget.
+- [x] Missing decorative assets do not break assembly.
+- [x] Targets work with touch.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in the independent lazy critter chunk using shared low-poly primitives and 64px-class DOM targets. Desktop/tablet baselines show the platform, trays, socket steps, mirror, and child-safe WebGL fallback without external assets.
 ```
 
 ---
 
 ### P4-04 — Add guided assembly flow
 
-- [ ] Introduce one category at a time.
-- [ ] Name each body part aloud.
-- [ ] Add visual demonstration.
-- [ ] Add replay.
-- [ ] Add hint escalation.
-- [ ] Allow free replacement before completion.
+- [x] Introduce one category at a time.
+- [x] Name each body part aloud.
+- [x] Add visual demonstration.
+- [x] Add replay.
+- [x] Add hint escalation.
+- [x] Allow free replacement before completion.
 
 Dependencies: P4-02, P4-03, Phase 3 shared systems
 
 Verification:
 
-- [ ] Child can complete without reading.
-- [ ] Repeated selections remain safe.
-- [ ] Audio does not overlap incorrectly.
+- [x] Child can complete without reading.
+- [x] Repeated selections remain safe.
+- [x] Audio does not overlap incorrectly.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by unit and E2E flows. Eyes, mouth, and legs appear in sequence with symbols, demonstrations, visual socket progress, serialized Ava voice cues, Replay interruption, escalating outlines, and access to earlier filled categories for replacement.
 ```
 
 ---
 
 ### P4-05 — Add critter animation and reactions
 
-- [ ] Add completed-creature reveal.
-- [ ] Add at least three reactions.
-- [ ] Add tap-to-react.
-- [ ] Add reduced-motion alternatives.
-- [ ] Add fallback animation behavior.
+- [x] Add completed-creature reveal.
+- [x] Add at least three reactions.
+- [x] Add tap-to-react.
+- [x] Add reduced-motion alternatives.
+- [x] Add fallback animation behavior.
 
 Dependencies: P4-04
 
 Verification:
 
-- [ ] Reactions do not overlap incorrectly.
-- [ ] Rapid taps are bounded.
-- [ ] Reduced motion remains engaging.
+- [x] Reactions do not overlap incorrectly.
+- [x] Rapid taps are bounded.
+- [x] Reduced motion remains engaging.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by reduced-motion desktop/tablet E2E and guarded reaction state. Wave, bounce, and sparkle share one owned reaction window; rapid taps are ignored until cleanup, while reduced motion substitutes static sparkles and a short reveal.
 ```
 
 ---
 
 ### P4-06 — Persist saved creatures
 
-- [ ] Save completed creatures.
-- [ ] Load saved creatures.
-- [ ] Add schema migration.
-- [ ] Handle missing part assets safely.
-- [ ] Add delete or reset behavior in parent controls later.
+- [x] Save completed creatures.
+- [x] Load saved creatures.
+- [x] Add schema migration.
+- [x] Handle missing part assets safely.
+- [N/A] Add delete or reset behavior in parent controls later.
 
 Dependencies: P4-05, P3-07
 
 Verification:
 
-- [ ] Creature survives reload.
-- [ ] Corrupt creature entry is isolated.
-- [ ] Old schema migration test passes.
+- [x] Creature survives reload.
+- [x] Corrupt creature entry is isolated.
+- [x] Old schema migration test passes.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `critterPersistence.test.ts` and E2E reload. Root-save entries deduplicate, corrupt creatures are filtered independently, compatible schema-0 saves migrate, and stable part IDs render with built-in primitives. Parent reset remains correctly scheduled for Phase 8.
 ```
 
 ---
 
 ### P4-07 — Add critter E2E and visual tests
 
-- [ ] Assemble a fixed creature.
-- [ ] Replace one part.
-- [ ] Complete animation.
-- [ ] Save and reload.
-- [ ] Test reduced motion.
-- [ ] Capture deterministic screenshot.
+- [x] Assemble a fixed creature.
+- [x] Replace one part.
+- [x] Complete animation.
+- [x] Save and reload.
+- [x] Test reduced motion.
+- [x] Capture deterministic screenshot.
 
 Dependencies: P4-01 through P4-06
 
 Verification:
 
-- [ ] E2E suite passes.
-- [ ] Visual baseline is stable.
-- [ ] Touch viewport passes.
+- [x] E2E suite passes.
+- [x] Visual baseline is stable.
+- [x] Touch viewport passes.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in desktop/tablet Chromium under the repository subpath. The fixed flow replaces eyes, completes mouth/legs, requests all four voice cues in order, bounds reaction taps, reloads one saved creature, and matches per-viewport baselines.
 ```
 
 ---
 
 ## Phase 4 completion gate
 
-- [ ] All Phase 4 tasks are complete and verified.
-- [ ] No invalid creature can be produced.
-- [ ] Saved creatures survive reload.
-- [ ] Room is lazy-loaded and disposable.
-- [ ] Phase 4 completion is recorded in the changelog.
+- [x] All Phase 4 tasks are complete and verified.
+- [x] No invalid creature can be produced.
+- [x] Saved creatures survive reload.
+- [x] Room is lazy-loaded and disposable.
+- [x] Phase 4 completion is recorded in the changelog.
 
 ---
 
@@ -2816,12 +2816,12 @@ Known limitations: Audio intentionally permits one active voice for clarity. Sha
 ## Phase 4 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 4 Build-a-Critter Lab commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (56 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "fixed critter" --update-snapshots --reporter=line; npm run test:e2e -- --reporter=line; git diff --check
+Manual checks: Desktop and touch-tablet Chromium assembled and replaced a fixed creature, matched reduced-motion visual baselines, requested eyes/mouth/legs/ready speech in order, bounded rapid reaction taps, reloaded one saved creature, and retained the train regression. Eight critter audio files were decoded and inspected for format, sample rate, channels, duration, and size.
+Known limitations: The approved Ava neural TTS remains replaceable interim voice artwork. Complete local data deletion is intentionally delivered with the Phase 8 parent controls.
 ```
 
 ## Phase 5 verification
@@ -3031,7 +3031,7 @@ Every agent session that changes implementation status should add an entry.
 ### 2026-07-18 — Phase 3 shared activity framework
 
 **Agent or developer:** Codex
-**Commit or branch:** Phase 3 commit (this commit)
+**Commit or branch:** `01310c1`
 
 **Completed:**
 - P3-01 through P3-08
@@ -3050,3 +3050,26 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-004 records the post-train extraction boundary and IndexedDB v2 root migration.
 - Shared abstractions remain domain-neutral; curriculum rules and render decisions stay inside each room.
+
+### 2026-07-18 — Phase 4 Build-a-Critter Lab
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 4 commit (this commit)
+
+**Completed:**
+- P4-01 through P4-07
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 56 unit/integration tests, coverage, root/Pages builds, and desktop/tablet Playwright passed.
+- Every declared compatible part attaches by socket ID; incompatible and corrupt combinations fail safely.
+- The fixed reduced-motion E2E flow replaces a part, completes, reacts, persists, reloads, and matches stable per-viewport screenshots.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-005 records valid-by-construction assembly and stable saved-part identifiers.
+- Four guided lines use the approved build-time Ava voice in OGG/MP3 with no runtime TTS or network dependency.
