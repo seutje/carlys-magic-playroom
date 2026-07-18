@@ -41,14 +41,62 @@ test("supports keyboard settings and reduced-motion room transitions", async ({ 
   await page.goto("./");
   await page.getByRole("button", { name: "Play" }).press("Enter");
   await page.getByRole("button", { name: "Open settings" }).click();
-  await expect(page.getByRole("dialog", { name: "Sound settings" })).toBeVisible();
+  await unlockParentArea(page);
+  await expect(page.getByText("Local controls")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open settings" })).toBeFocused();
 
   await page.getByRole("button", { name: "Visit the garden" }).click();
   await expect(page.getByRole("heading", { name: "Little Garden" })).toBeVisible({
     timeout: 2_000,
   });
+});
+
+test("persists accessible parent controls and confirms local reset", async ({ page }) => {
+  test.setTimeout(45_000);
+
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await expect(page.getByText(/not a security lock/)).toBeVisible();
+  await page.getByRole("button", { name: "Back to play" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await unlockParentArea(page);
+  await expect(page.getByText(/not a diagnosis/)).toBeVisible();
+  await expect(page).toHaveScreenshot("parent-controls.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
+  await page.getByRole("slider", { name: "Master volume" }).fill("0.4");
+  await page.getByRole("checkbox", { name: "Reduce motion" }).check();
+  await page.getByRole("checkbox", { name: "Reduce decorative effects" }).check();
+  await page.getByRole("checkbox", { name: "High-contrast interaction outlines" }).check();
+  await page.getByLabel("Hint timing").selectOption("8000");
+  await page.getByRole("checkbox", { name: "Musical Corner" }).uncheck();
+  await page.getByRole("button", { name: "Back to play" }).click();
+  await expect(page.locator("main.game-shell")).toHaveClass(/high-contrast/);
+  await expect(page.getByRole("button", { name: "Make some music" })).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Play" }).click();
+  await expect(page.getByRole("button", { name: "Make some music" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await unlockParentArea(page);
+  await expect(page.getByRole("slider", { name: "Master volume" })).toHaveValue("0.4");
+  await expect(page.getByText(/No activities recorded yet/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Reset all local data" }).click();
+  await expect(page.getByText("Confirm reset all local data?")).toBeVisible();
+  await page.getByRole("button", { name: "Cancel" }).click();
+  await expect(page.getByRole("slider", { name: "Master volume" })).toHaveValue("0.4");
+  await page.getByRole("button", { name: "Reset all local data" }).click();
+  await page.getByRole("button", { name: "Yes, reset" }).click();
+  await expect(page.getByRole("slider", { name: "Master volume" })).toHaveValue("1");
+  await page.getByRole("button", { name: "Back to play" }).click();
+  await expect(page.getByRole("button", { name: "Make some music" })).toBeVisible();
 });
 
 test("completes and persists the fixed two-yellow-duck train activity", async ({ page }) => {
@@ -230,6 +278,7 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
 });
 
 test("replays, mutes, bounds taps, and matches a musical target", async ({ page }) => {
+  test.setTimeout(45_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const soundRequests: string[] = [];
   page.on("request", (request) => {
@@ -255,6 +304,7 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
   });
 
   await page.getByRole("button", { name: "Open settings" }).click();
+  await unlockParentArea(page);
   await page.getByRole("checkbox", { name: "Sound on" }).uncheck();
   await page.getByRole("button", { name: "Back to play" }).click();
   await page.getByRole("button", { name: "Play target sound again" }).click();
@@ -262,9 +312,9 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("checkbox", { name: "Sound on" }).check();
   await page.getByRole("button", { name: "Back to play" }).click();
-  await page.getByRole("button", { name: "Play target sound again" }).evaluate((button) => {
-    for (let index = 0; index < 5; index += 1) button.click();
-  });
+  for (let index = 0; index < 5; index += 1) {
+    await page.getByRole("button", { name: "Play target sound again" }).click();
+  }
   await expect(page.locator(".music-choices button")).toHaveCount(1);
   await page.locator('.music-choices button[data-target="true"]').click();
   await expect(page.getByRole("button", { name: "Try another sound" })).toBeVisible();
@@ -281,4 +331,14 @@ async function expectedGardenHelper(page: Page) {
   await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
   return page.getByRole("button", { name: wantsWater ? "Tap rain cloud" : "Tap warm sun" });
+}
+
+async function unlockParentArea(page: Page) {
+  const hold = page.getByRole("button", { name: "Hold for grown-up controls" });
+  await expect(hold).toBeVisible();
+  await hold.focus();
+  await page.keyboard.down("Enter");
+  await page.waitForTimeout(1_850);
+  await page.keyboard.up("Enter");
+  await expect(page.getByText("Local controls")).toBeVisible();
 }

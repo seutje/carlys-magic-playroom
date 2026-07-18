@@ -3,6 +3,7 @@ interface GlobalControlsProps {
   readonly onReplay: () => void;
   readonly onSettings: () => void;
   readonly homeDisabled?: boolean;
+  readonly settingsButtonRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
 export function GlobalControls({
@@ -10,6 +11,7 @@ export function GlobalControls({
   onReplay,
   onSettings,
   homeDisabled = false,
+  settingsButtonRef,
 }: GlobalControlsProps) {
   return (
     <nav className="global-controls" aria-label="Playroom controls">
@@ -19,7 +21,7 @@ export function GlobalControls({
       <button type="button" aria-label="Replay instruction" onClick={onReplay}>
         <span aria-hidden="true">↻</span>
       </button>
-      <button type="button" aria-label="Open settings" onClick={onSettings}>
+      <button ref={settingsButtonRef} type="button" aria-label="Open settings" onClick={onSettings}>
         <span aria-hidden="true">⚙</span>
       </button>
     </nav>

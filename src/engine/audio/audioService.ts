@@ -11,13 +11,20 @@ export type AudioContextFactory = () => ResumableAudioContext;
 export interface AudioSettings {
   readonly muted: boolean;
   readonly masterVolume: number;
+  readonly musicVolume?: number;
+  readonly speechVolume?: number;
 }
 
 /** Gesture-initialized audio foundation. Failure never prevents visual play. */
 export class AudioService {
   private context: ResumableAudioContext | undefined;
   private initialization: Promise<AudioAvailability> | undefined;
-  private settings: AudioSettings = { muted: false, masterVolume: 1 };
+  private settings: AudioSettings = {
+    muted: false,
+    masterVolume: 1,
+    musicVolume: 0.8,
+    speechVolume: 1,
+  };
 
   public constructor(private readonly createContext: AudioContextFactory = browserAudioFactory) {}
 
@@ -45,6 +52,14 @@ export class AudioService {
     this.settings = {
       ...this.settings,
       masterVolume: Math.min(1, Math.max(0, masterVolume)),
+    };
+  }
+
+  public setChannelVolumes(musicVolume: number, speechVolume: number): void {
+    this.settings = {
+      ...this.settings,
+      musicVolume: Math.min(1, Math.max(0, musicVolume)),
+      speechVolume: Math.min(1, Math.max(0, speechVolume)),
     };
   }
 

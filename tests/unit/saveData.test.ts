@@ -28,13 +28,30 @@ describe("root save data", () => {
   it("recovers valid subsections and bounds local diagnostic metadata", () => {
     const recovered = migrateSaveData({
       schemaVersion: 1,
-      settings: { muted: true, masterVolume: 5, reducedMotion: "bad" },
+      settings: {
+        muted: true,
+        masterVolume: 5,
+        musicVolume: -4,
+        speechVolume: "bad",
+        reducedMotion: "bad",
+        hintDelayMs: 42,
+        enabledRooms: ["train", "bad"],
+        enabledLearningCategories: [],
+      },
       roomProgress: { train: { schemaVersion: 1 }, unknown: { secret: true } },
       completedTutorials: ["valid", 2],
       savedCreatures: Array.from({ length: 25 }, (_, id) => ({ id })),
       diagnosticCodes: Array.from({ length: 30 }, (_, id) => `code-${id}`),
     });
-    expect(recovered.settings).toMatchObject({ muted: true, masterVolume: 1 });
+    expect(recovered.settings).toMatchObject({
+      muted: true,
+      masterVolume: 1,
+      musicVolume: 0,
+      speechVolume: 1,
+      hintDelayMs: 5000,
+      enabledRooms: ["train"],
+      enabledLearningCategories: ["counting", "creativity", "nature", "shapes", "music"],
+    });
     expect(recovered.roomProgress).toEqual({ train: { schemaVersion: 1 } });
     expect(recovered.completedTutorials).toEqual(["valid"]);
     expect(recovered.savedCreatures).toHaveLength(20);

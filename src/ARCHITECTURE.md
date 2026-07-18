@@ -19,3 +19,5 @@ The startup tier excludes Three.js. Play initializes audio and lazy-loads the pl
 Each lazy room module declares capabilities, preload work, and a session factory. `RoomHost` owns start, exit, and disposal, so room resources cannot outlive navigation. Activity reducers reuse typed lifecycle phases/events while room events remain local.
 
 Shared instruction templates, hint plans, pointer lifecycle helpers, channel-priority audio, owned timers, and deterministic test doubles are engine services rather than curriculum decisions. IndexedDB stores a validated versioned root record; invalid room subsections recover independently and legacy train progress migrates into the root.
+
+The root settings provider owns validated parent preferences and persists complete settings snapshots optimistically. Lazy rooms consume motion, effects, hint timing, and audio policy through shared hooks rather than importing persistence. The grown-up area reads bounded room progress for a neutral local summary and exposes separately confirmed reset scopes; it never owns curriculum state.

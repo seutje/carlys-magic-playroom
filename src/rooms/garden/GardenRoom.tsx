@@ -2,7 +2,8 @@ import { useEffect, useReducer, useRef, useState } from "react";
 
 import { audioService } from "../../engine/audio/audioService";
 import { useOwnedTimeout } from "../../engine/timing/useOwnedTimeout";
-import { useReducedMotion } from "../../ui/useReducedMotion";
+import { useSettings } from "../../ui/settings/settingsContext";
+import { useReducedEffects, useReducedMotion } from "../../ui/useReducedMotion";
 import type { RoomComponentProps } from "../roomModule";
 import { GardenAudioController } from "./garden.audio";
 import { generateGardenActivity } from "./garden.generator";
@@ -33,6 +34,8 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
   const lastReplay = useRef(replayRequest);
   const savedCompletion = useRef<string | undefined>(undefined);
   const reducedMotion = useReducedMotion();
+  const reducedEffects = useReducedEffects();
+  const { settings } = useSettings();
   const { schedule, watchdog, cancelAll } = useOwnedTimeout();
   const expectedAction =
     state.definition.task[state.actionIndex] ?? state.definition.task[0] ?? "water";
@@ -53,7 +56,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
     if (state.phase === "intro") {
       schedule(() => dispatch({ type: "INTRO_FINISHED" }), reducedMotion ? 50 : 600);
     } else if (state.phase === "waiting") {
-      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), 5_000);
+      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), settings.hintDelayMs);
     } else if (state.phase === "evaluating") {
       schedule(() => dispatch({ type: "EFFECT_FINISHED" }), reducedMotion ? 100 : 550);
     } else if (state.phase === "celebrating") {
@@ -67,6 +70,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
     state.actionIndex,
     state.hintLevel,
     state.phase,
+    settings.hintDelayMs,
     watchdog,
   ]);
 
@@ -99,7 +103,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
       <h1 id="garden-title" className="sr-only">
         Little Garden
       </h1>
-      <GardenScene state={state} reducedEffects={reducedMotion} />
+      <GardenScene state={state} reducedEffects={reducedEffects} />
       <div className="garden-guide" aria-live="polite">
         <span aria-hidden="true">*</span>
         <div>

@@ -104,7 +104,7 @@ Verified:
 - [x] Phase 5 — Little Garden
 - [x] Phase 6 — Magic Shape Factory
 - [x] Phase 7 — Musical Corner
-- [ ] Phase 8 — Parent Controls and Accessibility
+- [x] Phase 8 — Parent Controls and Accessibility
 - [ ] Phase 9 — Offline Support and Performance
 - [ ] Phase 10 — Release Hardening
 
@@ -2073,216 +2073,216 @@ An adult can configure the game and inspect local progress without exposing chil
 
 ### P8-01 — Implement parent gate
 
-- [ ] Add accidental-access deterrent.
-- [ ] Use adult-readable instructions.
-- [ ] Add keyboard access.
-- [ ] Add cancel behavior.
-- [ ] Avoid presenting the gate as security.
+- [x] Add accidental-access deterrent.
+- [x] Use adult-readable instructions.
+- [x] Add keyboard access.
+- [x] Add cancel behavior.
+- [x] Avoid presenting the gate as security.
 
 Dependencies: Phase 1
 
 Verification:
 
-- [ ] Child is unlikely to open it accidentally.
-- [ ] Adult can enter with keyboard and pointer.
-- [ ] Gate cannot trap the user.
+- [x] Child is unlikely to open it accidentally.
+- [x] Adult can enter with keyboard and pointer.
+- [x] Gate cannot trap the user.
 
 Evidence:
 
 ```text
-Not yet verified.
+Owned hold timers, pointer cancellation, keyboard entry, Escape/Back, and focus restoration are covered by ParentGate integration tests and desktop/tablet Playwright.
 ```
 
 ---
 
 ### P8-02 — Implement settings model
 
-- [ ] Master volume.
-- [ ] Music toggle or volume.
-- [ ] Speech volume.
-- [ ] Reduced motion.
-- [ ] Reduced effects.
-- [ ] High-contrast interaction outlines.
-- [ ] Hint delay.
-- [ ] Enabled rooms.
-- [ ] Enabled learning categories.
+- [x] Master volume.
+- [x] Music toggle or volume.
+- [x] Speech volume.
+- [x] Reduced motion.
+- [x] Reduced effects.
+- [x] High-contrast interaction outlines.
+- [x] Hint delay.
+- [x] Enabled rooms.
+- [x] Enabled learning categories.
 
 Dependencies: P3-07
 
 Verification:
 
-- [ ] Settings persist.
-- [ ] Invalid values fall back safely.
-- [ ] Every room consumes relevant settings.
+- [x] Settings persist.
+- [x] Invalid values fall back safely.
+- [x] Every room consumes relevant settings.
 
 Evidence:
 
 ```text
-Not yet verified.
+Persisted settings are validated with safe defaults; channel volumes, hint timing, room/category availability, motion, effects, and contrast are consumed by the app and rooms.
 ```
 
 ---
 
 ### P8-03 — Implement settings UI
 
-- [ ] Use accessible native controls.
-- [ ] Add visible focus.
-- [ ] Add labels.
-- [ ] Add immediate preview where useful.
-- [ ] Add Back or Close.
-- [ ] Avoid child-like ambiguity in adult settings.
+- [x] Use accessible native controls.
+- [x] Add visible focus.
+- [x] Add labels.
+- [x] Add immediate preview where useful.
+- [x] Add Back or Close.
+- [x] Avoid child-like ambiguity in adult settings.
 
 Dependencies: P8-02
 
 Verification:
 
-- [ ] Keyboard navigation works.
-- [ ] Screen-reader names are present.
-- [ ] Touch targets are adequate.
+- [x] Keyboard navigation works.
+- [x] Screen-reader names are present.
+- [x] Touch targets are adequate.
 
 Evidence:
 
 ```text
-Not yet verified.
+Native labeled controls, visible focus, immediate previews, 44px minimum adult targets, keyboard operation, and responsive desktop/tablet screenshots were verified.
 ```
 
 ---
 
 ### P8-04 — Apply reduced motion globally
 
-- [ ] Startup transition.
-- [ ] Playroom camera transitions.
-- [ ] Train celebration.
-- [ ] Critter reactions.
-- [ ] Garden lighting and growth.
-- [ ] Shape machine.
-- [ ] Musical stage.
-- [ ] Idle hints.
+- [x] Startup transition.
+- [x] Playroom camera transitions.
+- [x] Train celebration.
+- [x] Critter reactions.
+- [x] Garden lighting and growth.
+- [x] Shape machine.
+- [x] Musical stage.
+- [x] Idle hints.
 
 Dependencies: P8-02, Phases 1–7
 
 Verification:
 
-- [ ] Each room has a documented reduced-motion behavior.
-- [ ] No critical educational animation is removed.
-- [ ] E2E reduced-motion path passes.
+- [x] Each room has a documented reduced-motion behavior.
+- [x] No critical educational animation is removed.
+- [x] E2E reduced-motion path passes.
 
 Evidence:
 
 ```text
-Not yet verified.
+Persisted and system motion preferences cover startup/playroom transitions, all five rooms, celebrations, reactions, growth, stage effects, and hints without removing instructional state.
 ```
 
 ---
 
 ### P8-05 — Apply reduced effects globally
 
-- [ ] Reduce particles.
-- [ ] Reduce flashes.
-- [ ] Reduce decorative motion.
-- [ ] Preserve essential feedback.
-- [ ] Apply setting without reload where practical.
+- [x] Reduce particles.
+- [x] Reduce flashes.
+- [x] Reduce decorative motion.
+- [x] Preserve essential feedback.
+- [x] Apply setting without reload where practical.
 
 Dependencies: P8-02, Phases 1–7
 
 Verification:
 
-- [ ] All rooms respond to the setting.
-- [ ] Core success feedback remains understandable.
+- [x] All rooms respond to the setting.
+- [x] Core success feedback remains understandable.
 
 Evidence:
 
 ```text
-Not yet verified.
+A global reduced-effects class plus room hooks suppress decorative particles, flashes, and motion immediately while retaining text, state, and success feedback.
 ```
 
 ---
 
 ### P8-06 — Add local progress summary
 
-- [ ] Show recently played rooms.
-- [ ] Show activity completion counts.
-- [ ] Show encountered concepts.
-- [ ] Show saved creatures.
-- [ ] Avoid ranking or negative assessment language.
-- [ ] Make clear that this is not a diagnosis.
+- [x] Show recently played rooms.
+- [x] Show activity completion counts.
+- [x] Show encountered concepts.
+- [x] Show saved creatures.
+- [x] Avoid ranking or negative assessment language.
+- [x] Make clear that this is not a diagnosis.
 
 Dependencies: Phases 2, 4, 5, 6, 7
 
 Verification:
 
-- [ ] Summary reflects saved data accurately.
-- [ ] Empty state is friendly.
-- [ ] No personal information is shown or requested.
+- [x] Summary reflects saved data accurately.
+- [x] Empty state is friendly.
+- [x] No personal information is shown or requested.
 
 Evidence:
 
 ```text
-Not yet verified.
+The parent summary reads validated local migrations/completions/concepts/creatures, presents a friendly empty state, and explicitly avoids diagnosis and personal information.
 ```
 
 ---
 
 ### P8-07 — Add reset and deletion controls
 
-- [ ] Reset learning progress.
-- [ ] Delete saved creatures.
-- [ ] Reset settings.
-- [ ] Reset all local data.
-- [ ] Add deliberate confirmation.
-- [ ] Recover cleanly after reset.
+- [x] Reset learning progress.
+- [x] Delete saved creatures.
+- [x] Reset settings.
+- [x] Reset all local data.
+- [x] Add deliberate confirmation.
+- [x] Recover cleanly after reset.
 
 Dependencies: P8-03, P8-06
 
 Verification:
 
-- [ ] Each reset scope affects only intended data.
-- [ ] Full reset returns to safe defaults.
-- [ ] Destructive action cannot be triggered accidentally.
+- [x] Each reset scope affects only intended data.
+- [x] Full reset returns to safe defaults.
+- [x] Destructive action cannot be triggered accidentally.
 
 Evidence:
 
 ```text
-Not yet verified.
+Integration tests verify isolated progress, creature, settings, and all-data resets; Playwright covers cancel plus confirmed full reset and restoration of safe defaults.
 ```
 
 ---
 
 ### P8-08 — Accessibility audit
 
-- [ ] Global keyboard navigation.
-- [ ] Visible focus.
-- [ ] Accessible names.
-- [ ] Color is not the only signal.
-- [ ] Important audio has visual equivalents.
-- [ ] Target sizes meet guidance.
-- [ ] Reduced-motion behavior is complete.
-- [ ] Canvas-adjacent DOM controls are usable.
+- [x] Global keyboard navigation.
+- [x] Visible focus.
+- [x] Accessible names.
+- [x] Color is not the only signal.
+- [x] Important audio has visual equivalents.
+- [x] Target sizes meet guidance.
+- [x] Reduced-motion behavior is complete.
+- [x] Canvas-adjacent DOM controls are usable.
 
 Dependencies: P8-01 through P8-07
 
 Verification:
 
-- [ ] Automated accessibility checks pass where applicable.
-- [ ] Manual keyboard audit is recorded.
-- [ ] Manual color-dependence review is recorded.
+- [x] Automated accessibility checks pass where applicable.
+- [x] Manual keyboard audit is recorded.
+- [x] Manual color-dependence review is recorded.
 
 Evidence:
 
 ```text
-Not yet verified.
+80 unit/integration tests, native control semantics, keyboard/focus E2E, desktop/tablet screenshots, and manual color/visual review cover the Phase 8 audit.
 ```
 
 ---
 
 ## Phase 8 completion gate
 
-- [ ] All Phase 8 tasks are complete and verified.
-- [ ] Settings persist and affect every room.
-- [ ] Parent controls are accessible.
-- [ ] Reset behavior is safe.
-- [ ] Accessibility audit is complete.
-- [ ] Phase 8 completion is recorded in the changelog.
+- [x] All Phase 8 tasks are complete and verified.
+- [x] Settings persist and affect every room.
+- [x] Parent controls are accessible.
+- [x] Reset behavior is safe.
+- [x] Accessibility audit is complete.
+- [x] Phase 8 completion is recorded in the changelog.
 
 ---
 
@@ -2860,12 +2860,12 @@ Known limitations: The local synthesized cues are interim audio artwork and may 
 ## Phase 8 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 8 Parent Controls and Accessibility commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (80 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "parent controls" --reporter=line (2 passed); npm run test:e2e -- --reporter=line (20 passed); git diff --check
+Manual checks: Desktop and touch-tablet Chromium verified the cancellable keyboard/pointer parent gate, focus restoration, responsive controls, immediate high-contrast and room-availability previews, persistence after reload, friendly empty summary, and cancel/confirm reset flows. Screenshot review confirmed readable layouts, visible control states, and no color-only meaning.
+Known limitations: The parent gate intentionally deters accidental access but is not a security boundary. The existing shared React Three Fiber production chunk remains 881 kB and is tracked by Phase 9 performance work.
 ```
 
 ## Phase 9 verification
@@ -3144,3 +3144,26 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-008 records local synthesis, visual equivalents, and why emulation cannot substitute for the physical listening gate.
 - The maintainer confirmed all required cues are clear on the intended physical tablet speakers on 2026-07-18.
+
+### 2026-07-18 — Phase 8 Parent Controls and Accessibility
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 8 commit (this commit)
+
+**Completed:**
+- P8-01 through P8-08
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 80 unit/integration tests, coverage, root/Pages builds, and 20 desktop/tablet Playwright tests passed.
+- Parent settings persist with validated recovery and immediately affect audio, motion, effects, contrast, hints, rooms, and learning categories.
+- Keyboard/focus behavior, native control labels, responsive screenshots, neutral summaries, and isolated/full reset scopes were audited.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-009 records the session-only accidental-access gate, optimistic local settings provider, and scoped reset ownership.
+- The gate explicitly states that it is not a security lock; progress explicitly states that it is not a diagnosis or formal assessment.

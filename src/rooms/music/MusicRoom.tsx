@@ -2,7 +2,8 @@ import { useEffect, useReducer, useRef, useState } from "react";
 
 import { audioService } from "../../engine/audio/audioService";
 import { useOwnedTimeout } from "../../engine/timing/useOwnedTimeout";
-import { useReducedMotion } from "../../ui/useReducedMotion";
+import { useSettings } from "../../ui/settings/settingsContext";
+import { useReducedEffects, useReducedMotion } from "../../ui/useReducedMotion";
 import type { RoomComponentProps } from "../roomModule";
 import { MusicAudioController } from "./music.audio";
 import { generateMusicRound } from "./music.generator";
@@ -29,6 +30,8 @@ export function MusicRoom({ replayRequest, session }: RoomComponentProps) {
       ),
   );
   const reducedMotion = useReducedMotion();
+  const reducedEffects = useReducedEffects();
+  const { settings } = useSettings();
   const lastReplay = useRef(replayRequest);
   const savedCompletion = useRef<string | undefined>(undefined);
   const { schedule, cancelAll } = useOwnedTimeout();
@@ -56,13 +59,13 @@ export function MusicRoom({ replayRequest, session }: RoomComponentProps) {
     if (state.phase === "intro")
       schedule(() => dispatch({ type: "INTRO_FINISHED" }), reducedMotion ? 50 : 500);
     else if (state.phase === "waiting" || state.phase === "hint")
-      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), 5_000);
+      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), settings.hintDelayMs);
     else if (state.phase === "evaluating")
       schedule(() => dispatch({ type: "EVALUATION_FINISHED" }), reducedMotion ? 220 : 500);
     else if (state.phase === "celebrating")
       schedule(() => dispatch({ type: "CELEBRATION_FINISHED" }), reducedMotion ? 250 : 1_200);
     return cancelAll;
-  }, [cancelAll, reducedMotion, schedule, state.hintLevel, state.phase]);
+  }, [cancelAll, reducedMotion, schedule, settings.hintDelayMs, state.hintLevel, state.phase]);
 
   useEffect(() => {
     if ((state.phase === "waiting" || state.phase === "hint") && target) {
@@ -96,7 +99,7 @@ export function MusicRoom({ replayRequest, session }: RoomComponentProps) {
       <h1 id="music-title" className="sr-only">
         Musical Corner
       </h1>
-      <MusicScene state={state} reducedEffects={reducedMotion} />
+      <MusicScene state={state} reducedEffects={reducedEffects} />
       <div className="music-guide" aria-live="polite">
         <span aria-hidden="true">♫</span>
         <div>

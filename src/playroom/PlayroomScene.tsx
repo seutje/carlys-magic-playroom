@@ -10,6 +10,7 @@ interface PlayroomSceneProps {
   readonly transitioningTo: RoomId | undefined;
   readonly reducedMotion: boolean;
   readonly interactionLocked: boolean;
+  readonly enabledRooms?: readonly RoomId[];
   readonly onSelectRoom: (roomId: RoomId) => void;
 }
 
@@ -17,6 +18,7 @@ export function PlayroomScene({
   transitioningTo,
   reducedMotion,
   interactionLocked,
+  enabledRooms = PORTALS.map((portal) => portal.id),
   onSelectRoom,
 }: PlayroomSceneProps) {
   useEffect(
@@ -39,7 +41,7 @@ export function PlayroomScene({
         <directionalLight position={[3, 8, 6]} intensity={2.2} />
         <CameraRig roomId={transitioningTo} reducedMotion={reducedMotion} />
         <PlayroomFloor />
-        {PORTALS.map((portal, index) => (
+        {PORTALS.filter((portal) => enabledRooms.includes(portal.id)).map((portal, index) => (
           <RoomPortal
             key={portal.id}
             portal={portal}

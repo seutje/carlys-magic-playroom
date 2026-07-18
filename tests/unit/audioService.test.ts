@@ -47,6 +47,11 @@ describe("AudioService", () => {
     const service = new AudioService(() => fakeContext("running").context);
     service.setMasterVolume(4);
     service.setMuted(true);
-    expect(service.getSettings()).toEqual({ masterVolume: 1, muted: true });
+    expect(service.getSettings()).toEqual({
+      masterVolume: 1,
+      musicVolume: 0.8,
+      speechVolume: 1,
+      muted: true,
+    });
   });
 });

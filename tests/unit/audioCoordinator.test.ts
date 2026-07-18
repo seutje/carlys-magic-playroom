@@ -57,4 +57,19 @@ describe("AudioCoordinator", () => {
     await vi.waitFor(() => expect(resume).toHaveBeenCalled());
     expect(played).toEqual([]);
   });
+
+  it("applies persisted music and speech channel volumes", async () => {
+    const player = new FakeAudioPlayer<Cue>();
+    const audio = new AudioCoordinator(player, () => ({
+      muted: false,
+      masterVolume: 0.5,
+      musicVolume: 0.4,
+      speechVolume: 0.8,
+    }));
+    audio.play({ cue: "ambient", channel: "music", ownerId: "shell" });
+    await vi.waitFor(() => expect(player.volumes).toEqual([0.2]));
+    player.finish();
+    audio.play({ cue: "instruction", channel: "instructions", ownerId: "room" });
+    await vi.waitFor(() => expect(player.volumes).toEqual([0.2, 0.4]));
+  });
 });

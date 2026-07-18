@@ -3,6 +3,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import { audioService } from "../../engine/audio/audioService";
 import { isInsideTarget, PointerDragTracker } from "../../engine/input/pointerDrag";
 import { useOwnedTimeout } from "../../engine/timing/useOwnedTimeout";
+import { useSettings } from "../../ui/settings/settingsContext";
 import { useReducedMotion } from "../../ui/useReducedMotion";
 import type { RoomComponentProps } from "../roomModule";
 import { ShapeAudioController } from "./shapes.audio";
@@ -31,6 +32,7 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
       ),
   );
   const reducedMotion = useReducedMotion();
+  const { settings } = useSettings();
   const lastReplay = useRef(replayRequest);
   const savedCompletion = useRef<string | undefined>(undefined);
   const { schedule, watchdog, cancelAll } = useOwnedTimeout();
@@ -57,7 +59,7 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
     } else if (state.feedback === "returning") {
       schedule(() => dispatch({ type: "RETURN_FINISHED" }), reducedMotion ? 50 : 350);
     } else if (state.phase === "waiting" || state.phase === "hint") {
-      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), 5_000);
+      schedule(() => dispatch({ type: "HINT_TIMEOUT" }), settings.hintDelayMs);
     } else if (state.phase === "processing") {
       watchdog(() => dispatch({ type: "PROCESSING_FINISHED" }), reducedMotion ? 150 : 1_100);
     } else if (state.phase === "output") {
@@ -66,7 +68,16 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
       schedule(() => dispatch({ type: "CELEBRATION_FINISHED" }), reducedMotion ? 200 : 1_100);
     }
     return cancelAll;
-  }, [cancelAll, reducedMotion, schedule, state.feedback, state.hintLevel, state.phase, watchdog]);
+  }, [
+    cancelAll,
+    reducedMotion,
+    schedule,
+    settings.hintDelayMs,
+    state.feedback,
+    state.hintLevel,
+    state.phase,
+    watchdog,
+  ]);
 
   useEffect(() => {
     if (state.phase === "waiting") shapeAudio.instruct(state.definition.target, true);

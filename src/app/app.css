@@ -991,6 +991,157 @@ h1 {
   }
 }
 
+.parent-gate,
+.parent-area {
+  width: min(48rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 1.25rem;
+  border: 0.25rem solid #fff;
+  border-radius: 1.4rem;
+  overflow: auto;
+  background: #fffdf5;
+  color: #30284b;
+  box-shadow: 0 1rem 3rem rgb(25 20 55 / 35%);
+}
+
+.parent-gate {
+  max-width: 32rem;
+  text-align: center;
+}
+
+.parent-gate button,
+.parent-area button,
+.parent-area input,
+.parent-area select {
+  min-height: 2.75rem;
+}
+
+.parent-hold-button {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  background: #6752a5;
+}
+
+.parent-hold-button:active::after,
+.parent-hold-button:focus-visible::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.35rem;
+  background: #ffda5f;
+  content: "";
+  transform-origin: left;
+  animation: parent-hold-fill 1.8s linear both;
+}
+
+.parent-area header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.parent-area h2,
+.parent-area h3,
+.parent-area p {
+  margin-top: 0.25rem;
+}
+
+.parent-notice {
+  padding: 0.8rem;
+  border-left: 0.35rem solid #6e5aab;
+  background: #f1edf9;
+}
+
+.parent-area fieldset,
+.parent-area section {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 0.12rem solid #c9c1df;
+  border-radius: 1rem;
+  margin: 0.9rem 0;
+}
+
+.parent-area legend,
+.parent-area h3 {
+  font-weight: 850;
+}
+
+.parent-area label {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(8rem, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.parent-area label:has(input[type="checkbox"]) {
+  grid-template-columns: 2.75rem 1fr;
+}
+
+.parent-area input[type="checkbox"] {
+  width: 1.6rem;
+  min-height: 1.6rem;
+}
+
+.parent-area ul {
+  margin: 0;
+}
+
+.reset-controls > button {
+  background: #755b9f;
+}
+
+.reset-controls [role="alert"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 0.15rem solid #9f5968;
+  border-radius: 0.8rem;
+}
+
+.high-contrast button:focus-visible,
+.high-contrast button:not(:disabled),
+.high-contrast input:focus-visible,
+.high-contrast select:focus-visible {
+  outline: 0.3rem solid #fff700;
+  outline-offset: 0.18rem;
+}
+
+.reduced-effects .garden-celebration,
+.reduced-effects .train-celebration,
+.reduced-effects .shape-celebration,
+.reduced-effects .music-celebration,
+.reduced-effects .critter-celebration,
+.reduced-effects .shape-tray,
+.reduced-effects .music-target {
+  animation: none !important;
+  box-shadow: none;
+}
+
+@keyframes parent-hold-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .parent-area label {
+    grid-template-columns: 1fr;
+  }
+  .parent-area label:has(input[type="checkbox"]) {
+    grid-template-columns: 2.75rem 1fr;
+  }
+}
+
 .music-room {
   position: relative;
   min-height: 100dvh;

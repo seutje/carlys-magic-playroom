@@ -87,7 +87,14 @@ export class AudioCoordinator<Cue extends string> {
     try {
       await this.resume();
       if (token !== this.playbackToken) return;
-      await this.player.play(request.cue, this.getSettings().masterVolume);
+      const settings = this.getSettings();
+      const channelVolume =
+        request.channel === "music" || request.channel === "ambient"
+          ? (settings.musicVolume ?? 1)
+          : request.channel === "speech" || request.channel === "instructions"
+            ? (settings.speechVolume ?? 1)
+            : 1;
+      await this.player.play(request.cue, settings.masterVolume * channelVolume);
     } catch {
       // Audio failure remains nonfatal and the queue continues.
     } finally {

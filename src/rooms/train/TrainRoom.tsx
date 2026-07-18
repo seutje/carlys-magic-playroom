@@ -4,6 +4,7 @@ import { useOwnedTimeout } from "../../engine/timing/useOwnedTimeout";
 import { hintDelay, nextHintStep } from "../../engine/hints/hintPlan";
 import { isInsideTarget, PointerDragTracker } from "../../engine/input/pointerDrag";
 import { useReducedMotion } from "../../ui/useReducedMotion";
+import { useSettings } from "../../ui/settings/settingsContext";
 import type { RoomComponentProps } from "../roomModule";
 import { audioService } from "../../engine/audio/audioService";
 import { createBrowserTrainClipPlayer, TrainAudioController } from "./train.audio";
@@ -42,6 +43,7 @@ export function TrainRoom({ replayRequest, session }: RoomComponentProps) {
   const lastReplayRequest = useRef(replayRequest);
   const lastSpokenObject = useRef<string | undefined>(undefined);
   const reducedMotion = useReducedMotion();
+  const { settings } = useSettings();
   const { schedule, cancelAll } = useOwnedTimeout();
   const definition = state.definition ?? INITIAL_DEFINITION;
 
@@ -116,7 +118,7 @@ export function TrainRoom({ replayRequest, session }: RoomComponentProps) {
       case "hint":
         schedule(
           () => dispatch({ type: "HINT_TIMEOUT" }),
-          hintDelay(TRAIN_HINT_PLAN, state.hintLevel),
+          hintDelay(TRAIN_HINT_PLAN, state.hintLevel) * (settings.hintDelayMs / 5_000),
         );
         break;
       case "celebrating":
@@ -133,7 +135,15 @@ export function TrainRoom({ replayRequest, session }: RoomComponentProps) {
         assertNever(state.phase);
     }
     return cancelAll;
-  }, [cancelAll, reducedMotion, replayRequest, schedule, state.hintLevel, state.phase]);
+  }, [
+    cancelAll,
+    reducedMotion,
+    replayRequest,
+    schedule,
+    settings.hintDelayMs,
+    state.hintLevel,
+    state.phase,
+  ]);
 
   const handleDrop = (objectId: string, insideTrain: boolean) => {
     if (!insideTrain) {

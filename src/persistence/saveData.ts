@@ -5,9 +5,17 @@ import type { RoomId } from "../types/domain";
 export interface PersistedSettings {
   readonly muted: boolean;
   readonly masterVolume: number;
+  readonly musicVolume: number;
+  readonly speechVolume: number;
   readonly reducedMotion: boolean;
   readonly reducedEffects: boolean;
+  readonly highContrast: boolean;
+  readonly hintDelayMs: 3000 | 5000 | 8000;
+  readonly enabledRooms: readonly RoomId[];
+  readonly enabledLearningCategories: readonly LearningCategory[];
 }
+
+export type LearningCategory = "counting" | "creativity" | "nature" | "shapes" | "music";
 
 export interface SaveData {
   readonly schemaVersion: 1;
@@ -35,8 +43,14 @@ export const defaultSaveData: SaveData = {
   settings: {
     muted: false,
     masterVolume: 1,
+    musicVolume: 0.8,
+    speechVolume: 1,
     reducedMotion: false,
     reducedEffects: false,
+    highContrast: false,
+    hintDelayMs: 5000,
+    enabledRooms: ["train", "critter", "garden", "shapes", "music"],
+    enabledLearningCategories: ["counting", "creativity", "nature", "shapes", "music"],
   },
   roomProgress: {},
   completedTutorials: [],
@@ -122,9 +136,41 @@ function recoverSettings(value: unknown): PersistedSettings {
       typeof settings.masterVolume === "number" && Number.isFinite(settings.masterVolume)
         ? Math.min(1, Math.max(0, settings.masterVolume))
         : 1,
+    musicVolume: boundedVolume(settings.musicVolume, 0.8),
+    speechVolume: boundedVolume(settings.speechVolume, 1),
     reducedMotion: typeof settings.reducedMotion === "boolean" && settings.reducedMotion,
     reducedEffects: typeof settings.reducedEffects === "boolean" && settings.reducedEffects,
+    highContrast: typeof settings.highContrast === "boolean" && settings.highContrast,
+    hintDelayMs: [3000, 5000, 8000].includes(settings.hintDelayMs as number)
+      ? (settings.hintDelayMs as 3000 | 5000 | 8000)
+      : 5000,
+    enabledRooms: recoverStringUnion(settings.enabledRooms, [
+      "train",
+      "critter",
+      "garden",
+      "shapes",
+      "music",
+    ] as const),
+    enabledLearningCategories: recoverStringUnion(settings.enabledLearningCategories, [
+      "counting",
+      "creativity",
+      "nature",
+      "shapes",
+      "music",
+    ] as const),
   };
+}
+
+function boundedVolume(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.min(1, Math.max(0, value))
+    : fallback;
+}
+
+function recoverStringUnion<T extends string>(value: unknown, allowed: readonly T[]): T[] {
+  if (!Array.isArray(value)) return [...allowed];
+  const recovered = [...new Set(value.filter((item): item is T => allowed.includes(item as T)))];
+  return recovered.length > 0 ? recovered : [...allowed];
 }
 
 function recoverRoomProgress(value: unknown): SaveData["roomProgress"] {
