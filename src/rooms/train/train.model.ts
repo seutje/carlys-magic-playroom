@@ -1,9 +1,18 @@
-import { BufferGeometry, type Group, Material, type Object3D, Texture } from "three";
+import {
+  BufferGeometry,
+  type Group,
+  Material,
+  MeshStandardMaterial,
+  type Object3D,
+  Texture,
+} from "three";
 
 import { assetUrl } from "../../engine/assets/assetUrl";
 
 export const TRAIN_MODEL_PATH = "models/train/locomotive.glb";
 export const CARGO_CAR_MODEL_PATH = "models/train/cargo-car.glb";
+export const DUCK_MODEL_PATH = "models/train/duck.glb";
+export const DUCK_FEATHER_MATERIAL = "CMP_Duck_Feathers";
 
 export interface TrainModelLoader {
   loadAsync(url: string): Promise<{ readonly scene: Group }>;
@@ -16,6 +25,10 @@ export async function loadTrainModel(loader?: TrainModelLoader): Promise<Group> 
 
 export async function loadCargoCarModel(loader?: TrainModelLoader): Promise<Group> {
   return loadModel(CARGO_CAR_MODEL_PATH, loader);
+}
+
+export async function loadDuckModel(loader?: TrainModelLoader): Promise<Group> {
+  return loadModel(DUCK_MODEL_PATH, loader);
 }
 
 async function loadModel(path: string, loader?: TrainModelLoader): Promise<Group> {
@@ -34,6 +47,35 @@ export function disposeTrainModel(root: Object3D): void {
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     materials.forEach(disposeMaterial);
   });
+}
+
+/** Creates an independently colored render instance while sharing immutable model geometry. */
+export function createDuckModelInstance(source: Group, featherColor: string): Group {
+  const instance = source.clone(true);
+  instance.traverse((object) => {
+    if (!("material" in object) || !isMaterialValue(object.material)) return;
+    object.material = Array.isArray(object.material)
+      ? object.material.map((material) => cloneDuckMaterial(material, featherColor))
+      : cloneDuckMaterial(object.material, featherColor);
+  });
+  return instance;
+}
+
+/** Instance materials are cloned per curriculum color; geometry remains owned by the source GLB. */
+export function disposeDuckModelInstance(root: Object3D): void {
+  root.traverse((object) => {
+    if (!("material" in object) || !isMaterialValue(object.material)) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.forEach((material) => material.dispose());
+  });
+}
+
+function cloneDuckMaterial(material: Material, featherColor: string): Material {
+  const clone = material.clone();
+  if (clone.name === DUCK_FEATHER_MATERIAL && clone instanceof MeshStandardMaterial) {
+    clone.color.set(featherColor);
+  }
+  return clone;
 }
 
 function isMaterialValue(value: unknown): value is Material | Material[] {

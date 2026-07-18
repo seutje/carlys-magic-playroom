@@ -12,7 +12,14 @@ import {
 } from "../../engine/input/pointerDrag";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
-import { disposeTrainModel, loadCargoCarModel, loadTrainModel } from "./train.model";
+import {
+  createDuckModelInstance,
+  disposeDuckModelInstance,
+  disposeTrainModel,
+  loadCargoCarModel,
+  loadDuckModel,
+  loadTrainModel,
+} from "./train.model";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -40,6 +47,7 @@ export function TrainScene({
   const loaded = loadedObjectIds
     .map((id) => definition.objects.find((object) => object.id === id))
     .filter((object): object is TrainObjectDefinition => Boolean(object));
+  const duckModel = useOwnedTrainModel(loadDuckModel, "duck-model-load-failed");
 
   return (
     <div className="train-canvas" aria-label="Tiny Delivery Train scene">
@@ -63,6 +71,7 @@ export function TrainScene({
             reducedMotion={reducedMotion}
             highlighted={hintLevel >= 2 && isMatchingObject(definition, object)}
             faded={hintLevel >= 3 && !isMatchingObject(definition, object)}
+            duckModel={duckModel}
             onDrop={onDrop}
           />
         ))}
@@ -72,6 +81,7 @@ export function TrainScene({
             object={object}
             position={[2.45 + index * 0.55, -0.62, 0.2]}
             scale={0.48}
+            duckModel={duckModel}
           />
         ))}
       </Canvas>
@@ -231,6 +241,7 @@ interface DraggableToyProps {
   readonly reducedMotion: boolean;
   readonly highlighted: boolean;
   readonly faded: boolean;
+  readonly duckModel: Group | undefined;
   readonly onDrop: (objectId: string, insideTrain: boolean) => void;
 }
 
@@ -240,6 +251,7 @@ function DraggableToy({
   reducedMotion,
   highlighted,
   faded,
+  duckModel,
   onDrop,
 }: DraggableToyProps) {
   const mesh = useRef<Mesh>(null);
@@ -326,14 +338,22 @@ function DraggableToy({
         target.current.copy(origin);
       }}
     >
-      <sphereGeometry args={[0.72, 20, 16]} />
-      <meshStandardMaterial
-        color={COLOR_HEX[object.color]}
-        transparent={faded}
-        opacity={faded ? 0.15 : 1}
-        roughness={0.7}
-      />
-      <ToyDecoration object={object} />
+      <sphereGeometry args={[object.category === "duck" ? 0.95 : 0.72, 20, 16]} />
+      {object.category === "duck" ? (
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      ) : (
+        <meshStandardMaterial
+          color={COLOR_HEX[object.color]}
+          transparent={faded}
+          opacity={faded ? 0.15 : 1}
+          roughness={0.7}
+        />
+      )}
+      {object.category === "duck" ? (
+        <DuckVisual model={duckModel} color={COLOR_HEX[object.color]} />
+      ) : (
+        <ToyDecoration object={object} />
+      )}
     </mesh>
   );
 }
@@ -351,19 +371,72 @@ function ToyVisual({
   object,
   position,
   scale,
+  duckModel,
 }: {
   object: TrainObjectDefinition;
   position: readonly [number, number, number];
   scale: number;
+  duckModel: Group | undefined;
 }) {
   return (
     <group position={position} scale={scale}>
+      {object.category === "duck" ? (
+        <DuckVisual model={duckModel} color={COLOR_HEX[object.color]} />
+      ) : (
+        <>
+          <mesh>
+            <sphereGeometry args={[0.72, 20, 16]} />
+            <meshStandardMaterial color={COLOR_HEX[object.color]} roughness={0.7} />
+          </mesh>
+          <ToyDecoration object={object} />
+        </>
+      )}
+    </group>
+  );
+}
+
+function DuckVisual({
+  model,
+  color,
+}: {
+  readonly model: Group | undefined;
+  readonly color: string;
+}) {
+  const instance = useMemo(
+    () => (model ? createDuckModelInstance(model, color) : undefined),
+    [color, model],
+  );
+
+  useEffect(
+    () => () => {
+      if (instance) disposeDuckModelInstance(instance);
+    },
+    [instance],
+  );
+
+  return (
+    <group scale={0.8}>
+      {instance ? <primitive object={instance} /> : <DuckFallback color={color} />}
+    </group>
+  );
+}
+
+function DuckFallback({ color }: { readonly color: string }) {
+  return (
+    <>
       <mesh>
         <sphereGeometry args={[0.72, 20, 16]} />
-        <meshStandardMaterial color={COLOR_HEX[object.color]} roughness={0.7} />
+        <meshStandardMaterial color={color} roughness={0.7} />
       </mesh>
-      <ToyDecoration object={object} />
-    </group>
+      <mesh position={[0.35, 0.58, 0]}>
+        <sphereGeometry args={[0.42, 16, 12]} />
+        <meshStandardMaterial color={color} roughness={0.7} />
+      </mesh>
+      <mesh position={[0.75, 0.55, 0]} rotation={[0, 0, -Math.PI / 2]}>
+        <coneGeometry args={[0.16, 0.42, 12]} />
+        <meshStandardMaterial color="#ef8b37" />
+      </mesh>
+    </>
   );
 }
 

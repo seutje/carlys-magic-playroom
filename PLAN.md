@@ -766,7 +766,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 with the base-aware, offline-cached `models/train/locomotive.glb` and `models/train/cargo-car.glb` assets at desktop and tablet viewports. Both models use their shared Blender scale, the room owns and disposes their GPU resources, immediate primitive fallbacks preserve play when either load fails, and cargo highlighting, drop validation, and toy placement remain independent of model object names. The train room is 19.82kB minified; the lazy GLTF loader is 44.27kB and the two reported GLB assets total 824,828 bytes.
+Verified 2026-07-18 with the base-aware, offline-cached locomotive, cargo-car, and duck GLBs at desktop and tablet viewports. The room shares immutable duck geometry while cloning and disposing per-instance materials for curriculum colors, preserves oversized invisible drag colliders and primitive fallbacks, and owns all source-model GPU cleanup. The train room is 21.45kB minified; the lazy GLTF loader is 44.27kB and the three reported GLB assets total 944,708 bytes.
 ```
 
 ---
