@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Completed Phase 7 Musical Corner with deterministic instrument/pitch/volume matching, local synthesized cues, coordinated replay, muted visual equivalents, bounded taps, progress recovery, browser coverage, and approved tablet-speaker clarity.
 - Completed Phase 6 Magic Shape Factory with deterministic validated puzzles, forgiving conveyor drag, bounded hints, watchdog recovery, local Ava speech, progress migration, and desktop/tablet visual coverage.
 
 - Establish the strict Vite, React, testing, diagnostics, and GitHub Pages foundation, verified through root and repository-subpath production previews.

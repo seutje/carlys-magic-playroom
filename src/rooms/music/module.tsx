@@ -1,9 +1,12 @@
-import { definePlaceholderRoom } from "../definePlaceholderRoom";
+import type { RoomModule } from "../roomModule";
+import { BasicRoomSession } from "../roomSession";
+import { MusicRoom } from "./MusicRoom";
 
-export const musicRoom = definePlaceholderRoom({
+export const musicRoom: RoomModule = {
   id: "music",
   title: "Musical Corner",
-  symbol: "♫",
-  color: "#4f8fc5",
-  instruction: "The instruments are tuning up!",
-});
+  capabilities: { audio: true, drag: false, persistence: true, pause: false, restart: true },
+  preload: () => Promise.resolve(),
+  createSession: () => new BasicRoomSession(`music:${crypto.randomUUID()}`),
+  Component: MusicRoom,
+};

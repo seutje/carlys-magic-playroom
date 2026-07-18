@@ -229,6 +229,54 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
   await expect(page.getByText("Shapes made: 1")).toBeVisible();
 });
 
+test("replays, mutes, bounds taps, and matches a musical target", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const soundRequests: string[] = [];
+  page.on("request", (request) => {
+    const match = /audio\/music\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
+    if (match?.[1]) soundRequests.push(match[1]);
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Make some music" }).click();
+
+  await expect(page.getByRole("button", { name: "Play target sound again" })).toBeVisible();
+  await page.getByRole("button", { name: "Replay instruction" }).click();
+  await page.getByRole("button", { name: "Play target sound again" }).click();
+  const wrong = page.locator('.music-choices button[data-target="false"]').first();
+  await wrong.click();
+  await expect(page.getByText("Watch the target picture bounce.")).toBeVisible();
+  await wrong.click();
+  await expect(page.getByText("Here is the matching picture.")).toBeVisible();
+  await expect(page.locator(".music-choices button")).toHaveCount(1);
+  await expect(page).toHaveScreenshot("music-stage.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
+
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await page.getByRole("checkbox", { name: "Sound on" }).uncheck();
+  await page.getByRole("button", { name: "Back to play" }).click();
+  await page.getByRole("button", { name: "Play target sound again" }).click();
+
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await page.getByRole("checkbox", { name: "Sound on" }).check();
+  await page.getByRole("button", { name: "Back to play" }).click();
+  await page.getByRole("button", { name: "Play target sound again" }).evaluate((button) => {
+    for (let index = 0; index < 5; index += 1) button.click();
+  });
+  await expect(page.locator(".music-choices button")).toHaveCount(1);
+  await page.locator('.music-choices button[data-target="true"]').click();
+  await expect(page.getByRole("button", { name: "Try another sound" })).toBeVisible();
+  await expect(page.getByText("Songs matched: 1")).toBeVisible();
+  await expect.poll(() => new Set(soundRequests).size).toBeGreaterThanOrEqual(2);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Make some music" }).click();
+  await expect(page.getByText("Songs matched: 1")).toBeVisible();
+});
+
 async function expectedGardenHelper(page: Page) {
   await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();

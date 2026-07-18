@@ -103,7 +103,7 @@ Verified:
 - [x] Phase 4 — Build-a-Critter Lab
 - [x] Phase 5 — Little Garden
 - [x] Phase 6 — Magic Shape Factory
-- [ ] Phase 7 — Musical Corner
+- [x] Phase 7 — Musical Corner
 - [ ] Phase 8 — Parent Controls and Accessibility
 - [ ] Phase 9 — Offline Support and Performance
 - [ ] Phase 10 — Release Hardening
@@ -1850,212 +1850,212 @@ The child can hear, replay, and match sounds without overlapping audio or depend
 
 ### P7-01 — Define music activity model
 
-- [ ] Define instruments.
-- [ ] Define sound IDs.
-- [ ] Define target selection.
-- [ ] Define choices.
-- [ ] Define difficulty.
-- [ ] Define serialized round format.
+- [x] Define instruments.
+- [x] Define sound IDs.
+- [x] Define target selection.
+- [x] Define choices.
+- [x] Define difficulty.
+- [x] Define serialized round format.
 
 Dependencies: Phase 3
 
 Verification:
 
-- [ ] Model is serializable.
-- [ ] Target always exists among choices.
-- [ ] Fixed-seed output is stable.
+- [x] Model is serializable.
+- [x] Target always exists among choices.
+- [x] Fixed-seed output is stable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `musicActivity.test.ts`. Versioned rendering-independent rounds reproduce from fixed seeds, cover three difficulty concepts, keep stable IDs, and validate that the target exists exactly once among distinct choices.
 ```
 
 ---
 
 ### P7-02 — Prepare audio assets
 
-- [ ] Add drum sound.
-- [ ] Add bell sound.
-- [ ] Add xylophone sound.
-- [ ] Normalize perceived loudness.
-- [ ] Add supported format fallbacks.
-- [ ] Record metadata.
-- [ ] Verify tablet speaker clarity.
+- [x] Add drum sound.
+- [x] Add bell sound.
+- [x] Add xylophone sound.
+- [x] Normalize perceived loudness.
+- [x] Add supported format fallbacks.
+- [x] Record metadata.
+- [x] Verify tablet speaker clarity.
 
 Dependencies: P7-01
 
 Verification:
 
-- [ ] All sounds load from base-aware paths.
-- [ ] Sounds are clearly distinguishable.
-- [ ] File sizes meet budget.
+- [x] All sounds load from base-aware paths.
+- [x] Sounds are clearly distinguishable.
+- [x] File sizes meet budget.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18. Seven 48 kHz mono cues provide OGG/MP3 fallbacks, additive timbres, -18 LUFS normal targets, intentional -14/-28 LUFS volume contrast, base-aware URLs, 0.85–1.45 second duration, and files under 9 KB. The maintainer confirmed clarity on the intended physical tablet speakers.
 ```
 
 ---
 
 ### P7-03 — Create musical stage scene
 
-- [ ] Add three instruments.
-- [ ] Add stage characters or faces.
-- [ ] Add pulse indicators.
-- [ ] Add replay control.
-- [ ] Add decorative lights.
-- [ ] Add large interaction colliders.
+- [x] Add three instruments.
+- [x] Add stage characters or faces.
+- [x] Add pulse indicators.
+- [x] Add replay control.
+- [x] Add decorative lights.
+- [x] Add large interaction colliders.
 
 Dependencies: P7-01
 
 Verification:
 
-- [ ] Instruments are visually distinct.
-- [ ] Touch targets meet size guidance.
-- [ ] Reduced effects mode remains clear.
+- [x] Instruments are visually distinct.
+- [x] Touch targets meet size guidance.
+- [x] Reduced effects mode remains clear.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by desktop/tablet Chromium baselines. Low-poly drum/bell/xylophone props, stage lights, target pulse, exact visual patterns, replay, and 80+ CSS-pixel DOM choices remain distinct with reduced effects.
 ```
 
 ---
 
 ### P7-04 — Implement target sound playback
 
-- [ ] Schedule target sound.
-- [ ] Stop or duck background audio.
-- [ ] Prevent instruction overlap.
-- [ ] Add replay.
-- [ ] Add audio-context recovery.
-- [ ] Add visual pulse equivalent.
+- [x] Schedule target sound.
+- [x] Stop or duck background audio.
+- [x] Prevent instruction overlap.
+- [x] Add replay.
+- [x] Add audio-context recovery.
+- [x] Add visual pulse equivalent.
 
 Dependencies: P7-02, P3-06
 
 Verification:
 
-- [ ] Target plays once.
-- [ ] Replay works repeatedly.
-- [ ] Suspended audio context recovers.
-- [ ] Muted mode shows visual target support.
+- [x] Target plays once.
+- [x] Replay works repeatedly.
+- [x] Suspended audio context recovers.
+- [x] Muted mode shows visual target support.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `musicAudio.test.ts` and E2E Replay/mute flows. Educational targets interrupt stale sound, resume the shared audio context, replay repeatedly, stay one-voice coordinated, and always expose an equivalent target picture.
 ```
 
 ---
 
 ### P7-05 — Implement instrument selection
 
-- [ ] Play selected sound.
-- [ ] Animate selected instrument.
-- [ ] Evaluate match.
-- [ ] Celebrate correct choice.
-- [ ] Replay target after mismatch.
-- [ ] Reduce choices after repeated mismatch.
-- [ ] Bound rapid taps.
+- [x] Play selected sound.
+- [x] Animate selected instrument.
+- [x] Evaluate match.
+- [x] Celebrate correct choice.
+- [x] Replay target after mismatch.
+- [x] Reduce choices after repeated mismatch.
+- [x] Bound rapid taps.
 
 Dependencies: P7-03, P7-04
 
 Verification:
 
-- [ ] Rapid taps do not create audio overload.
-- [ ] Incorrect choices remain playful.
-- [ ] Correct choice completes exactly once.
+- [x] Rapid taps do not create audio overload.
+- [x] Incorrect choices remain playful.
+- [x] Correct choice completes exactly once.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by pure reducer and E2E flows. Selection plays its cue, evaluating disables all choices immediately, mismatch replays the target, two mismatches reduce to one picture, correct completion is idempotent, and a 180 ms controller gate bounds audio requests.
 ```
 
 ---
 
 ### P7-06 — Add additional sound concepts
 
-- [ ] Add loud versus soft.
-- [ ] Add high versus low.
-- [ ] Keep difficulty appropriate for age.
-- [ ] Add visual equivalents.
-- [ ] Keep activity generation deterministic.
+- [x] Add loud versus soft.
+- [x] Add high versus low.
+- [x] Keep difficulty appropriate for age.
+- [x] Add visual equivalents.
+- [x] Keep activity generation deterministic.
 
 Dependencies: P7-05
 
 Verification:
 
-- [ ] Concepts are distinguishable on target hardware.
-- [ ] Muted fallback remains understandable.
-- [ ] Generation tests pass.
+- [x] Concepts are distinguishable on target hardware.
+- [x] Muted fallback remains understandable.
+- [x] Generation tests pass.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18. Seeded difficulty two uses bell cues separated by over an octave; difficulty three uses a 14 LU drum contrast; both have up/down and big/small visual patterns and muted fallback. The maintainer confirmed target-hardware distinguishability.
 ```
 
 ---
 
 ### P7-07 — Persist musical progress
 
-- [ ] Save completed rounds.
-- [ ] Save skill outcomes.
-- [ ] Save last-played timestamp.
-- [ ] Add migration coverage.
+- [x] Save completed rounds.
+- [x] Save skill outcomes.
+- [x] Save last-played timestamp.
+- [x] Add migration coverage.
 
 Dependencies: P7-06, P3-07
 
 Verification:
 
-- [ ] Progress survives reload.
-- [ ] Storage failure is nonfatal.
+- [x] Progress survives reload.
+- [x] Storage failure is nonfatal.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `musicPersistence.test.ts` and E2E reload. Root progress stores bounded totals, concepts, attempts/successes, completion IDs, and ISO last-played time; schema 0 migrates and storage corruption/failure recovers nonfatally.
 ```
 
 ---
 
 ### P7-08 — Add music E2E and audio tests
 
-- [ ] Play target.
-- [ ] Replay target.
-- [ ] Choose incorrect instrument.
-- [ ] Choose correct instrument.
-- [ ] Test rapid taps.
-- [ ] Test mute.
-- [ ] Test audio resume.
-- [ ] Capture stable visual screenshot.
+- [x] Play target.
+- [x] Replay target.
+- [x] Choose incorrect instrument.
+- [x] Choose correct instrument.
+- [x] Test rapid taps.
+- [x] Test mute.
+- [x] Test audio resume.
+- [x] Capture stable visual screenshot.
 
 Dependencies: P7-01 through P7-07
 
 Verification:
 
-- [ ] E2E suite passes.
-- [ ] Audio coordination tests pass.
-- [ ] Tablet manual sound check is recorded.
+- [x] E2E suite passes.
+- [x] Audio coordination tests pass.
+- [x] Tablet manual sound check is recorded.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 with 74 unit/integration tests and the desktop/tablet Pages-path flow. Target/replay, mute, rapid replay, selection locking, two mismatches, choice reduction, correct match, audio requests, persistence, and stable screenshots pass. The maintainer recorded the required physical tablet listening approval.
 ```
 
 ---
 
 ## Phase 7 completion gate
 
-- [ ] All Phase 7 tasks are complete and verified.
-- [ ] Audio overlap rules are verified.
-- [ ] Replay and recovery are verified.
-- [ ] Visual equivalents are present.
-- [ ] Phase 7 completion is recorded in the changelog.
+- [x] All Phase 7 tasks are complete and verified.
+- [x] Audio overlap rules are verified.
+- [x] Replay and recovery are verified.
+- [x] Visual equivalents are present.
+- [x] Phase 7 completion is recorded in the changelog.
 
 ---
 
@@ -2849,12 +2849,12 @@ Known limitations: The approved Ava neural TTS remains replaceable interim voice
 ## Phase 7 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 7 Musical Corner commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (74 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "musical target" --update-snapshots=all --reporter=line; npm run test:e2e -- --reporter=line (18 passed); git diff --check
+Manual checks: Desktop and touch-tablet Chromium replayed, muted, retained exact visual targets, disabled choices during evaluation, reduced after mismatches, completed, persisted/reloaded, requested distinct local cues, and matched per-viewport baselines. Fourteen encoded audio files were decoded and inspected for format, sample rate, channels, duration, size, and designed frequency/loudness separation.
+Known limitations: The local synthesized cues are interim audio artwork and may be replaced later without changing their stable sound IDs.
 ```
 
 ## Phase 8 verification
@@ -3120,3 +3120,27 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-007 records the deterministic puzzle/render adapter boundary and watchdog-owned processing sequence.
 - Two guided lines use approved bundled Ava OGG/MP3 assets; no runtime speech or network dependency was added.
+
+
+### 2026-07-18 — Phase 7 Musical Corner
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 7 commit (this commit)
+
+**Completed:**
+- P7-01 through P7-08
+
+**In progress:**
+- None
+
+**Verified:**
+- Deterministic instrument/pitch/volume generation, state transitions, one-voice coordination, resume, mute, throttling, and persistence pass automated tests.
+- Desktop and touch-tablet Chromium complete the fixed flow and match stable visual baselines.
+- All 14 encoded cues decode at 48 kHz mono, remain under 9 KB each, and meet their designed duration/frequency/loudness targets.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-008 records local synthesis, visual equivalents, and why emulation cannot substitute for the physical listening gate.
+- The maintainer confirmed all required cues are clear on the intended physical tablet speakers on 2026-07-18.
