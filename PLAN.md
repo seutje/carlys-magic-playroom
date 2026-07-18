@@ -1292,7 +1292,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 in the independent lazy critter chunk using shared low-poly primitives and 64px-class DOM targets. Desktop/tablet baselines show the platform, trays, socket steps, mirror, and child-safe WebGL fallback without external assets.
+Verified 2026-07-18 with nine base-aware, offline-cached GLBs covering both bodies and every eye, mouth, and leg choice. The scene shares immutable source geometry, clones and disposes visible-instance materials for curriculum body colors, and retains per-component primitives as immediate load-failure fallbacks. Initial and completed desktop/tablet baselines cover every component family, the platform, trays, socket steps, mirror, and 64px-class DOM targets. The critter chunk is 15.05kB minified; its nine GLBs total 566,824 bytes, keeping all project models at 1,511,532 bytes against the 2MB budget.
 ```
 
 ---
@@ -1365,7 +1365,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 by `critterPersistence.test.ts` and E2E reload. Root-save entries deduplicate, corrupt creatures are filtered independently, compatible schema-0 saves migrate, and stable part IDs render with built-in primitives. Parent reset remains correctly scheduled for Phase 8.
+Verified 2026-07-18 by `critterPersistence.test.ts` and E2E reload. Root-save entries deduplicate, corrupt creatures are filtered independently, compatible schema-0 saves migrate, and stable part IDs resolve independent GLBs with built-in primitive recovery. Parent reset remains correctly scheduled for Phase 8.
 ```
 
 ---
@@ -1390,7 +1390,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 in desktop/tablet Chromium under the repository subpath. The fixed flow replaces eyes, completes mouth/legs, requests all four voice cues in order, bounds reaction taps, reloads one saved creature, and matches per-viewport baselines.
+Verified 2026-07-18 in desktop/tablet Chromium under the repository subpath. The fixed flow replaces GLB eye components, completes GLB mouth/legs, requests all four voice cues in order, bounds reaction taps, reloads one saved creature, survives complete component-asset loss, and matches per-viewport baselines.
 ```
 
 ---

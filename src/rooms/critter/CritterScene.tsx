@@ -1,9 +1,18 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 
+import { diagnostics } from "../../engine/diagnostics/diagnostics";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
+import {
+  createCritterModelInstance,
+  disposeCritterModelInstance,
+  disposeCritterModelSources,
+  loadCritterModels,
+  type CritterModelId,
+  type CritterModelSources,
+} from "./critter.model";
 import type { CritterAssemblyState } from "./critter.types";
 
 interface CritterSceneProps {
@@ -15,6 +24,7 @@ const BODY_COLORS = { lavender: "#9b7fd1", mint: "#66bd9a", peach: "#ee9d78" } a
 
 export function CritterScene({ creature, reducedMotion }: CritterSceneProps) {
   const quality = useQuality();
+  const models = useOwnedCritterModels();
   return (
     <div className="critter-canvas" aria-label="Build-a-Critter preview">
       <Canvas
@@ -32,7 +42,7 @@ export function CritterScene({ creature, reducedMotion }: CritterSceneProps) {
           <cylinderGeometry args={[2.8, 3.2, 0.35, 32]} />
           <meshStandardMaterial color="#f4d06f" />
         </mesh>
-        <Critter creature={creature} reducedMotion={reducedMotion} />
+        <Critter creature={creature} reducedMotion={reducedMotion} models={models} />
         {quality.decorativeObjects ? (
           <mesh position={[3.4, 0.4, -1.2]}>
             <boxGeometry args={[1.8, 4.5, 0.2]} />
@@ -44,7 +54,11 @@ export function CritterScene({ creature, reducedMotion }: CritterSceneProps) {
   );
 }
 
-function Critter({ creature, reducedMotion }: CritterSceneProps) {
+function Critter({
+  creature,
+  reducedMotion,
+  models,
+}: CritterSceneProps & { readonly models: CritterModelSources }) {
   const group = useRef<Group>(null);
   useFrame(({ clock }) => {
     if (!group.current || !creature.reaction || reducedMotion) return;
@@ -54,18 +68,38 @@ function Critter({ creature, reducedMotion }: CritterSceneProps) {
     if (creature.reaction === "sparkle") group.current.scale.setScalar(1 + Math.abs(wave) * 0.08);
   });
 
-  const bodyScale: [number, number, number] =
-    creature.bodyId === "tall" ? [1.15, 1.5, 1] : [1.4, 1.2, 1];
   return (
-    <group ref={group} position={[-0.5, -0.55, 0]}>
-      <mesh scale={bodyScale}>
-        <sphereGeometry args={[1.3, 28, 20]} />
-        <meshStandardMaterial color={BODY_COLORS[creature.color]} roughness={0.7} />
-      </mesh>
+    <group ref={group} position={[-0.5, -0.05, 0]} scale={0.88}>
+      <CritterComponentModel
+        source={models[`body-${creature.bodyId}`]}
+        bodyColor={BODY_COLORS[creature.color]}
+        fallback={<BodyFallback bodyId={creature.bodyId} color={BODY_COLORS[creature.color]} />}
+      />
       <Pattern pattern={creature.pattern} />
-      {creature.parts.eyes ? <Eyes stars={creature.parts.eyes === "eyes-star"} /> : null}
-      {creature.parts.mouth ? <Mouth round={creature.parts.mouth === "mouth-o"} /> : null}
-      {creature.parts.legs ? <Legs partId={creature.parts.legs} /> : null}
+      {creature.parts.eyes ? (
+        <group position={[0, 0.45, 1.25]}>
+          <CritterComponentModel
+            source={models[creature.parts.eyes]}
+            fallback={<EyesFallback stars={creature.parts.eyes === "eyes-star"} />}
+          />
+        </group>
+      ) : null}
+      {creature.parts.mouth ? (
+        <group position={[0, -0.25, 1.31]}>
+          <CritterComponentModel
+            source={models[creature.parts.mouth]}
+            fallback={<MouthFallback round={creature.parts.mouth === "mouth-o"} />}
+          />
+        </group>
+      ) : null}
+      {creature.parts.legs ? (
+        <group position={[0, -1.2, 0]}>
+          <CritterComponentModel
+            source={models[creature.parts.legs]}
+            fallback={<LegsFallback partId={creature.parts.legs} />}
+          />
+        </group>
+      ) : null}
       {creature.reaction === "sparkle" || (reducedMotion && creature.reaction) ? (
         <group>
           {[-2, 2].map((x) => (
@@ -80,9 +114,47 @@ function Critter({ creature, reducedMotion }: CritterSceneProps) {
   );
 }
 
-function Eyes({ stars }: { readonly stars: boolean }) {
+function CritterComponentModel({
+  source,
+  bodyColor,
+  fallback,
+}: {
+  readonly source: Group | undefined;
+  readonly bodyColor?: string;
+  readonly fallback: React.ReactNode;
+}) {
+  const instance = useMemo(
+    () => (source ? createCritterModelInstance(source, bodyColor) : undefined),
+    [bodyColor, source],
+  );
+  useEffect(
+    () => () => {
+      if (instance) disposeCritterModelInstance(instance);
+    },
+    [instance],
+  );
+  return instance ? <primitive object={instance} /> : fallback;
+}
+
+function BodyFallback({
+  bodyId,
+  color,
+}: {
+  readonly bodyId: CritterAssemblyState["bodyId"];
+  readonly color: string;
+}) {
+  const bodyScale: [number, number, number] = bodyId === "tall" ? [1.15, 1.5, 1] : [1.4, 1.2, 1];
   return (
-    <group position={[0, 0.45, 1.25]}>
+    <mesh scale={bodyScale}>
+      <sphereGeometry args={[1.3, 28, 20]} />
+      <meshStandardMaterial color={color} roughness={0.7} />
+    </mesh>
+  );
+}
+
+function EyesFallback({ stars }: { readonly stars: boolean }) {
+  return (
+    <group>
       {[-0.45, 0.45].map((x) => (
         <mesh key={x} position={[x, 0, 0]}>
           {stars ? <octahedronGeometry args={[0.24]} /> : <sphereGeometry args={[0.22, 16, 12]} />}
@@ -93,9 +165,9 @@ function Eyes({ stars }: { readonly stars: boolean }) {
   );
 }
 
-function Mouth({ round }: { readonly round: boolean }) {
+function MouthFallback({ round }: { readonly round: boolean }) {
   return (
-    <mesh position={[0, -0.25, 1.31]} rotation={[Math.PI / 2, 0, 0]}>
+    <mesh rotation={[Math.PI / 2, 0, 0]}>
       <torusGeometry
         args={[round ? 0.22 : 0.35, 0.07, 10, round ? 24 : 12, round ? Math.PI * 2 : Math.PI]}
       />
@@ -104,10 +176,10 @@ function Mouth({ round }: { readonly round: boolean }) {
   );
 }
 
-function Legs({ partId }: { readonly partId: string }) {
+function LegsFallback({ partId }: { readonly partId: string }) {
   const height = partId === "legs-tall" ? 1.25 : partId === "legs-stompy" ? 0.55 : 0.8;
   return (
-    <group position={[0, -1.7, 0]}>
+    <group>
       {[-0.65, 0.65].map((x) => (
         <mesh key={x} position={[x, -height / 2, 0]}>
           <capsuleGeometry args={[partId === "legs-stompy" ? 0.3 : 0.2, height, 6, 12]} />
@@ -116,6 +188,33 @@ function Legs({ partId }: { readonly partId: string }) {
       ))}
     </group>
   );
+}
+
+function useOwnedCritterModels(): CritterModelSources {
+  const [models, setModels] = useState<CritterModelSources>({});
+
+  useEffect(() => {
+    let disposed = false;
+    let ownedModels: CritterModelSources = {};
+    void loadCritterModels().then(({ models: loadedModels, failedIds }) => {
+      if (disposed) {
+        disposeCritterModelSources(loadedModels);
+        return;
+      }
+      ownedModels = loadedModels;
+      failedIds.forEach((id: CritterModelId) => {
+        diagnostics.record({ category: "asset", code: `critter-model-load-failed:${id}` });
+      });
+      setModels(loadedModels);
+    });
+
+    return () => {
+      disposed = true;
+      disposeCritterModelSources(ownedModels);
+    };
+  }, []);
+
+  return models;
 }
 
 function Pattern({ pattern }: Pick<CritterAssemblyState, "pattern">) {
