@@ -50,3 +50,55 @@ test("supports keyboard settings and reduced-motion room transitions", async ({ 
     timeout: 2_000,
   });
 });
+
+test("completes and persists the fixed two-yellow-duck train activity", async ({ page }) => {
+  const voiceRequests: string[] = [];
+  page.on("request", (request) => {
+    const match = /audio\/train\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
+    if (match?.[1]) voiceRequests.push(match[1]);
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Play with the train" }).click();
+  await expect(page.getByRole("button", { name: "Load yellow duck" }).first()).toBeEnabled();
+  await expect(page).toHaveScreenshot("train-fixed-seed.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
+
+  const wrongToy = page.getByRole("button", { name: /^Load (?!yellow duck)/ }).first();
+  await expect(wrongToy).toBeEnabled();
+  await wrongToy.click();
+  await expect(page.getByText(/wiggle back/)).toBeVisible();
+
+  const firstDuck = page.getByRole("button", { name: "Load yellow duck" }).first();
+  await expect(firstDuck).toBeEnabled();
+  const duckBounds = await firstDuck.boundingBox();
+  const dropBounds = await page.getByTestId("train-drop-zone").boundingBox();
+  expect(duckBounds).not.toBeNull();
+  expect(dropBounds).not.toBeNull();
+  if (!duckBounds || !dropBounds) return;
+  await page.mouse.move(duckBounds.x + duckBounds.width / 2, duckBounds.y + duckBounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(dropBounds.x + dropBounds.width / 2, dropBounds.y + dropBounds.height / 2, {
+    steps: 8,
+  });
+  await page.mouse.up();
+  await expect(page.getByLabel("1 toys loaded")).toBeVisible();
+
+  const secondDuck = page.getByRole("button", { name: "Load yellow duck" }).first();
+  await expect(secondDuck).toBeEnabled();
+  await secondDuck.click();
+  await expect(page.getByLabel("2 toys loaded")).toBeVisible();
+  await expect(page.getByText("All aboard!")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Play again" })).toBeVisible();
+  await expect(page.getByText("Trips: 1")).toBeVisible();
+  await expect
+    .poll(() => voiceRequests, { timeout: 6_000 })
+    .toEqual(["instruction-two-yellow-ducks", "count-one", "count-two", "success-all-aboard"]);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Play with the train" }).click();
+  await expect(page.getByText("Trips: 1")).toBeVisible();
+});

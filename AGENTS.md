@@ -611,7 +611,9 @@ Important audio must have a visual equivalent.
 
 Production must not depend on browser text-to-speech.
 
-Text-to-speech may exist only as a development fallback.
+Build-time neural TTS may be used to create documented, locally bundled interim voice assets when a maintainer approves it. Generated clips must be reviewed like any other asset, require no runtime network access, and retain stable audio keys so human recordings can replace them later.
+
+Runtime text-to-speech may exist only as a development fallback.
 
 ### Cleanup
 

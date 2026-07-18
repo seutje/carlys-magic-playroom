@@ -366,6 +366,186 @@ h1 {
   height: 2rem;
 }
 
+.train-room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 35rem;
+  overflow: hidden;
+  background: #bfe8f2;
+}
+
+.train-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.train-canvas canvas {
+  touch-action: none;
+}
+
+.train-instruction {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  display: flex;
+  max-width: min(37rem, calc(100vw - 17rem));
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 1.2rem;
+  border: 0.18rem solid #fff;
+  border-radius: 1.5rem;
+  background: rgb(255 252 238 / 92%);
+  box-shadow: 0 0.5rem 1.5rem rgb(54 69 93 / 18%);
+}
+
+.conductor-face {
+  flex: 0 0 auto;
+  font-size: 3rem;
+}
+
+.instruction-copy,
+.train-feedback {
+  margin: 0.15rem 0 0;
+}
+
+.instruction-copy {
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  font-weight: 800;
+}
+
+.train-feedback {
+  min-height: 1.2em;
+  color: #68557c;
+  font-size: 0.95rem;
+}
+
+.count-display {
+  position: absolute;
+  top: 7.4rem;
+  left: max(1.2rem, env(safe-area-inset-left));
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 1rem;
+  color: #d99b16;
+  background: rgb(255 255 255 / 88%);
+  font-size: 1.8rem;
+}
+
+.count-display .filled {
+  color: #e65d6f;
+}
+
+.train-progress {
+  position: absolute;
+  top: 10.5rem;
+  left: max(1.2rem, env(safe-area-inset-left));
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.8rem;
+  margin: 0;
+  color: #5c4779;
+  background: rgb(255 255 255 / 82%);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.train-dom-drop-zone {
+  position: absolute;
+  top: 31%;
+  right: 13%;
+  width: 24%;
+  height: 32%;
+  border: 0.25rem dashed rgb(255 255 255 / 55%);
+  border-radius: 2rem;
+  pointer-events: none;
+}
+
+.train-toy-controls {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.8rem;
+  pointer-events: none;
+}
+
+.train-toy-controls button {
+  display: grid;
+  width: clamp(4.5rem, 10vw, 6.5rem);
+  min-width: 4.5rem;
+  height: clamp(4.5rem, 10vw, 6.5rem);
+  min-height: 4.5rem;
+  padding: 0.3rem;
+  border: 0.2rem solid #fff;
+  border-radius: 1.6rem;
+  place-content: center;
+  background: #7653b3;
+  box-shadow: 0 0.45rem 0 #4e357b;
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  pointer-events: auto;
+  touch-action: none;
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+  user-select: none;
+}
+
+.train-toy-controls button.hinted {
+  outline: 0.35rem solid #ffcf4a;
+  outline-offset: 0.2rem;
+  animation: toy-hint 800ms ease-in-out infinite alternate;
+}
+
+.toy-color-name {
+  font-size: 0.72rem;
+  text-transform: capitalize;
+}
+
+.train-celebration {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  color: #fff;
+  font-size: clamp(2rem, 8vw, 5rem);
+  inset: 20% 10%;
+  place-content: center;
+  text-align: center;
+  text-shadow: 0 0.2rem 0 #735197;
+  pointer-events: none;
+  animation: celebration-pop 600ms ease-out both;
+}
+
+.train-celebration strong {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+.train-play-again {
+  position: absolute;
+  z-index: 7;
+  bottom: max(2rem, env(safe-area-inset-bottom));
+  left: 50%;
+  min-height: 4.5rem;
+  background: #d94f6c;
+  transform: translateX(-50%);
+}
+
+@keyframes toy-hint {
+  to {
+    transform: translateY(-0.35rem) scale(1.04);
+  }
+}
+
+@keyframes celebration-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -469,5 +649,19 @@ h1 {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .train-instruction {
+    max-width: calc(100vw - 14rem);
+  }
+
+  .train-feedback {
+    display: none;
+  }
+
+  .count-display {
+    top: 6.5rem;
   }
 }

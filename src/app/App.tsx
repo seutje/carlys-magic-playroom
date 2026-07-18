@@ -96,7 +96,7 @@ export function App() {
         </>
       ) : null}
       {view.kind === "room" ? (
-        <RoomHost roomId={view.roomId} onHome={goHome} onReplayInstruction={replayInstruction} />
+        <RoomHost roomId={view.roomId} onHome={goHome} replayRequest={replayCount} />
       ) : null}
       {view.kind === "transitioning" ? (
         <div className={`transition-cover ${reducedMotion ? "reduced" : ""}`} role="status">

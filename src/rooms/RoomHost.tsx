@@ -9,7 +9,7 @@ import type { RoomModule, RoomModuleLoader } from "./roomModule";
 interface RoomHostProps {
   readonly roomId: RoomId;
   readonly onHome: () => void;
-  readonly onReplayInstruction: () => void;
+  readonly replayRequest: number;
   readonly loader?: RoomModuleLoader;
 }
 
@@ -21,7 +21,7 @@ type LoadState =
 export function RoomHost({
   roomId,
   onHome,
-  onReplayInstruction,
+  replayRequest,
   loader = ROOM_LOADERS[roomId],
 }: RoomHostProps) {
   const [attempt, setAttempt] = useState(0);
@@ -85,7 +85,7 @@ export function RoomHost({
   const RoomComponent = state.room.Component;
   return (
     <RoomErrorBoundary key={`${roomId}:${attempt}`} onHome={onHome} onRetry={retry}>
-      <RoomComponent onReplayInstruction={onReplayInstruction} />
+      <RoomComponent replayRequest={replayRequest} />
     </RoomErrorBoundary>
   );
 }

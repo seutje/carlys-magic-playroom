@@ -1,16 +1,8 @@
-import { PlaceholderRoom } from "../PlaceholderRoom";
 import type { RoomModule } from "../roomModule";
+import { TrainRoom } from "./TrainRoom";
 
 export const trainRoom: RoomModule = {
   id: "train",
   title: "Tiny Delivery Train",
-  Component: (props) => (
-    <PlaceholderRoom
-      {...props}
-      title="Tiny Delivery Train"
-      symbol="🚂"
-      color="#ef6b62"
-      instruction="The train is getting ready!"
-    />
-  ),
+  Component: TrainRoom,
 };

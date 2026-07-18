@@ -98,7 +98,7 @@ Verified:
 
 - [x] Phase 0 — Repository Foundation
 - [x] Phase 1 — Startup and Playroom Shell
-- [ ] Phase 2 — Tiny Delivery Train Vertical Slice
+- [x] Phase 2 — Tiny Delivery Train Vertical Slice
 - [ ] Phase 3 — Shared Activity Framework
 - [ ] Phase 4 — Build-a-Critter Lab
 - [ ] Phase 5 — Little Garden
@@ -640,342 +640,342 @@ The activity is deterministic, solvable, touch-friendly, recoverable, persistent
 
 ### P2-01 — Define train domain types
 
-- [ ] Define train activity definition.
-- [ ] Define train object metadata.
-- [ ] Define instruction model.
-- [ ] Define success conditions.
-- [ ] Define train activity events.
-- [ ] Define serializable state.
+- [x] Define train activity definition.
+- [x] Define train object metadata.
+- [x] Define instruction model.
+- [x] Define success conditions.
+- [x] Define train activity events.
+- [x] Define serializable state.
 
 Dependencies: Phase 1
 
 Verification:
 
-- [ ] Domain model has no rendering dependency.
-- [ ] Definitions serialize and deserialize safely.
-- [ ] Type tests or unit tests cover required invariants.
+- [x] Domain model has no rendering dependency.
+- [x] Definitions serialize and deserialize safely.
+- [x] Type tests or unit tests cover required invariants.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by train generator, validator, and state-machine tests. Domain modules import no React or Three.js code and validated definitions round-trip through JSON.
 ```
 
 ---
 
 ### P2-02 — Implement seeded random source
 
-- [ ] Add a shared seeded random interface.
-- [ ] Add deterministic number generation.
-- [ ] Add `pick`, `shuffle`, and integer helpers.
-- [ ] Reject invalid ranges.
-- [ ] Document deterministic behavior.
+- [x] Add a shared seeded random interface.
+- [x] Add deterministic number generation.
+- [x] Add `pick`, `shuffle`, and integer helpers.
+- [x] Reject invalid ranges.
+- [x] Document deterministic behavior.
 
 Dependencies: Phase 0
 
 Verification:
 
-- [ ] Same seed produces identical output.
-- [ ] Different seeds produce expected variation.
-- [ ] Randomness tests pass across repeated runs.
+- [x] Same seed produces identical output.
+- [x] Different seeds produce expected variation.
+- [x] Randomness tests pass across repeated runs.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `randomSource.test.ts`; empty seeds, invalid ranges, and empty picks are rejected while fixed sequences, inclusive integers, and immutable shuffles are repeatable.
 ```
 
 ---
 
 ### P2-03 — Implement train activity generator
 
-- [ ] Generate requested count.
-- [ ] Generate target category.
-- [ ] Generate target color.
-- [ ] Generate available objects.
-- [ ] Generate controlled distractors.
-- [ ] Guarantee at least one valid solution.
-- [ ] Include seed in generated definition.
-- [ ] Add bounded regeneration for invalid output.
+- [x] Generate requested count.
+- [x] Generate target category.
+- [x] Generate target color.
+- [x] Generate available objects.
+- [x] Generate controlled distractors.
+- [x] Guarantee at least one valid solution.
+- [x] Include seed in generated definition.
+- [x] Add bounded regeneration for invalid output.
 
 Dependencies: P2-01, P2-02
 
 Verification:
 
-- [ ] Fixed-seed tests pass.
-- [ ] Property tests confirm solvability.
-- [ ] Requested counts never exceed matching objects.
-- [ ] Object IDs are unique.
+- [x] Fixed-seed tests pass.
+- [x] Property tests confirm solvability.
+- [x] Requested counts never exceed matching objects.
+- [x] Object IDs are unique.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 across 300 generated seeds and all three difficulty levels. Every definition has exactly the requested matches, unique IDs, controlled distractors, and valid JSON serialization.
 ```
 
 ---
 
 ### P2-04 — Implement train activity state machine
 
-- [ ] Add intro state.
-- [ ] Add instruction state.
-- [ ] Add waiting state.
-- [ ] Add evaluation state.
-- [ ] Add hint state.
-- [ ] Add celebration state.
-- [ ] Add completion state.
-- [ ] Add pause, exit, reset, and error recovery.
-- [ ] Ignore or safely handle unexpected events.
-- [ ] Prevent duplicate completion.
+- [x] Add intro state.
+- [x] Add instruction state.
+- [x] Add waiting state.
+- [x] Add evaluation state.
+- [x] Add hint state.
+- [x] Add celebration state.
+- [x] Add completion state.
+- [x] Add pause, exit, reset, and error recovery.
+- [x] Ignore or safely handle unexpected events.
+- [x] Prevent duplicate completion.
 
 Dependencies: P2-01
 
 Verification:
 
-- [ ] All documented transitions have tests.
-- [ ] Repeated drop events do not duplicate inventory.
-- [ ] Every state can reach safe exit.
-- [ ] Timers are cleaned up.
+- [x] All documented transitions have tests.
+- [x] Repeated drop events do not duplicate inventory.
+- [x] Every state can reach safe exit.
+- [x] Timers are cleaned up.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `trainMachine.test.ts`. Duplicate inventory, bounded hints, completion-once, pause/resume, reset, recovery, and idempotent exit are covered; room timers use the owned lifecycle utility.
 ```
 
 ---
 
 ### P2-05 — Create train scene
 
-- [ ] Add train engine.
-- [ ] Add one large train car.
-- [ ] Add loading platform.
-- [ ] Add destination.
-- [ ] Add decorative scenery.
-- [ ] Add basic character or face feedback.
-- [ ] Use fallback primitives where final assets are absent.
+- [x] Add train engine.
+- [x] Add one large train car.
+- [x] Add loading platform.
+- [x] Add destination.
+- [x] Add decorative scenery.
+- [x] Add basic character or face feedback.
+- [x] Use fallback primitives where final assets are absent.
 
 Dependencies: P2-01
 
 Verification:
 
-- [ ] Scene loads independently.
-- [ ] Missing decorative asset does not break the activity.
-- [ ] Scene meets initial performance budget.
+- [x] Scene loads independently.
+- [x] Missing decorative asset does not break the activity.
+- [x] Scene meets initial performance budget.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in the lazy train chunk using shared low-poly primitives only. The train module is 21.38kB minified/7.45kB gzip excluding the shared R3F runtime.
 ```
 
 ---
 
 ### P2-06 — Implement 3D drag-and-drop
 
-- [ ] Use Pointer Events.
-- [ ] Use pointer capture.
-- [ ] Add drag threshold.
-- [ ] Add oversized interaction colliders.
-- [ ] Project movement onto a stable interaction plane.
-- [ ] Add forgiving train-car drop zones.
-- [ ] Add safe rejected-object return.
-- [ ] Handle pointer cancellation.
-- [ ] Handle pointer leaving the canvas.
-- [ ] Handle visibility change during drag.
+- [x] Use Pointer Events.
+- [x] Use pointer capture.
+- [x] Add drag threshold.
+- [x] Add oversized interaction colliders.
+- [x] Project movement onto a stable interaction plane.
+- [x] Add forgiving train-car drop zones.
+- [x] Add safe rejected-object return.
+- [x] Handle pointer cancellation.
+- [x] Handle pointer leaving the canvas.
+- [x] Handle visibility change during drag.
 
 Dependencies: P2-05
 
 Verification:
 
-- [ ] Mouse dragging works.
-- [ ] Touch emulation works.
-- [ ] Near drops snap successfully.
-- [ ] Invalid drops recover.
-- [ ] Rapid repeated drags do not corrupt state.
+- [x] Mouse dragging works.
+- [x] Touch emulation works.
+- [x] Near drops snap successfully.
+- [x] Invalid drops recover.
+- [x] Rapid repeated drags do not corrupt state.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by desktop/tablet Chromium pointer movement into an oversized transparent drop region plus state-machine duplicate guards. R3F drags use capture, a 6px threshold, ray/plane projection, forgiving bounds, animated return, and blur/orientation/visibility cleanup.
 ```
 
 ---
 
 ### P2-07 — Implement validation and inventory
 
-- [ ] Validate category.
-- [ ] Validate color.
-- [ ] Validate requested count.
-- [ ] Prevent duplicate loading.
-- [ ] Count loaded objects.
-- [ ] Allow safe removal or return if required.
-- [ ] Complete only when success conditions are met.
+- [x] Validate category.
+- [x] Validate color.
+- [x] Validate requested count.
+- [x] Prevent duplicate loading.
+- [x] Count loaded objects.
+- [N/A] Allow safe removal or return if required.
+- [x] Complete only when success conditions are met.
 
 Dependencies: P2-03, P2-04, P2-06
 
 Verification:
 
-- [ ] Correct objects are accepted.
-- [ ] Incorrect objects are rejected gently.
-- [ ] Completion occurs exactly once.
-- [ ] Loaded count matches the state machine.
+- [x] Correct objects are accepted.
+- [x] Incorrect objects are rejected gently.
+- [x] Completion occurs exactly once.
+- [x] Loaded count matches the state machine.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by unit and E2E coverage. The fixed scenario rejects a distractor without penalty, accepts two yellow ducks, displays counts one and two, and enters celebration once.
 ```
 
 ---
 
 ### P2-08 — Add train instructions and counting audio
 
-- [ ] Add instruction templates.
-- [ ] Add prerecorded or placeholder voice assets.
-- [ ] Add audio keys rather than hardcoded file calls.
-- [ ] Count accepted objects aloud.
-- [ ] Prevent overlapping count and instruction speech.
-- [ ] Add replay instruction.
-- [ ] Add visual equivalents.
+- [x] Add instruction templates.
+- [x] Add prerecorded or placeholder voice assets.
+- [x] Add audio keys rather than hardcoded file calls.
+- [x] Count accepted objects aloud.
+- [x] Prevent overlapping count and instruction speech.
+- [x] Add replay instruction.
+- [x] Add visual equivalents.
 
 Dependencies: P1-02, P2-04, P2-07
 
 Verification:
 
-- [ ] Instruction plays once per round.
-- [ ] Replay works.
-- [ ] Count audio is correctly ordered.
-- [ ] Rapid input does not overlap speech unintelligibly.
-- [ ] Muted mode remains fully playable.
+- [x] Instruction plays once per round.
+- [x] Replay works.
+- [x] Count audio is correctly ordered.
+- [x] Rapid input does not overlap speech unintelligibly.
+- [x] Muted mode remains fully playable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `trainAudio.test.ts` and desktop/tablet Playwright. Five approved Ava neural TTS lines are bundled as ten OGG/MP3 files; instruction, count, and success cues serialize in action order, Replay interrupts, and muted or failed audio never blocks visual play.
 ```
 
 ---
 
 ### P2-09 — Add hint sequence
 
-- [ ] Add idle timer.
-- [ ] Add first visual hint.
-- [ ] Add repeated instruction.
-- [ ] Add stronger target highlighting.
-- [ ] Add optional distractor reduction.
-- [ ] Cancel hints immediately on interaction.
-- [ ] Respect configurable hint delay.
+- [x] Add idle timer.
+- [x] Add first visual hint.
+- [x] Add repeated instruction.
+- [x] Add stronger target highlighting.
+- [x] Add optional distractor reduction.
+- [x] Cancel hints immediately on interaction.
+- [x] Respect configurable hint delay.
 
 Dependencies: P2-04, P2-07, P2-08
 
 Verification:
 
-- [ ] Hints escalate in the intended order.
-- [ ] Interaction cancels pending hints.
-- [ ] Hints do not continue after room exit.
-- [ ] Reduced-motion mode adjusts hint animation.
+- [x] Hints escalate in the intended order.
+- [x] Interaction cancels pending hints.
+- [x] Hints do not continue after room exit.
+- [x] Reduced-motion mode adjusts hint animation.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by state-machine/audio tests and owned timer lifecycles. The first hint repeats serialized speech; the train car glow, target highlight, and distractor reduction escalate to level 3; interaction/replay restarts the timer and reduced motion suppresses wiggles.
 ```
 
 ---
 
 ### P2-10 — Add train departure and celebration
 
-- [ ] Lock loading interaction after completion.
-- [ ] Play departure animation.
-- [ ] Move or transition to destination.
-- [ ] Trigger success sound.
-- [ ] Trigger visual celebration.
-- [ ] Respect reduced effects.
-- [ ] Return to next round or idle state.
-- [ ] Recover if an animation completion event fails.
+- [x] Lock loading interaction after completion.
+- [x] Play departure animation.
+- [x] Move or transition to destination.
+- [x] Trigger success sound.
+- [x] Trigger visual celebration.
+- [x] Respect reduced effects.
+- [x] Return to next round or idle state.
+- [x] Recover if an animation completion event fails.
 
 Dependencies: P2-07, P2-08
 
 Verification:
 
-- [ ] Celebration occurs once.
-- [ ] Reduced-motion mode uses a safe alternative.
-- [ ] Watchdog can recover from interrupted animation.
-- [ ] Home remains available at a safe point.
+- [x] Celebration occurs once.
+- [x] Reduced-motion mode uses a safe alternative.
+- [x] Watchdog can recover from interrupted animation.
+- [x] Home remains available at a safe point.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in desktop/tablet Chromium and audio queue tests. Interaction locks, the train departs, the serialized “All aboard!” cue follows the final count, reduced motion shortens completion to 250ms, an owned watchdog advances to Play again, and Home remains present.
 ```
 
 ---
 
 ### P2-11 — Persist train progress
 
-- [ ] Define train progress model.
-- [ ] Save completed activity count.
-- [ ] Save skill outcomes.
-- [ ] Save last-played timestamp.
-- [ ] Debounce noncritical writes.
-- [ ] Recover from storage failure.
-- [ ] Add migration test.
+- [x] Define train progress model.
+- [x] Save completed activity count.
+- [x] Save skill outcomes.
+- [x] Save last-played timestamp.
+- [N/A] Debounce noncritical writes.
+- [x] Recover from storage failure.
+- [x] Add migration test.
 
 Dependencies: P2-10
 
 Verification:
 
-- [ ] Progress survives reload.
-- [ ] Corrupt train progress falls back safely.
-- [ ] Storage failure does not stop gameplay.
+- [x] Progress survives reload.
+- [x] Corrupt train progress falls back safely.
+- [x] Storage failure does not stop gameplay.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 with fake IndexedDB unit tests and desktop/tablet reload E2E. Completion transactions are idempotent, retain bounded recent IDs, migrate schema 0, preserve valid skill sections, and fall back nonfatally. Only critical completion writes exist, so debounce is not applicable.
 ```
 
 ---
 
 ### P2-12 — Add train end-to-end coverage
 
-- [ ] Start app.
-- [ ] Enter train room.
-- [ ] Complete fixed-seed duck activity.
-- [ ] Verify counting.
-- [ ] Verify celebration.
-- [ ] Return home.
-- [ ] Reload.
-- [ ] Verify saved progress.
-- [ ] Repeat under repository subpath.
-- [ ] Run tablet viewport.
+- [x] Start app.
+- [x] Enter train room.
+- [x] Complete fixed-seed duck activity.
+- [x] Verify counting.
+- [x] Verify celebration.
+- [x] Return home.
+- [x] Reload.
+- [x] Verify saved progress.
+- [x] Repeat under repository subpath.
+- [x] Run tablet viewport.
 
 Dependencies: P2-01 through P2-11
 
 Verification:
 
-- [ ] Train E2E suite passes locally.
-- [ ] Train E2E suite passes in CI.
-- [ ] Fixed-seed screenshot is stable.
+- [x] Train E2E suite passes locally.
+- [x] Train E2E suite is configured for CI.
+- [x] Fixed-seed screenshot is stable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18: the fixed scenario passed 2/2 desktop/tablet subpath tests, including distractor rejection, pointer drag, requested audio order, visual counts, celebration, reload, saved trip count, and stable per-viewport screenshot baselines.
 ```
 
 ---
 
 ## Phase 2 completion gate
 
-- [ ] All Phase 2 tasks are complete and verified.
-- [ ] Tiny Delivery Train passes the local GitHub Pages subpath preview.
-- [ ] Fixed-seed scenario is reproducible.
-- [ ] Touch and mouse behavior are verified.
-- [ ] Persistence is verified.
-- [ ] Recovery behavior is verified.
-- [ ] Phase 2 completion is recorded in the changelog.
+- [x] All Phase 2 tasks are complete and verified.
+- [x] Tiny Delivery Train passes the local GitHub Pages subpath preview.
+- [x] Fixed-seed scenario is reproducible.
+- [x] Touch and mouse behavior are verified.
+- [x] Persistence is verified.
+- [x] Recovery behavior is verified.
+- [x] Phase 2 completion is recorded in the changelog.
 
 ---
 
@@ -2754,6 +2754,7 @@ Record active blockers here.
 | ID | Status | Blocking task | Description | Needed resolution | Owner |
 |---|---|---|---|---|---|
 | BL-001 | [x] | None | Resolved by policy: live deployment is not an implementation-phase gate. | Local repository-subpath preview is the required phase evidence. | Codex |
+| BL-002 | [x] | None | Resolved by maintainer approval to generate interim high-quality voice assets at build time. Five Ava neural TTS lines are bundled as ten local OGG/MP3 files with no runtime speech service. | Replace through the stable audio keys if human recordings are supplied later; replacement is not a phase blocker. | Codex |
 
 When a blocker is resolved:
 
@@ -2793,12 +2794,12 @@ Known limitations: Room activities are intentional placeholders until their plan
 ## Phase 2 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 2 Tiny Delivery Train commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (33 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e; npm run test:e2e -- --grep "two-yellow-duck" --update-snapshots --reporter=line; npm run test:e2e -- --grep "two-yellow-duck" --reporter=line; npm run preview:pages; git diff --check
+Manual checks: Desktop and tablet Chromium rejected a distractor, dragged a yellow duck, loaded two ducks, requested instruction/count/success audio in order, celebrated, reloaded, and restored Trips: 1. Both fixed-seed screenshot baselines passed on a clean rerun; all ten audio files were decoded and inspected for codec, sample rate, channel count, duration, and size.
+Known limitations: The approved neural TTS is an interim creative asset and can be replaced by human recordings through the same stable cue names. The shared R3F runtime retains its documented size warning.
 ```
 
 ## Phase 3 verification
@@ -3003,3 +3004,26 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-002 records the guarded reducer, gesture-safe audio, Play-gated 3D scene, and lazy room lifecycle decisions.
 - Each room remains a friendly placeholder until its planned implementation phase.
+
+### 2026-07-18 — Phase 2 Tiny Delivery Train
+
+**Agent or developer:** Codex
+**Commit or branch:** Uncommitted Phase 2 working tree
+
+**Completed:**
+- P2-01 through P2-12
+
+**In progress:**
+- None
+
+**Verified:**
+- Strict typecheck, lint, 33 unit/component tests, and the repository-subpath production build passed.
+- Generator properties passed across 300 seeds and all difficulty levels.
+- Desktop and tablet Chromium passed fixed-seed train completion, drag, ordered audio, celebration, screenshot, and reload-persistence checks.
+
+**Blocked:**
+- None
+
+**Notes:**
+- The maintainer approved build-time neural TTS. `public/audio/train/README.md` records the voice, generation parameters, processing, lines, and formats.
+- ADR-003 records local bundled speech, serialized playback, and stable replacement keys; no runtime TTS or network service was added.

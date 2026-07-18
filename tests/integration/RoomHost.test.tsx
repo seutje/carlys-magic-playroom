@@ -19,7 +19,7 @@ describe("RoomHost", () => {
       });
 
     const { unmount } = render(
-      <RoomHost roomId="train" loader={loader} onHome={vi.fn()} onReplayInstruction={vi.fn()} />,
+      <RoomHost roomId="train" loader={loader} onHome={vi.fn()} replayRequest={0} />,
     );
     expect(screen.getByRole("status")).toHaveTextContent("Gathering room magic");
     expect(await screen.findByRole("heading", { name: "Test Train" })).toBeInTheDocument();
@@ -31,9 +31,7 @@ describe("RoomHost", () => {
     const user = userEvent.setup();
     const onHome = vi.fn();
     const loader = vi.fn<RoomModuleLoader>().mockRejectedValue(new Error("technical"));
-    render(
-      <RoomHost roomId="train" loader={loader} onHome={onHome} onReplayInstruction={vi.fn()} />,
-    );
+    render(<RoomHost roomId="train" loader={loader} onHome={onHome} replayRequest={0} />);
 
     expect(await screen.findByRole("alert")).not.toHaveTextContent("technical");
     await user.click(screen.getByRole("button", { name: "Try again" }));
