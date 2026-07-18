@@ -12,7 +12,7 @@ import {
 } from "../../engine/input/pointerDrag";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
-import { disposeTrainModel, loadTrainModel } from "./train.model";
+import { disposeTrainModel, loadCargoCarModel, loadTrainModel } from "./train.model";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -106,21 +106,7 @@ function TrainWorld({
       </mesh>
       <group ref={train}>
         <TrainEngine />
-        <mesh position={[2.8, -0.2, 0]}>
-          <boxGeometry args={[2.6, 1.4, 1.8]} />
-          <meshStandardMaterial
-            color={hinting ? "#ffd45e" : "#6b9bd1"}
-            emissive={hinting ? "#6c4c00" : "#000000"}
-            emissiveIntensity={hinting ? 0.25 : 0}
-            roughness={0.7}
-          />
-        </mesh>
-        {[2.1, 3.5].map((x) => (
-          <mesh key={x} position={[x, -1.1, 0.65]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.42, 0.42, 0.25, 20]} />
-            <meshStandardMaterial color="#493b5e" roughness={0.8} />
-          </mesh>
-        ))}
+        <CargoCar hinting={hinting} />
       </group>
       <mesh position={[6, 0.2, -1.3]}>
         <boxGeometry args={[1.8, 3.4, 0.4]} />
@@ -135,13 +121,48 @@ function TrainWorld({
 }
 
 function TrainEngine() {
+  const model = useOwnedTrainModel(loadTrainModel, "train-model-load-failed");
+
+  return (
+    <group position={[4.85, -1.48, 0]} rotation={[0, Math.PI, 0]} scale={0.55}>
+      {model ? <primitive object={model} /> : <TrainEngineFallback />}
+    </group>
+  );
+}
+
+function CargoCar({ hinting }: { readonly hinting: boolean }) {
+  const model = useOwnedTrainModel(loadCargoCarModel, "cargo-car-model-load-failed");
+
+  return (
+    <>
+      <group position={[2.7, -1.48, 0]} scale={[0.78, 0.85, 0.9]}>
+        {model ? <primitive object={model} /> : <CargoCarFallback />}
+      </group>
+      {hinting ? (
+        <mesh position={[2.7, -0.65, 0]}>
+          <boxGeometry args={[2.85, 1.55, 1.75]} />
+          <meshStandardMaterial
+            color="#ffd45e"
+            emissive="#6c4c00"
+            emissiveIntensity={0.35}
+            transparent
+            opacity={0.28}
+            depthWrite={false}
+          />
+        </mesh>
+      ) : null}
+    </>
+  );
+}
+
+function useOwnedTrainModel(loader: () => Promise<Group>, failureCode: string): Group | undefined {
   const [model, setModel] = useState<Group>();
 
   useEffect(() => {
     let disposed = false;
     let ownedModel: Group | undefined;
 
-    void loadTrainModel().then(
+    void loader().then(
       (loadedModel) => {
         if (disposed) {
           disposeTrainModel(loadedModel);
@@ -152,7 +173,7 @@ function TrainEngine() {
       },
       () => {
         if (!disposed) {
-          diagnostics.record({ category: "asset", code: "train-model-load-failed" });
+          diagnostics.record({ category: "asset", code: failureCode });
         }
       },
     );
@@ -161,13 +182,9 @@ function TrainEngine() {
       disposed = true;
       if (ownedModel) disposeTrainModel(ownedModel);
     };
-  }, []);
+  }, [failureCode, loader]);
 
-  return (
-    <group position={[4.85, -1.48, 0]} rotation={[0, Math.PI, 0]} scale={0.55}>
-      {model ? <primitive object={model} /> : <TrainEngineFallback />}
-    </group>
-  );
+  return model;
 }
 
 function TrainEngineFallback() {
@@ -184,6 +201,23 @@ function TrainEngineFallback() {
       {[-0.72, 0.72].map((x) => (
         <mesh key={x} position={[x, 0.69, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.76, 0.76, 0.45, 20]} />
+          <meshStandardMaterial color="#493b5e" roughness={0.8} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+function CargoCarFallback() {
+  return (
+    <>
+      <mesh position={[0, 1.38, 0]} scale={[1.45, 0.5, 0.76]}>
+        <boxGeometry />
+        <meshStandardMaterial color="#6b9bd1" roughness={0.7} />
+      </mesh>
+      {[-0.88, 0.88].map((x) => (
+        <mesh key={x} position={[x, 0.48, 0.78]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.44, 0.44, 0.22, 20]} />
           <meshStandardMaterial color="#493b5e" roughness={0.8} />
         </mesh>
       ))}

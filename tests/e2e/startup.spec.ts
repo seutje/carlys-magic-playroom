@@ -40,10 +40,8 @@ test("starts, enters the train room, replays, and returns home", async ({ page }
   await expect(page.getByRole("heading", { name: "Where shall we play?" })).toBeVisible();
 });
 
-test("keeps the train activity playable when its locomotive model is unavailable", async ({
-  page,
-}) => {
-  await page.route("**/models/train/locomotive.glb", (route) => route.abort("failed"));
+test("keeps the train activity playable when its models are unavailable", async ({ page }) => {
+  await page.route("**/models/train/*.glb", (route) => route.abort("failed"));
   await page.goto("./");
   await page.getByRole("button", { name: "Play" }).click();
   await page.getByRole("button", { name: "Play with the train" }).click();

@@ -1,6 +1,8 @@
 import { Group } from "three";
 
 import {
+  CARGO_CAR_MODEL_PATH,
+  loadCargoCarModel,
   loadTrainModel,
   TRAIN_MODEL_PATH,
   type TrainModelLoader,
@@ -24,5 +26,13 @@ describe("train model", () => {
     };
 
     await expect(loadTrainModel(loader)).rejects.toThrow("missing model");
+  });
+
+  it("loads the cargo car from its base-path-aware public asset URL", async () => {
+    const scene = new Group();
+    const loadAsync = vi.fn().mockResolvedValue({ scene });
+
+    await expect(loadCargoCarModel({ loadAsync })).resolves.toBe(scene);
+    expect(loadAsync).toHaveBeenCalledWith(`${import.meta.env.BASE_URL}${CARGO_CAR_MODEL_PATH}`);
   });
 });

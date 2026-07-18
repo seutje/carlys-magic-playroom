@@ -3,6 +3,7 @@ import { BufferGeometry, type Group, Material, type Object3D, Texture } from "th
 import { assetUrl } from "../../engine/assets/assetUrl";
 
 export const TRAIN_MODEL_PATH = "models/train/locomotive.glb";
+export const CARGO_CAR_MODEL_PATH = "models/train/cargo-car.glb";
 
 export interface TrainModelLoader {
   loadAsync(url: string): Promise<{ readonly scene: Group }>;
@@ -10,9 +11,17 @@ export interface TrainModelLoader {
 
 /** Loads a fresh, room-owned model instance so room cleanup can release its GPU resources. */
 export async function loadTrainModel(loader?: TrainModelLoader): Promise<Group> {
+  return loadModel(TRAIN_MODEL_PATH, loader);
+}
+
+export async function loadCargoCarModel(loader?: TrainModelLoader): Promise<Group> {
+  return loadModel(CARGO_CAR_MODEL_PATH, loader);
+}
+
+async function loadModel(path: string, loader?: TrainModelLoader): Promise<Group> {
   const activeLoader =
     loader ?? new (await import("three/addons/loaders/GLTFLoader.js")).GLTFLoader();
-  const model = await activeLoader.loadAsync(assetUrl(TRAIN_MODEL_PATH));
+  const model = await activeLoader.loadAsync(assetUrl(path));
   return model.scene;
 }
 
