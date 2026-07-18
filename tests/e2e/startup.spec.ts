@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test("loads the startup shell from the repository subpath", async ({ page }) => {
   await page.goto("./");
@@ -139,3 +139,48 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
   await page.getByRole("button", { name: "Build a critter" }).click();
   await expect(page.getByText("Saved critters: 1")).toBeVisible();
 });
+
+test("completes one-step and two-step garden tasks safely", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const voiceRequests: string[] = [];
+  page.on("request", (request) => {
+    const match = /audio\/garden\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
+    if (match?.[1]) voiceRequests.push(match[1]);
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Visit the garden" }).click();
+
+  await expect(page.getByRole("button", { name: "Pause garden" })).toBeEnabled();
+  await page.getByRole("button", { name: "Pause garden" }).click();
+  await expect(page.getByText("The garden is resting.")).toBeVisible();
+  await page.getByRole("button", { name: "Resume garden" }).click();
+
+  const firstHelper = await expectedGardenHelper(page);
+  await firstHelper.click({ clickCount: 2 });
+  await expect(page.getByText("Growth 1/3")).toBeVisible();
+  await expect(page.getByText("Garden games: 1")).toBeVisible();
+  await expect(page).toHaveScreenshot("garden-growth.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
+
+  await page.getByRole("button", { name: "Try two steps" }).click();
+  await (await expectedGardenHelper(page)).click();
+  await (await expectedGardenHelper(page)).click();
+  await expect(page.getByText("Garden games: 2")).toBeVisible();
+  await expect
+    .poll(() => [...new Set(voiceRequests)].sort())
+    .toEqual(["flower-grew", "tap-cloud", "tap-sun"]);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Visit the garden" }).click();
+  await expect(page.getByText("Garden games: 2")).toBeVisible();
+});
+
+async function expectedGardenHelper(page: Page) {
+  await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
+  const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
+  return page.getByRole("button", { name: wantsWater ? "Tap rain cloud" : "Tap warm sun" });
+}

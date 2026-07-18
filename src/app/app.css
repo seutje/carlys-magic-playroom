@@ -221,6 +221,183 @@
   }
 }
 
+.garden-room {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #9edbf0;
+}
+
+.garden-canvas {
+  position: absolute;
+  inset: 0;
+  transition: filter 0.5s ease;
+}
+
+.garden-canvas.night {
+  filter: saturate(0.8) brightness(0.85);
+}
+
+.garden-guide {
+  position: absolute;
+  top: 5.5rem;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  width: min(33rem, calc(100% - 2rem));
+  padding: 0.75rem 1rem;
+  border: 3px solid #fff;
+  border-radius: 1.5rem;
+  background: rgb(255 252 232 / 92%);
+  box-shadow: 0 0.7rem 1.4rem rgb(39 82 57 / 18%);
+  transform: translateX(-50%);
+}
+
+.garden-guide > span {
+  color: #d79b27;
+  font-size: 2.2rem;
+}
+
+.garden-guide p,
+.garden-guide strong {
+  margin: 0.1rem 0;
+}
+
+.garden-controls {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  gap: 1rem;
+  transform: translateX(-50%);
+}
+
+.garden-controls button,
+.garden-next,
+.garden-pause {
+  min-width: 5.5rem;
+  min-height: 5rem;
+  border: 4px solid #fff;
+  border-radius: 1.4rem;
+  background: #fff8df;
+  color: #34533c;
+  font: inherit;
+  font-weight: 900;
+  box-shadow: 0 0.45rem 0.8rem rgb(37 74 47 / 22%);
+}
+
+.garden-controls button span {
+  display: block;
+  color: #e5a634;
+  font-size: 2.2rem;
+}
+
+.garden-controls.hint-1 button:not(:disabled),
+.garden-controls.hint-2 button:not(:disabled) {
+  outline: 6px solid #ffe270;
+  outline-offset: 4px;
+}
+
+.garden-controls.hint-2 button:not(:disabled) {
+  transform: scale(1.08);
+}
+
+.garden-controls button:disabled {
+  opacity: 0.65;
+}
+
+.garden-levels {
+  position: absolute;
+  top: 14rem;
+  left: 1rem;
+  z-index: 3;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.garden-levels span,
+.garden-saved {
+  padding: 0.45rem 0.7rem;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 84%);
+  color: #34533c;
+  font-weight: 800;
+}
+
+.garden-saved {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  margin: 0;
+}
+
+.garden-pause {
+  position: absolute;
+  top: 14rem;
+  right: 1rem;
+  z-index: 3;
+  min-width: 4.2rem;
+  min-height: 4.2rem;
+}
+
+.garden-paused,
+.garden-celebration {
+  position: absolute;
+  inset: 45% auto auto 50%;
+  z-index: 5;
+  padding: 1rem 1.5rem;
+  border-radius: 1.5rem;
+  background: rgb(255 252 224 / 94%);
+  color: #3d6448;
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.garden-celebration span {
+  display: block;
+  color: #e66592;
+  font-size: 2.5rem;
+}
+
+.garden-next {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  z-index: 5;
+  transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garden-canvas {
+    transition: none;
+  }
+
+  .garden-controls.hint-2 button:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .garden-guide {
+    top: 4.8rem;
+  }
+
+  .garden-levels,
+  .garden-pause {
+    top: 12.5rem;
+  }
+
+  .garden-saved {
+    bottom: 6.8rem;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

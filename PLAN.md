@@ -101,7 +101,7 @@ Verified:
 - [x] Phase 2 — Tiny Delivery Train Vertical Slice
 - [x] Phase 3 — Shared Activity Framework
 - [x] Phase 4 — Build-a-Critter Lab
-- [ ] Phase 5 — Little Garden
+- [x] Phase 5 — Little Garden
 - [ ] Phase 6 — Magic Shape Factory
 - [ ] Phase 7 — Musical Corner
 - [ ] Phase 8 — Parent Controls and Accessibility
@@ -1419,192 +1419,192 @@ The child can provide water and sunlight, observe growth, trigger visitors, and 
 
 ### P5-01 — Define garden simulation model
 
-- [ ] Define water level.
-- [ ] Define light level.
-- [ ] Define growth stages.
-- [ ] Define day and night.
-- [ ] Define visitors.
-- [ ] Define actions.
-- [ ] Define serialization.
-- [ ] Define deterministic transition rules.
+- [x] Define water level.
+- [x] Define light level.
+- [x] Define growth stages.
+- [x] Define day and night.
+- [x] Define visitors.
+- [x] Define actions.
+- [x] Define serialization.
+- [x] Define deterministic transition rules.
 
 Dependencies: Phase 3
 
 Verification:
 
-- [ ] Simulation runs without rendering.
-- [ ] Same input sequence produces the same result.
-- [ ] Every action has a safe outcome.
+- [x] Simulation runs without rendering.
+- [x] Same input sequence produces the same result.
+- [x] Every action has a safe outcome.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `gardenSimulation.test.ts`. Seeded one/two-step definitions survive JSON, identical event sequences reproduce water/light/growth/time/visitors, and every helper monotonically adds a bounded positive resource.
 ```
 
 ---
 
 ### P5-02 — Implement garden state machine
 
-- [ ] Add instruction.
-- [ ] Add waiting.
-- [ ] Add environmental effect.
-- [ ] Add growth.
-- [ ] Add visitor.
-- [ ] Add celebration.
-- [ ] Add pause and resume.
-- [ ] Add recovery.
-- [ ] Add repeated-tap throttling.
+- [x] Add instruction.
+- [x] Add waiting.
+- [x] Add environmental effect.
+- [x] Add growth.
+- [x] Add visitor.
+- [x] Add celebration.
+- [x] Add pause and resume.
+- [x] Add recovery.
+- [x] Add repeated-tap throttling.
 
 Dependencies: P5-01
 
 Verification:
 
-- [ ] State transitions are tested.
-- [ ] Rapid tapping cannot skip into invalid state.
-- [ ] Pause and resume preserve simulation.
+- [x] State transitions are tested.
+- [x] Rapid tapping cannot skip into invalid state.
+- [x] Pause and resume preserve simulation.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by pure reducer tests and E2E double-dispatch. The evaluating phase admits one action, owned timers advance effects/watchdogs, stable waiting can pause/resume, and recovery never reduces the garden.
 ```
 
 ---
 
 ### P5-03 — Create garden scene
 
-- [ ] Add garden bed.
-- [ ] Add plant.
-- [ ] Add sun.
-- [ ] Add cloud or watering control.
-- [ ] Add visitor character.
-- [ ] Add day and night lighting.
-- [ ] Add growth visuals.
-- [ ] Add fallback effects.
+- [x] Add garden bed.
+- [x] Add plant.
+- [x] Add sun.
+- [x] Add cloud or watering control.
+- [x] Add visitor character.
+- [x] Add day and night lighting.
+- [x] Add growth visuals.
+- [x] Add fallback effects.
 
 Dependencies: P5-01
 
 Verification:
 
-- [ ] Scene works on target browser.
-- [ ] Lighting transition respects reduced motion.
-- [ ] Particle effects respect reduced effects.
+- [x] Scene works on target browser.
+- [x] Lighting transition respects reduced motion.
+- [x] Particle effects respect reduced effects.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by desktop/tablet Chromium baselines. Shared primitives render the bed, four growth stages, sun/cloud, butterfly/ladybug, day/night lighting, and WebGL fallback; reduced motion removes lighting transitions and rain particles.
 ```
 
 ---
 
 ### P5-04 — Add cause-and-effect interactions
 
-- [ ] Tap sun.
-- [ ] Tap cloud.
-- [ ] Optional watering-can drag.
-- [ ] Show immediate response.
-- [ ] Update deterministic simulation.
-- [ ] Ensure excess input creates playful, safe results.
-- [ ] Cancel obsolete effects.
+- [x] Tap sun.
+- [x] Tap cloud.
+- [N/A] Optional watering-can drag.
+- [x] Show immediate response.
+- [x] Update deterministic simulation.
+- [x] Ensure excess input creates playful, safe results.
+- [x] Cancel obsolete effects.
 
 Dependencies: P5-02, P5-03
 
 Verification:
 
-- [ ] Every control responds promptly.
-- [ ] Repeated tapping is bounded.
-- [ ] No action harms or resets the plant.
+- [x] Every control responds promptly.
+- [x] Repeated tapping is bounded.
+- [x] No action harms or resets the plant.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by immediate DOM feedback, pure transition tests, and a browser double-click dispatch. Sun/rain always increase a clamped resource, mismatches keep growth, and phase/room changes cancel obsolete owned effects.
 ```
 
 ---
 
 ### P5-05 — Add guided sequencing and hints
 
-- [ ] Add one-step tasks.
-- [ ] Add two-step tasks.
-- [ ] Add visual hint escalation.
-- [ ] Add spoken replay.
-- [ ] Simplify after repeated mismatch.
-- [ ] Preserve positive outcomes.
+- [x] Add one-step tasks.
+- [x] Add two-step tasks.
+- [x] Add visual hint escalation.
+- [x] Add spoken replay.
+- [x] Simplify after repeated mismatch.
+- [x] Preserve positive outcomes.
 
 Dependencies: P5-04, Phase 3 shared systems
 
 Verification:
 
-- [ ] One-step and two-step flows pass.
-- [ ] Incorrect sequence remains recoverable.
-- [ ] Hint timers clean up.
+- [x] One-step and two-step flows pass.
+- [x] Incorrect sequence remains recoverable.
+- [x] Hint timers clean up.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by unit and E2E flows. Named water/sun guidance uses local serialized speech and Replay interruption; outlines escalate, two mismatches leave only the requested helper enabled, and every alternate action stays positive.
 ```
 
 ---
 
 ### P5-06 — Persist garden progress
 
-- [ ] Save completed activities.
-- [ ] Save encountered concepts.
-- [ ] Save skill results.
-- [ ] Avoid persisting transient animation state.
-- [ ] Add migration coverage.
+- [x] Save completed activities.
+- [x] Save encountered concepts.
+- [x] Save skill results.
+- [x] Avoid persisting transient animation state.
+- [x] Add migration coverage.
 
 Dependencies: P5-05, P3-07
 
 Verification:
 
-- [ ] Progress survives reload.
-- [ ] Storage failure remains nonfatal.
+- [x] Progress survives reload.
+- [x] Storage failure remains nonfatal.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `gardenPersistence.test.ts` and E2E reload. Root progress stores only totals/concepts/skills/bounded IDs, migrates schema 0, validates corrupt fields, writes idempotently, and catches blocked storage locally.
 ```
 
 ---
 
 ### P5-07 — Add garden E2E and visual tests
 
-- [ ] Complete one-step task.
-- [ ] Complete two-step task.
-- [ ] Test repeated tapping.
-- [ ] Test pause and resume.
-- [ ] Test reduced effects.
-- [ ] Capture deterministic growth screenshot.
+- [x] Complete one-step task.
+- [x] Complete two-step task.
+- [x] Test repeated tapping.
+- [x] Test pause and resume.
+- [x] Test reduced effects.
+- [x] Capture deterministic growth screenshot.
 
 Dependencies: P5-01 through P5-06
 
 Verification:
 
-- [ ] E2E suite passes.
-- [ ] Visual baseline is stable.
-- [ ] Tablet viewport passes.
+- [x] E2E suite passes.
+- [x] Visual baseline is stable.
+- [x] Tablet viewport passes.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in desktop/tablet Chromium under the repository subpath. The fixed flow pauses/resumes, double-dispatches a helper safely, completes one then two steps, requests all three cue assets, reloads two games, and matches deterministic growth baselines.
 ```
 
 ---
 
 ## Phase 5 completion gate
 
-- [ ] All Phase 5 tasks are complete and verified.
-- [ ] All actions produce safe outcomes.
-- [ ] Deterministic simulation is verified.
-- [ ] Pause and repeated input are verified.
-- [ ] Phase 5 completion is recorded in the changelog.
+- [x] All Phase 5 tasks are complete and verified.
+- [x] All actions produce safe outcomes.
+- [x] Deterministic simulation is verified.
+- [x] Pause and repeated input are verified.
+- [x] Phase 5 completion is recorded in the changelog.
 
 ---
 
@@ -2827,12 +2827,12 @@ Known limitations: The approved Ava neural TTS remains replaceable interim voice
 ## Phase 5 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 5 Little Garden commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (61 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "garden tasks" --update-snapshots=all --reporter=line; npm run test:e2e -- --reporter=line; git diff --check
+Manual checks: Desktop and tablet Chromium paused/resumed, safely double-clicked a helper, completed one- and two-step tasks, requested cloud/sun/success assets, displayed deterministic growth/day-night/visitor states, reloaded two completions, and matched reduced-effects screenshots. Six garden audio files were decoded and inspected.
+Known limitations: The approved neural voice remains replaceable interim artwork. Reduced-effects currently follows reduced-motion until Phase 8 exposes its independent parent setting.
 ```
 
 ## Phase 6 verification
@@ -3054,7 +3054,7 @@ Every agent session that changes implementation status should add an entry.
 ### 2026-07-18 — Phase 4 Build-a-Critter Lab
 
 **Agent or developer:** Codex
-**Commit or branch:** Phase 4 commit (this commit)
+**Commit or branch:** `58ffb17`
 
 **Completed:**
 - P4-01 through P4-07
@@ -3073,3 +3073,26 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-005 records valid-by-construction assembly and stable saved-part identifiers.
 - Four guided lines use the approved build-time Ava voice in OGG/MP3 with no runtime TTS or network dependency.
+
+### 2026-07-18 — Phase 5 Little Garden
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 5 commit (this commit)
+
+**Completed:**
+- P5-01 through P5-07
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 61 unit/integration tests, coverage, root/Pages builds, and desktop/tablet Playwright passed.
+- Pure fixed-sequence tests prove deterministic monotonic growth and bounded rapid input.
+- The fixed reduced-effects E2E flow pauses, completes one/two steps, persists, reloads, and matches per-viewport growth baselines.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-006 records deterministic positive-outcome simulation and transient-state persistence boundaries.
+- Three guided lines use approved bundled Ava OGG/MP3 assets; no runtime speech/network dependency was added.
