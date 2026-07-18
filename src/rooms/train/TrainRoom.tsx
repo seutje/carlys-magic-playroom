@@ -1,15 +1,19 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 
 import { useOwnedTimeout } from "../../engine/timing/useOwnedTimeout";
+import { hintDelay, nextHintStep } from "../../engine/hints/hintPlan";
+import { isInsideTarget, PointerDragTracker } from "../../engine/input/pointerDrag";
 import { useReducedMotion } from "../../ui/useReducedMotion";
 import type { RoomComponentProps } from "../roomModule";
 import { audioService } from "../../engine/audio/audioService";
 import { createBrowserTrainClipPlayer, TrainAudioController } from "./train.audio";
 import { generateTrainActivity } from "./train.generator";
+import { TRAIN_HINT_PLAN } from "./train.hints";
+import { renderTrainInstruction } from "./train.instructions";
 import { initialTrainState, reduceTrainActivity } from "./train.machine";
 import { defaultTrainProgress, loadTrainProgress, recordTrainCompletion } from "./train.progress";
 import { TrainScene } from "./TrainScene";
-import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
+import type { TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
 const INITIAL_DEFINITION = generateTrainActivity({
@@ -18,15 +22,7 @@ const INITIAL_DEFINITION = generateTrainActivity({
   target: { category: "duck", color: "yellow", count: 2 },
 });
 
-const COUNT_WORD: Readonly<Record<1 | 2 | 3, string>> = {
-  1: "one",
-  2: "two",
-  3: "three",
-};
-
-let fallbackSessionCounter = 0;
-
-export function TrainRoom({ replayRequest }: RoomComponentProps) {
+export function TrainRoom({ replayRequest, session }: RoomComponentProps) {
   const [state, dispatch] = useReducer(reduceTrainActivity, {
     ...initialTrainState,
     phase: "intro",
@@ -34,13 +30,13 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
   });
   const [manualFeedback, setManualFeedback] = useState("The conductor is waving hello!");
   const [progress, setProgress] = useState(defaultTrainProgress);
-  const [sessionId] = useState(createTrainSessionId);
   const [round, setRound] = useState(0);
   const [trainAudio] = useState(
     () =>
       new TrainAudioController(
-        createBrowserTrainClipPlayer(() => audioService.getSettings()),
+        createBrowserTrainClipPlayer(),
         () => audioService.getSettings(),
+        () => audioService.resume(),
       ),
   );
   const lastReplayRequest = useRef(replayRequest);
@@ -70,7 +66,12 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
   }, [state.lastDrop, state.loadedObjectIds.length, trainAudio]);
 
   useEffect(() => {
-    if (state.phase === "hint" && state.hintLevel === 1) trainAudio.repeatInstruction();
+    if (
+      state.phase === "hint" &&
+      nextHintStep(TRAIN_HINT_PLAN, Math.max(0, state.hintLevel - 1)).repeatInstruction
+    ) {
+      trainAudio.repeatInstruction();
+    }
     if (state.phase === "celebrating") trainAudio.celebrate();
   }, [state.hintLevel, state.phase, trainAudio]);
 
@@ -87,15 +88,17 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
   useEffect(() => {
     if (state.phase !== "complete") return;
     let active = true;
-    void recordTrainCompletion(definition, state.mismatchCount, `${sessionId}:round:${round}`).then(
-      (savedProgress) => {
-        if (active) setProgress(savedProgress);
-      },
-    );
+    void recordTrainCompletion(
+      definition,
+      state.mismatchCount,
+      `${session.id}:round:${round}`,
+    ).then((savedProgress) => {
+      if (active) setProgress(savedProgress);
+    });
     return () => {
       active = false;
     };
-  }, [definition, round, sessionId, state.mismatchCount, state.phase]);
+  }, [definition, round, session.id, state.mismatchCount, state.phase]);
 
   useEffect(() => {
     cancelAll();
@@ -111,7 +114,10 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
         break;
       case "waiting":
       case "hint":
-        schedule(() => dispatch({ type: "HINT_TIMEOUT" }), 5_000);
+        schedule(
+          () => dispatch({ type: "HINT_TIMEOUT" }),
+          hintDelay(TRAIN_HINT_PLAN, state.hintLevel),
+        );
         break;
       case "celebrating":
         // This owned timeout is also the watchdog if a visual animation is interrupted.
@@ -127,7 +133,7 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
         assertNever(state.phase);
     }
     return cancelAll;
-  }, [cancelAll, reducedMotion, replayRequest, schedule, state.phase]);
+  }, [cancelAll, reducedMotion, replayRequest, schedule, state.hintLevel, state.phase]);
 
   const handleDrop = (objectId: string, insideTrain: boolean) => {
     if (!insideTrain) {
@@ -167,7 +173,7 @@ export function TrainRoom({ replayRequest }: RoomComponentProps) {
         </span>
         <div>
           <p className="eyebrow">Tiny Delivery Train</p>
-          <p className="instruction-copy">{instructionText(definition)}</p>
+          <p className="instruction-copy">{renderTrainInstruction(definition.instruction)}</p>
           <p className="train-feedback">{feedbackText(state, manualFeedback)}</p>
         </div>
       </div>
@@ -237,24 +243,20 @@ function ToyButton({
   readonly highlighted: boolean;
   readonly onDrop: (insideTrain: boolean) => void;
 }) {
-  const pointerId = useRef<number | undefined>(undefined);
+  const drag = useRef(new PointerDragTracker());
   const start = useRef({ x: 0, y: 0 });
   const dragged = useRef(false);
 
   const finishDrag = (event: React.PointerEvent<HTMLButtonElement>, canceled = false) => {
-    if (pointerId.current !== event.pointerId) return;
+    if (!drag.current.owns(event.pointerId)) return;
     event.currentTarget.releasePointerCapture(event.pointerId);
-    pointerId.current = undefined;
+    const moved = drag.current.finish(event.pointerId);
     event.currentTarget.style.transform = "";
-    if (!canceled && dragged.current) {
+    if (!canceled && moved) {
       const dropZone = document.querySelector<HTMLElement>("[data-testid='train-drop-zone']");
       const bounds = dropZone?.getBoundingClientRect();
       const inside = Boolean(
-        bounds &&
-        event.clientX >= bounds.left &&
-        event.clientX <= bounds.right &&
-        event.clientY >= bounds.top &&
-        event.clientY <= bounds.bottom,
+        bounds && isInsideTarget({ x: event.clientX, y: event.clientY }, bounds, 12),
       );
       onDrop(inside);
     }
@@ -273,15 +275,15 @@ function ToyButton({
         if (!dragged.current) onDrop(true);
       }}
       onPointerDown={(event) => {
-        pointerId.current = event.pointerId;
+        drag.current.begin(event.pointerId, { x: event.clientX, y: event.clientY });
         start.current = { x: event.clientX, y: event.clientY };
         event.currentTarget.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
-        if (pointerId.current !== event.pointerId) return;
+        if (!drag.current.owns(event.pointerId)) return;
         const x = event.clientX - start.current.x;
         const y = event.clientY - start.current.y;
-        if (Math.hypot(x, y) < 6) return;
+        if (!drag.current.move(event.pointerId, { x: event.clientX, y: event.clientY })) return;
         dragged.current = true;
         event.currentTarget.style.transform = `translate(${x}px, ${y}px) scale(1.08)`;
       }}
@@ -294,11 +296,6 @@ function ToyButton({
       <span className="toy-color-name">{object.color}</span>
     </button>
   );
-}
-
-function instructionText(definition: TrainActivityDefinition): string {
-  const { count, color, category } = definition.target;
-  return `Put ${COUNT_WORD[count]} ${color} ${category}${count === 1 ? "" : "s"} in the train.`;
 }
 
 function feedbackText(state: ReturnType<typeof reduceTrainActivity>, fallback: string): string {
@@ -314,17 +311,4 @@ function feedbackText(state: ReturnType<typeof reduceTrainActivity>, fallback: s
 
 function assertNever(value: never): never {
   throw new Error(`Unexpected train phase: ${String(value)}`);
-}
-
-function createTrainSessionId(): string {
-  const key = "carlys-magic-playroom:train-session";
-  try {
-    const previous = Number.parseInt(sessionStorage.getItem(key) ?? "0", 10);
-    const next = Number.isSafeInteger(previous) && previous >= 0 ? previous + 1 : 1;
-    sessionStorage.setItem(key, String(next));
-    return `session:${next}`;
-  } catch {
-    fallbackSessionCounter += 1;
-    return `fallback-session:${fallbackSessionCounter}`;
-  }
 }

@@ -1,4 +1,7 @@
-import type { TrainActivityEvent, TrainActivityState, TrainPhase } from "./train.types";
+import { reduceActivityLifecycle } from "../../engine/activity/activityState";
+import { nextHintStep } from "../../engine/hints/hintPlan";
+import { TRAIN_HINT_PLAN } from "./train.hints";
+import type { TrainActivityEvent, TrainActivityState } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
 export const initialTrainState: TrainActivityState = {
@@ -13,15 +16,14 @@ export function reduceTrainActivity(
   state: TrainActivityState,
   event: TrainActivityEvent,
 ): TrainActivityState {
-  if (event.type === "EXIT")
-    return state.phase === "exiting" ? state : { ...state, phase: "exiting" };
-  if (event.type === "FAIL") return { ...state, phase: "error" };
   if (event.type === "RESET" && state.definition) {
     return { ...initialTrainState, phase: "intro", definition: state.definition };
   }
-  if (event.type === "PAUSE") return pause(state);
-  if (event.type === "RESUME") return resume(state);
-  if (event.type === "RECOVER") return recover(state);
+  const lifecycleState = reduceActivityLifecycle(state, event, {
+    pausable: ["instruction", "waiting", "hint"],
+    recover,
+  });
+  if (lifecycleState) return lifecycleState;
 
   switch (state.phase) {
     case "loading":
@@ -88,25 +90,11 @@ function evaluateDrop(state: TrainActivityState, objectId: string): TrainActivit
 }
 
 function nextHint(state: TrainActivityState): TrainActivityState {
-  const hintLevel = Math.min(3, state.hintLevel + 1) as 1 | 2 | 3;
-  return { ...state, phase: "hint", hintLevel };
-}
-
-function pause(state: TrainActivityState): TrainActivityState {
-  if (!(["instruction", "waiting", "hint"] as readonly TrainPhase[]).includes(state.phase)) {
-    return state;
-  }
   return {
     ...state,
-    phase: "paused",
-    pausedFrom: state.phase as "instruction" | "waiting" | "hint",
+    phase: "hint",
+    hintLevel: nextHintStep(TRAIN_HINT_PLAN, state.hintLevel).level,
   };
-}
-
-function resume(state: TrainActivityState): TrainActivityState {
-  if (state.phase !== "paused" || !state.pausedFrom) return state;
-  const { pausedFrom, ...rest } = state;
-  return { ...rest, phase: pausedFrom };
 }
 
 function recover(state: TrainActivityState): TrainActivityState {

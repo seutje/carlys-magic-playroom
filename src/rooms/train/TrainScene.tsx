@@ -3,6 +3,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { Plane, Vector3, type Group, type Mesh } from "three";
 
 import { COLOR_HEX } from "../../content/colors";
+import {
+  isInsideTarget,
+  PointerDragTracker,
+  projectRayToPlane,
+  snapSmoothing,
+} from "../../engine/input/pointerDrag";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -145,9 +151,7 @@ function DraggableToy({
   onDrop,
 }: DraggableToyProps) {
   const mesh = useRef<Mesh>(null);
-  const pointerId = useRef<number | undefined>(undefined);
-  const startPointer = useRef({ x: 0, y: 0 });
-  const dragging = useRef(false);
+  const drag = useRef(new PointerDragTracker());
   const target = useRef(new Vector3());
   const origin = useMemo(
     () => new Vector3(-4.5 + object.startSlot * 1.35, -0.75, 0.65),
@@ -161,8 +165,7 @@ function DraggableToy({
 
   useEffect(() => {
     const cancel = () => {
-      pointerId.current = undefined;
-      dragging.current = false;
+      drag.current.cancel();
       target.current.copy(origin);
     };
     const onVisibility = () => {
@@ -181,7 +184,7 @@ function DraggableToy({
   useFrame((_, delta) => {
     if (!mesh.current) return;
     const speed = reducedMotion ? 30 : 12;
-    mesh.current.position.lerp(target.current, 1 - Math.exp(-delta * speed));
+    mesh.current.position.lerp(target.current, snapSmoothing(delta, speed));
     const hintScale =
       highlighted && !reducedMotion ? 1 + Math.sin(performance.now() / 180) * 0.08 : 1;
     mesh.current.scale.setScalar(hintScale);
@@ -189,16 +192,20 @@ function DraggableToy({
 
   const moveToRayPlane = (event: ThreeEvent<PointerEvent>) => {
     const point = new Vector3();
-    if (event.ray.intersectPlane(interactionPlane, point)) target.current.copy(point);
+    if (projectRayToPlane(event.ray, interactionPlane, point)) target.current.copy(point);
   };
 
   const finish = (event: ThreeEvent<PointerEvent>) => {
-    if (pointerId.current !== event.pointerId) return;
+    if (!drag.current.owns(event.pointerId)) return;
     if (isPointerCaptureTarget(event.target)) event.target.releasePointerCapture(event.pointerId);
-    pointerId.current = undefined;
-    const inside = Math.abs(target.current.x - 2.8) < 2 && Math.abs(target.current.y + 0.1) < 1.8;
-    if (dragging.current) onDrop(object.id, inside);
-    dragging.current = false;
+    const moved = drag.current.finish(event.pointerId);
+    const inside = isInsideTarget(target.current, {
+      left: 0.8,
+      right: 4.8,
+      top: -1.9,
+      bottom: 1.7,
+    });
+    if (moved) onDrop(object.id, inside);
     target.current.copy(origin);
   };
 
@@ -210,22 +217,22 @@ function DraggableToy({
       onPointerDown={(event) => {
         if (disabled) return;
         event.stopPropagation();
-        pointerId.current = event.pointerId;
-        startPointer.current = { x: event.clientX, y: event.clientY };
+        drag.current.begin(event.pointerId, { x: event.clientX, y: event.clientY });
         if (isPointerCaptureTarget(event.target)) event.target.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
-        if (pointerId.current !== event.pointerId || disabled) return;
-        const distance = Math.hypot(
-          event.clientX - startPointer.current.x,
-          event.clientY - startPointer.current.y,
-        );
-        if (distance < 6) return;
-        dragging.current = true;
+        if (disabled || !drag.current.move(event.pointerId, event)) return;
         moveToRayPlane(event);
       }}
       onPointerUp={finish}
-      onPointerCancel={finish}
+      onPointerCancel={(event) => {
+        if (!drag.current.owns(event.pointerId)) return;
+        if (isPointerCaptureTarget(event.target)) {
+          event.target.releasePointerCapture(event.pointerId);
+        }
+        drag.current.cancel();
+        target.current.copy(origin);
+      }}
     >
       <sphereGeometry args={[0.72, 20, 16]} />
       <meshStandardMaterial

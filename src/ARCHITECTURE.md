@@ -15,3 +15,7 @@
 The intended activity flow is generator → serializable definition → typed state machine → render adapter → React scene. Room code must not import from another room.
 
 The startup tier excludes Three.js. Play initializes audio and lazy-loads the playroom scene; room selection then resolves one typed dynamic-import entry. Child navigation is a guarded pure reducer, while per-room rendering and resources live only for the selected room's mount lifecycle.
+
+Each lazy room module declares capabilities, preload work, and a session factory. `RoomHost` owns start, exit, and disposal, so room resources cannot outlive navigation. Activity reducers reuse typed lifecycle phases/events while room events remain local.
+
+Shared instruction templates, hint plans, pointer lifecycle helpers, channel-priority audio, owned timers, and deterministic test doubles are engine services rather than curriculum decisions. IndexedDB stores a validated versioned root record; invalid room subsections recover independently and legacy train progress migrates into the root.

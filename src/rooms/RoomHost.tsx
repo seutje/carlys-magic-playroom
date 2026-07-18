@@ -5,6 +5,7 @@ import type { RoomId } from "../types/domain";
 import { RoomErrorBoundary } from "./RoomErrorBoundary";
 import { ROOM_LOADERS } from "./roomLoaders";
 import type { RoomModule, RoomModuleLoader } from "./roomModule";
+import type { RoomSession } from "./roomSession";
 
 interface RoomHostProps {
   readonly roomId: RoomId;
@@ -15,7 +16,7 @@ interface RoomHostProps {
 
 type LoadState =
   | { readonly kind: "loading" }
-  | { readonly kind: "ready"; readonly room: RoomModule }
+  | { readonly kind: "ready"; readonly room: RoomModule; readonly session: RoomSession }
   | { readonly kind: "error" };
 
 export function RoomHost({
@@ -34,15 +35,26 @@ export function RoomHost({
 
   useEffect(() => {
     let active = true;
+    let session: RoomSession | undefined;
     void loader().then(
-      (room) => {
+      async (room) => {
         if (!active) return;
         if (room.id !== roomId) {
           diagnostics.record({ category: "activity", code: "room-id-mismatch" });
           setState({ kind: "error" });
           return;
         }
-        setState({ kind: "ready", room });
+        try {
+          await room.preload();
+          if (!active) return;
+          session = room.createSession();
+          session.start();
+          setState({ kind: "ready", room, session });
+        } catch {
+          if (!active) return;
+          diagnostics.record({ category: "asset", code: `room-preload-failed:${roomId}` });
+          setState({ kind: "error" });
+        }
       },
       () => {
         if (!active) return;
@@ -52,6 +64,8 @@ export function RoomHost({
     );
     return () => {
       active = false;
+      session?.exit();
+      session?.dispose();
     };
   }, [attempt, loader, roomId]);
 
@@ -85,7 +99,7 @@ export function RoomHost({
   const RoomComponent = state.room.Component;
   return (
     <RoomErrorBoundary key={`${roomId}:${attempt}`} onHome={onHome} onRetry={retry}>
-      <RoomComponent replayRequest={replayRequest} />
+      <RoomComponent replayRequest={replayRequest} session={state.session} />
     </RoomErrorBoundary>
   );
 }

@@ -1,6 +1,7 @@
 import { generateTrainActivity } from "../../src/rooms/train/train.generator";
 import { initialTrainState, reduceTrainActivity } from "../../src/rooms/train/train.machine";
 import type { TrainActivityState } from "../../src/rooms/train/train.types";
+import { runStateMachine } from "../../src/testing/helpers";
 
 const definition = generateTrainActivity({
   seed: "machine-ducks",
@@ -15,9 +16,11 @@ const incorrect = definition.objects.find(
 );
 
 function waitingState(): TrainActivityState {
-  let state = reduceTrainActivity(initialTrainState, { type: "LOADED", definition });
-  state = reduceTrainActivity(state, { type: "INTRO_FINISHED" });
-  return reduceTrainActivity(state, { type: "INSTRUCTION_FINISHED" });
+  return runStateMachine(reduceTrainActivity, initialTrainState, [
+    { type: "LOADED", definition },
+    { type: "INTRO_FINISHED" },
+    { type: "INSTRUCTION_FINISHED" },
+  ]);
 }
 
 describe("reduceTrainActivity", () => {

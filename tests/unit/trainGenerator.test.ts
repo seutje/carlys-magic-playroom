@@ -1,5 +1,6 @@
 import { generateTrainActivity } from "../../src/rooms/train/train.generator";
 import { validateTrainDefinition } from "../../src/rooms/train/train.validation";
+import { seededFixtures } from "../../src/testing/helpers";
 
 describe("generateTrainActivity", () => {
   it("reproduces a fixed two-yellow-duck scenario", () => {
@@ -13,7 +14,11 @@ describe("generateTrainActivity", () => {
   });
 
   it("generates serializable, unique, solvable definitions across seeds and difficulties", () => {
-    for (let index = 0; index < 300; index += 1) {
+    const indexes = seededFixtures(
+      Array.from({ length: 300 }, (_, index) => String(index)),
+      (seed) => Number(seed),
+    );
+    for (const index of indexes) {
       const difficulty = ((index % 3) + 1) as 1 | 2 | 3;
       const definition = generateTrainActivity({ seed: `property-${index}`, difficulty });
       const ids = definition.objects.map((object) => object.id);

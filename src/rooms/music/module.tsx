@@ -1,16 +1,9 @@
-import { PlaceholderRoom } from "../PlaceholderRoom";
-import type { RoomModule } from "../roomModule";
+import { definePlaceholderRoom } from "../definePlaceholderRoom";
 
-export const musicRoom: RoomModule = {
+export const musicRoom = definePlaceholderRoom({
   id: "music",
   title: "Musical Corner",
-  Component: (props) => (
-    <PlaceholderRoom
-      {...props}
-      title="Musical Corner"
-      symbol="♫"
-      color="#4f8fc5"
-      instruction="The instruments are tuning up!"
-    />
-  ),
-};
+  symbol: "♫",
+  color: "#4f8fc5",
+  instruction: "The instruments are tuning up!",
+});

@@ -99,7 +99,7 @@ Verified:
 - [x] Phase 0 — Repository Foundation
 - [x] Phase 1 — Startup and Playroom Shell
 - [x] Phase 2 — Tiny Delivery Train Vertical Slice
-- [ ] Phase 3 — Shared Activity Framework
+- [x] Phase 3 — Shared Activity Framework
 - [ ] Phase 4 — Build-a-Critter Lab
 - [ ] Phase 5 — Little Garden
 - [ ] Phase 6 — Magic Shape Factory
@@ -993,216 +993,216 @@ A mock activity and at least one second room can use shared contracts without du
 
 ### P3-01 — Formalize room module contract
 
-- [ ] Define preload lifecycle.
-- [ ] Define session creation.
-- [ ] Define start, pause, resume, restart, exit, and dispose.
-- [ ] Define room capability metadata.
-- [ ] Add contract tests.
-- [ ] Migrate train room to the contract.
+- [x] Define preload lifecycle.
+- [x] Define session creation.
+- [x] Define start, pause, resume, restart, exit, and dispose.
+- [x] Define room capability metadata.
+- [x] Add contract tests.
+- [x] Migrate train room to the contract.
 
 Dependencies: Phase 2
 
 Verification:
 
-- [ ] Train room passes unchanged behavior tests.
-- [ ] Mock room implements the contract.
-- [ ] Disposal removes room-owned resources.
+- [x] Train room passes unchanged behavior tests.
+- [x] Mock room implements the contract.
+- [x] Disposal removes room-owned resources.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `roomSession.test.ts`, `RoomHost.test.tsx`, and the train E2E regression. Lazy modules expose capabilities/preload/session factories; RoomHost starts and idempotently exits/disposes sessions, and all placeholder rooms use the same contract.
 ```
 
 ---
 
 ### P3-02 — Create shared activity state primitives
 
-- [ ] Define common phases.
-- [ ] Define common lifecycle events.
-- [ ] Add typed transition helpers.
-- [ ] Add timer ownership utilities.
-- [ ] Add watchdog support.
-- [ ] Keep room-specific events extensible.
+- [x] Define common phases.
+- [x] Define common lifecycle events.
+- [x] Add typed transition helpers.
+- [x] Add timer ownership utilities.
+- [x] Add watchdog support.
+- [x] Keep room-specific events extensible.
 
 Dependencies: P3-01
 
 Verification:
 
-- [ ] Train state machine uses shared primitives.
-- [ ] Unexpected events remain safe.
-- [ ] Timer cleanup tests pass.
+- [x] Train state machine uses shared primitives.
+- [x] Unexpected events remain safe.
+- [x] Timer cleanup tests pass.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by activity, timer, and train-machine tests. Common lifecycle transitions return control for room events, while deterministic owned timers cancel schedules and watchdogs together.
 ```
 
 ---
 
 ### P3-03 — Create shared instruction system
 
-- [ ] Define instruction templates.
-- [ ] Define audio keys.
-- [ ] Define parameter substitution.
-- [ ] Add replay behavior.
-- [ ] Add visual instruction representation.
-- [ ] Prepare for localization.
+- [x] Define instruction templates.
+- [x] Define audio keys.
+- [x] Define parameter substitution.
+- [x] Add replay behavior.
+- [x] Add visual instruction representation.
+- [x] Prepare for localization.
 
 Dependencies: P2-08
 
 Verification:
 
-- [ ] Train instructions migrate successfully.
-- [ ] Missing audio uses safe fallback behavior.
-- [ ] Templates remain serializable.
+- [x] Train instructions migrate successfully.
+- [x] Missing audio uses safe fallback behavior.
+- [x] Templates remain serializable.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `instruction.test.ts` and train E2E. Named parameters render through keyed templates, definitions survive JSON, and missing/rejected audio leaves the visual instruction usable.
 ```
 
 ---
 
 ### P3-04 — Create shared hint engine
 
-- [ ] Define hint steps.
-- [ ] Define timing.
-- [ ] Define escalation.
-- [ ] Add cancellation.
-- [ ] Add simplification hooks.
-- [ ] Add reduced-motion behavior.
+- [x] Define hint steps.
+- [x] Define timing.
+- [x] Define escalation.
+- [x] Add cancellation.
+- [x] Add simplification hooks.
+- [x] Add reduced-motion behavior.
 
 Dependencies: P2-09
 
 Verification:
 
-- [ ] Train hints migrate without regression.
-- [ ] Hint timers clean up on pause, reset, and exit.
-- [ ] Hint escalation has unit tests.
+- [x] Train hints migrate without regression.
+- [x] Hint timers clean up on pause, reset, and exit.
+- [x] Hint escalation has unit tests.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `hintPlan.test.ts`, train-machine tests, and owned timer cleanup. The three data-defined steps cover repeat, highlight, simplification, and reduced-motion outlines.
 ```
 
 ---
 
 ### P3-05 — Create shared draggable object system
 
-- [ ] Extract pointer lifecycle.
-- [ ] Extract drag-plane projection.
-- [ ] Extract target-zone evaluation.
-- [ ] Extract snap and return animations.
-- [ ] Expose room-specific validation hooks.
-- [ ] Preserve oversized colliders.
-- [ ] Add cancellation recovery.
+- [x] Extract pointer lifecycle.
+- [x] Extract drag-plane projection.
+- [x] Extract target-zone evaluation.
+- [x] Extract snap and return animations.
+- [x] Expose room-specific validation hooks.
+- [x] Preserve oversized colliders.
+- [x] Add cancellation recovery.
 
 Dependencies: P2-06
 
 Verification:
 
-- [ ] Train behavior remains unchanged.
-- [ ] Mock draggable scenario passes.
-- [ ] Pointer cancellation tests pass.
+- [x] Train behavior remains unchanged.
+- [x] Mock draggable scenario passes.
+- [x] Pointer cancellation tests pass.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `pointerDrag.test.ts` and desktop/tablet train E2E. DOM and R3F adapters share ownership, threshold, forgiving target, projection, and snap helpers while retaining train validation and oversized targets.
 ```
 
 ---
 
 ### P3-06 — Create shared audio coordinator
 
-- [ ] Define channels.
-- [ ] Define priorities.
-- [ ] Define interruption and ducking rules.
-- [ ] Add voice limits.
-- [ ] Add room ownership.
-- [ ] Add mute and volume integration.
-- [ ] Add context resume recovery.
+- [x] Define channels.
+- [x] Define priorities.
+- [x] Define interruption and ducking rules.
+- [x] Add voice limits.
+- [x] Add room ownership.
+- [x] Add mute and volume integration.
+- [x] Add context resume recovery.
 
 Dependencies: P1-02, P2-08
 
 Verification:
 
-- [ ] Train audio migrates without overlap regression.
-- [ ] Room exit stops room-owned audio.
-- [ ] Priority tests pass.
+- [x] Train audio migrates without overlap regression.
+- [x] Room exit stops room-owned audio.
+- [x] Priority tests pass.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by coordinator/train audio tests and E2E request order. Six channels use explicit priority, one active voice, instruction ducking, Replay interruption, room-owner cleanup, current settings, and gesture-context resume recovery.
 ```
 
 ---
 
 ### P3-07 — Create persistence schema and migrations
 
-- [ ] Define root save-data format.
-- [ ] Add schema version.
-- [ ] Add validators.
-- [ ] Add migration pipeline.
-- [ ] Add partial recovery.
-- [ ] Add reset operations.
-- [ ] Add bounded diagnostics.
+- [x] Define root save-data format.
+- [x] Add schema version.
+- [x] Add validators.
+- [x] Add migration pipeline.
+- [x] Add partial recovery.
+- [x] Add reset operations.
+- [x] Add bounded diagnostics.
 
 Dependencies: P2-11
 
 Verification:
 
-- [ ] Fresh install works.
-- [ ] Current save loads.
-- [ ] Invalid subsection recovers.
-- [ ] Migration suite passes.
+- [x] Fresh install works.
+- [x] Current save loads.
+- [x] Invalid subsection recovers.
+- [x] Migration suite passes.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `saveData.test.ts` and train progress tests. IndexedDB v2 validates a versioned root, migrates the v1 train store, bounds collections/diagnostic codes, preserves valid subsections, and supports complete reset.
 ```
 
 ---
 
 ### P3-08 — Add shared testing helpers
 
-- [ ] Add seeded fixtures.
-- [ ] Add state-machine test harness.
-- [ ] Add room lifecycle harness.
-- [ ] Add fake audio service.
-- [ ] Add fake persistence service.
-- [ ] Add deterministic animation clock.
-- [ ] Add pointer interaction helpers.
+- [x] Add seeded fixtures.
+- [x] Add state-machine test harness.
+- [x] Add room lifecycle harness.
+- [x] Add fake audio service.
+- [x] Add fake persistence service.
+- [x] Add deterministic animation clock.
+- [x] Add pointer interaction helpers.
 
 Dependencies: P3-01 through P3-07
 
 Verification:
 
-- [ ] Train tests use the shared helpers.
-- [ ] Visual tests no longer depend on real time.
-- [ ] Helpers are documented.
+- [x] Train tests use the shared helpers.
+- [x] Visual tests no longer depend on real time.
+- [x] Helpers are documented.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `testingHelpers.test.ts` plus migrated train generator/machine and shared subsystem tests. Fixed seeds, disabled browser animations, deterministic clocks, pointer paths, fake audio/persistence, and lifecycle/reducer harnesses are documented in `src/testing/README.md`.
 ```
 
 ---
 
 ## Phase 3 completion gate
 
-- [ ] All Phase 3 tasks are complete and verified.
-- [ ] Train room has migrated without behavioral regression.
-- [ ] Shared systems are documented and tested.
-- [ ] No premature generic abstraction remains unused.
-- [ ] Phase 3 completion is recorded in the changelog.
+- [x] All Phase 3 tasks are complete and verified.
+- [x] Train room has migrated without behavioral regression.
+- [x] Shared systems are documented and tested.
+- [x] No premature generic abstraction remains unused.
+- [x] Phase 3 completion is recorded in the changelog.
 
 ---
 
@@ -2805,12 +2805,12 @@ Known limitations: The approved neural TTS is an interim creative asset and can 
 ## Phase 3 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 3 shared activity framework commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (50 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --reporter=line; git diff --check
+Manual checks: The desktop/tablet fixed train scenario retained its visual baselines, drag behavior, ordered local audio, celebration, reload, and root-schema progress. Lazy train and placeholder modules exercised preload/session start/disposal under the Pages subpath.
+Known limitations: Audio intentionally permits one active voice for clarity. Shared primitives cover proven train and placeholder needs; later rooms may extend policies without weakening the current contracts.
 ```
 
 ## Phase 4 verification
@@ -3008,7 +3008,7 @@ Every agent session that changes implementation status should add an entry.
 ### 2026-07-18 — Phase 2 Tiny Delivery Train
 
 **Agent or developer:** Codex
-**Commit or branch:** Uncommitted Phase 2 working tree
+**Commit or branch:** `f89c14a`
 
 **Completed:**
 - P2-01 through P2-12
@@ -3027,3 +3027,26 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - The maintainer approved build-time neural TTS. `public/audio/train/README.md` records the voice, generation parameters, processing, lines, and formats.
 - ADR-003 records local bundled speech, serialized playback, and stable replacement keys; no runtime TTS or network service was added.
+
+### 2026-07-18 — Phase 3 shared activity framework
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 3 commit (this commit)
+
+**Completed:**
+- P3-01 through P3-08
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 50 unit/integration tests, coverage, root/Pages builds, and desktop/tablet Playwright regression passed.
+- The train migrated to shared lifecycle, state, instruction, hint, pointer, audio, root persistence, and deterministic test primitives without changing its child-facing flow.
+- Placeholder rooms provide independent consumers of the lazy room module/session contract.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-004 records the post-train extraction boundary and IndexedDB v2 root migration.
+- Shared abstractions remain domain-neutral; curriculum rules and render decisions stay inside each room.

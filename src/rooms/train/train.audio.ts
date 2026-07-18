@@ -1,24 +1,24 @@
 import type { AudioSettings } from "../../engine/audio/audioService";
+import { AudioCoordinator, type AudioClipPlayer } from "../../engine/audio/audioCoordinator";
 import { assetUrl } from "../../engine/assets/assetUrl";
 
 export type TrainAudioCue =
   "instruction-two-yellow-ducks" | "count-one" | "count-two" | "count-three" | "success-all-aboard";
 
-export interface TrainClipPlayer {
-  play(cue: TrainAudioCue): Promise<void>;
-  stop(): void;
-}
+export type TrainClipPlayer = AudioClipPlayer<TrainAudioCue>;
 
 /** Serializes speech so rapid child input never creates overlapping voices. */
 export class TrainAudioController {
-  private queue: Promise<void> = Promise.resolve();
-  private generation = 0;
+  private readonly coordinator: AudioCoordinator<TrainAudioCue>;
   private activeRound: number | undefined;
 
   public constructor(
-    private readonly player: TrainClipPlayer,
-    private readonly getSettings: () => AudioSettings,
-  ) {}
+    player: TrainClipPlayer,
+    getSettings: () => AudioSettings,
+    resume: () => Promise<unknown> = () => Promise.resolve(),
+  ) {
+    this.coordinator = new AudioCoordinator(player, getSettings, resume);
+  }
 
   public beginRound(round: number): void {
     if (this.activeRound === round) return;
@@ -27,60 +27,50 @@ export class TrainAudioController {
   }
 
   public repeatInstruction(): void {
-    this.enqueue("instruction-two-yellow-ducks");
+    this.play("instruction-two-yellow-ducks", "instructions");
   }
 
   public replayInstruction(): void {
-    this.interrupt();
-    this.enqueue("instruction-two-yellow-ducks");
+    this.play("instruction-two-yellow-ducks", "instructions", true);
   }
 
   public speakCount(count: 1 | 2 | 3): void {
-    this.enqueue(`count-${COUNT_NAMES[count]}`);
+    this.play(`count-${COUNT_NAMES[count]}`, "educational-target");
   }
 
   public celebrate(): void {
-    this.enqueue("success-all-aboard");
+    this.play("success-all-aboard", "speech");
   }
 
   public stop(): void {
     this.activeRound = undefined;
-    this.interrupt();
+    this.coordinator.stopOwner(TRAIN_AUDIO_OWNER);
   }
 
-  private interrupt(): void {
-    this.generation += 1;
-    this.player.stop();
-    this.queue = Promise.resolve();
-  }
-
-  private enqueue(cue: TrainAudioCue): void {
-    const generation = this.generation;
-    this.queue = this.queue
-      .then(async () => {
-        if (generation !== this.generation || this.getSettings().muted) return;
-        await this.player.play(cue);
-      })
-      .catch(() => {
-        // Voice is supportive feedback; playback failure must never stop visual play.
-      });
+  private play(
+    cue: TrainAudioCue,
+    channel: "instructions" | "educational-target" | "speech",
+    interrupt = false,
+  ): void {
+    this.coordinator.play({ cue, channel, interrupt, ownerId: TRAIN_AUDIO_OWNER });
   }
 }
 
+const TRAIN_AUDIO_OWNER = "train";
 const COUNT_NAMES = { 1: "one", 2: "two", 3: "three" } as const;
 
-export function createBrowserTrainClipPlayer(getSettings: () => AudioSettings): TrainClipPlayer {
+export function createBrowserTrainClipPlayer(): TrainClipPlayer {
   let current: HTMLAudioElement | undefined;
   let settleCurrent: (() => void) | undefined;
   const format = selectAudioFormat();
 
   return {
-    play(cue) {
+    play(cue, volume) {
       return new Promise<void>((resolve) => {
         const audio = new Audio(assetUrl(`audio/train/${cue}.${format}`));
         current = audio;
         audio.preload = "auto";
-        audio.volume = getSettings().masterVolume;
+        audio.volume = volume;
         const settle = () => {
           if (current === audio) current = undefined;
           if (settleCurrent === settle) settleCurrent = undefined;

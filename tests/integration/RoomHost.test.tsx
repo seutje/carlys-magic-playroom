@@ -4,14 +4,19 @@ import { useEffect } from "react";
 
 import { RoomHost } from "../../src/rooms/RoomHost";
 import type { RoomModuleLoader } from "../../src/rooms/roomModule";
+import { BasicRoomSession } from "../../src/rooms/roomSession";
 
 describe("RoomHost", () => {
   it("loads a room asynchronously and disposes its mounted lifecycle", async () => {
     const dispose = vi.fn();
+    const disposeSession = vi.fn();
     const loader: RoomModuleLoader = () =>
       Promise.resolve({
         id: "train",
         title: "Test Train",
+        capabilities: { audio: false, drag: false, persistence: false, pause: true, restart: true },
+        preload: () => Promise.resolve(),
+        createSession: () => new BasicRoomSession("test", undefined, disposeSession),
         Component: () => {
           useEffect(() => dispose, []);
           return <h1>Test Train</h1>;
@@ -25,6 +30,7 @@ describe("RoomHost", () => {
     expect(await screen.findByRole("heading", { name: "Test Train" })).toBeInTheDocument();
     unmount();
     expect(dispose).toHaveBeenCalledOnce();
+    expect(disposeSession).toHaveBeenCalledOnce();
   });
 
   it("offers Retry and Home when loading fails", async () => {

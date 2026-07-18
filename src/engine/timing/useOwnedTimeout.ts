@@ -1,24 +1,25 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import { OwnedTimers } from "./ownedTimers";
+
 /** Owns cancellable timeouts for one mounted lifecycle. */
 export function useOwnedTimeout() {
-  const timers = useRef(new Set<ReturnType<typeof window.setTimeout>>());
+  const timers = useRef<OwnedTimers | undefined>(undefined);
+  timers.current ??= new OwnedTimers();
 
   const cancelAll = useCallback(() => {
-    for (const timer of timers.current) window.clearTimeout(timer);
-    timers.current.clear();
+    timers.current?.cancelAll();
   }, []);
 
   const schedule = useCallback((callback: () => void, delayMs: number) => {
-    const timer = window.setTimeout(() => {
-      timers.current.delete(timer);
-      callback();
-    }, delayMs);
-    timers.current.add(timer);
-    return timer;
+    return timers.current?.schedule(callback, delayMs);
+  }, []);
+
+  const watchdog = useCallback((callback: () => void, deadlineMs: number) => {
+    return timers.current?.watchdog(callback, deadlineMs);
   }, []);
 
   useEffect(() => cancelAll, [cancelAll]);
 
-  return { schedule, cancelAll } as const;
+  return { schedule, watchdog, cancelAll } as const;
 }

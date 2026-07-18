@@ -1,4 +1,6 @@
 import type { BasicColor } from "../../content/colors";
+import type { ActivityLifecycleEvent, ActivityPhase } from "../../engine/activity/activityState";
+import type { InstructionDefinition } from "../../engine/instructions/instruction";
 
 export type TrainObjectCategory = "duck" | "ball" | "apple";
 
@@ -15,16 +17,16 @@ export interface TrainTarget {
   readonly count: 1 | 2 | 3;
 }
 
-export interface TrainInstruction {
-  readonly id: "train.load-request";
-  readonly textKey: "train.instruction.load";
-  readonly audioKey: string;
-  readonly parameters: {
+export type TrainInstruction = InstructionDefinition<
+  "train.load-request",
+  "train.instruction.load",
+  string,
+  {
     readonly count: 1 | 2 | 3;
     readonly color: BasicColor;
     readonly category: TrainObjectCategory;
-  };
-}
+  }
+>;
 
 export interface TrainActivityDefinition {
   readonly schemaVersion: 1;
@@ -36,18 +38,7 @@ export interface TrainActivityDefinition {
   readonly objects: readonly TrainObjectDefinition[];
 }
 
-export type TrainPhase =
-  | "loading"
-  | "intro"
-  | "instruction"
-  | "waiting"
-  | "evaluating"
-  | "hint"
-  | "celebrating"
-  | "complete"
-  | "paused"
-  | "exiting"
-  | "error";
+export type TrainPhase = ActivityPhase;
 
 export type DropResult = "accepted" | "rejected" | "duplicate";
 
@@ -58,7 +49,7 @@ export interface TrainActivityState {
   readonly mismatchCount: number;
   readonly hintLevel: 0 | 1 | 2 | 3;
   readonly lastDrop?: { readonly objectId: string; readonly result: DropResult } | undefined;
-  readonly pausedFrom?: "instruction" | "waiting" | "hint" | undefined;
+  readonly pausedFrom?: ActivityPhase | undefined;
   readonly completedOnce: boolean;
 }
 
@@ -70,9 +61,5 @@ export type TrainActivityEvent =
   | { readonly type: "EVALUATION_FINISHED" }
   | { readonly type: "HINT_TIMEOUT" }
   | { readonly type: "CELEBRATION_FINISHED" }
-  | { readonly type: "PAUSE" }
-  | { readonly type: "RESUME" }
   | { readonly type: "RESET" }
-  | { readonly type: "EXIT" }
-  | { readonly type: "FAIL" }
-  | { readonly type: "RECOVER" };
+  | ActivityLifecycleEvent;

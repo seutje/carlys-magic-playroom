@@ -1,6 +1,5 @@
-import { openDB, type DBSchema, type IDBPDatabase } from "idb";
-
 import { diagnostics } from "../../engine/diagnostics/diagnostics";
+import { loadSaveData, resetSaveData, updateSaveData } from "../../persistence/saveData";
 import type { TrainActivityDefinition } from "./train.types";
 
 export interface TrainSkillResult {
@@ -16,17 +15,7 @@ export interface TrainProgress {
   readonly skills: Readonly<Record<string, TrainSkillResult>>;
 }
 
-interface TrainDatabase extends DBSchema {
-  progress: {
-    key: "train";
-    value: unknown;
-  };
-}
-
-const DATABASE_NAME = "carlys-magic-playroom";
-const DATABASE_VERSION = 1;
 const MAX_RECENT_COMPLETIONS = 20;
-let databasePromise: Promise<IDBPDatabase<TrainDatabase>> | undefined;
 
 export const defaultTrainProgress: TrainProgress = {
   schemaVersion: 1,
@@ -37,8 +26,8 @@ export const defaultTrainProgress: TrainProgress = {
 
 export async function loadTrainProgress(): Promise<TrainProgress> {
   try {
-    const database = await getDatabase();
-    return migrateTrainProgress(await database.get("progress", "train"));
+    const save = await loadSaveData();
+    return migrateTrainProgress(save.roomProgress.train);
   } catch {
     diagnostics.record({ category: "persistence", code: "train-progress-load-failed" });
     return defaultTrainProgress;
@@ -52,41 +41,13 @@ export async function recordTrainCompletion(
   now = Date.now(),
 ): Promise<TrainProgress> {
   try {
-    const database = await getDatabase();
-    const transaction = database.transaction("progress", "readwrite");
-    const current = migrateTrainProgress(await transaction.store.get("train"));
-    if (current.recentCompletionIds.includes(completionId)) {
-      await transaction.done;
-      return current;
-    }
-
-    const attempts = definition.target.count + mismatchCount;
-    const skillIds = [
-      `count-${definition.target.count}`,
-      `color-${definition.target.color}`,
-      `category-${definition.target.category}`,
-    ];
-    const skills = { ...current.skills };
-    for (const skillId of skillIds) {
-      const previous = skills[skillId] ?? { attempts: 0, successes: 0 };
-      skills[skillId] = {
-        attempts: previous.attempts + attempts,
-        successes: previous.successes + 1,
-      };
-    }
-
-    const next: TrainProgress = {
-      schemaVersion: 1,
-      completedActivities: current.completedActivities + 1,
-      lastPlayedAt: now,
-      recentCompletionIds: [...current.recentCompletionIds, completionId].slice(
-        -MAX_RECENT_COMPLETIONS,
-      ),
-      skills,
-    };
-    await transaction.store.put(next, "train");
-    await transaction.done;
-    return next;
+    const save = await updateSaveData((currentSave) => {
+      const current = migrateTrainProgress(currentSave.roomProgress.train);
+      if (current.recentCompletionIds.includes(completionId)) return currentSave;
+      const next = addCompletion(current, definition, mismatchCount, completionId, now);
+      return { ...currentSave, roomProgress: { ...currentSave.roomProgress, train: next } };
+    });
+    return migrateTrainProgress(save.roomProgress.train);
   } catch {
     diagnostics.record({ category: "persistence", code: "train-progress-save-failed" });
     return defaultTrainProgress;
@@ -132,19 +93,38 @@ export function migrateTrainProgress(value: unknown): TrainProgress {
 }
 
 export async function clearTrainProgressForTests(): Promise<void> {
-  const database = await getDatabase();
-  await database.clear("progress");
+  await resetSaveData();
 }
 
-function getDatabase(): Promise<IDBPDatabase<TrainDatabase>> {
-  databasePromise ??= openDB<TrainDatabase>(DATABASE_NAME, DATABASE_VERSION, {
-    upgrade(database) {
-      if (!database.objectStoreNames.contains("progress")) {
-        database.createObjectStore("progress");
-      }
-    },
-  });
-  return databasePromise;
+function addCompletion(
+  current: TrainProgress,
+  definition: TrainActivityDefinition,
+  mismatchCount: number,
+  completionId: string,
+  now: number,
+): TrainProgress {
+  const attempts = definition.target.count + mismatchCount;
+  const skills = { ...current.skills };
+  for (const skillId of [
+    `count-${definition.target.count}`,
+    `color-${definition.target.color}`,
+    `category-${definition.target.category}`,
+  ]) {
+    const previous = skills[skillId] ?? { attempts: 0, successes: 0 };
+    skills[skillId] = {
+      attempts: previous.attempts + attempts,
+      successes: previous.successes + 1,
+    };
+  }
+  return {
+    schemaVersion: 1,
+    completedActivities: current.completedActivities + 1,
+    lastPlayedAt: now,
+    recentCompletionIds: [...current.recentCompletionIds, completionId].slice(
+      -MAX_RECENT_COMPLETIONS,
+    ),
+    skills,
+  };
 }
 
 function safeNonNegativeInteger(value: unknown): number {
