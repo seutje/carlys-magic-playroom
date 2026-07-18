@@ -19,8 +19,10 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@eslint/js": "latest",
@@ -31,8 +33,9 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "@vitest/coverage-v8": "latest",
+    "@types/three": "^0.185.1",
     "@vitejs/plugin-react": "latest",
+    "@vitest/coverage-v8": "latest",
     "eslint": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-react-refresh": "latest",

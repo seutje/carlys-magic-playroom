@@ -97,7 +97,7 @@ Verified:
 ### Current phase
 
 - [x] Phase 0 — Repository Foundation
-- [ ] Phase 1 — Startup and Playroom Shell
+- [x] Phase 1 — Startup and Playroom Shell
 - [ ] Phase 2 — Tiny Delivery Train Vertical Slice
 - [ ] Phase 3 — Shared Activity Framework
 - [ ] Phase 4 — Build-a-Critter Lab
@@ -434,191 +434,191 @@ A child can launch the app, tap Play, enter a placeholder room, return home, and
 
 ### P1-01 — Create startup screen
 
-- [ ] Add branded loading state.
-- [ ] Add a large Play button.
-- [ ] Add accessible DOM labeling.
-- [ ] Handle slow critical-asset loading.
-- [ ] Keep the button disabled only when strictly necessary.
-- [ ] Add a safe retry state for startup failure.
+- [x] Add branded loading state.
+- [x] Add a large Play button.
+- [x] Add accessible DOM labeling.
+- [x] Handle slow critical-asset loading.
+- [x] Keep the button disabled only when strictly necessary.
+- [x] Add a safe retry state for startup failure.
 
 Dependencies: Phase 0
 
 Verification:
 
-- [ ] Startup screen works with mouse.
-- [ ] Startup screen works with touch emulation.
-- [ ] Keyboard activation works.
-- [ ] Button target meets size guidance.
+- [x] Startup screen works with mouse.
+- [x] Startup screen works with touch emulation.
+- [x] Keyboard activation works.
+- [x] Button target meets size guidance.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `StartupScreen.test.tsx` and desktop/tablet Playwright. Play is a 5rem target, activates with Enter, and loading/error states retain friendly status and Retry behavior.
 ```
 
 ---
 
 ### P1-02 — Implement audio initialization
 
-- [ ] Create the audio service abstraction.
-- [ ] Initialize or resume audio only after Play is activated.
-- [ ] Detect suspended audio context.
-- [ ] Add safe retry behavior.
-- [ ] Add global mute or volume foundation.
-- [ ] Ensure audio initialization failure does not block visual play.
+- [x] Create the audio service abstraction.
+- [x] Initialize or resume audio only after Play is activated.
+- [x] Detect suspended audio context.
+- [x] Add safe retry behavior.
+- [x] Add global mute or volume foundation.
+- [x] Ensure audio initialization failure does not block visual play.
 
 Dependencies: P1-01
 
 Verification:
 
-- [ ] Audio initializes after the Play gesture.
-- [ ] No autoplay error appears during normal startup.
-- [ ] Visual gameplay remains available when audio fails.
-- [ ] Repeated Play activation is idempotent.
+- [x] Audio initializes after the Play gesture.
+- [x] No autoplay error appears during normal startup.
+- [x] Visual gameplay remains available when audio fails.
+- [x] Repeated Play activation is idempotent.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by `audioService.test.ts` and Playwright. Suspended contexts resume, simultaneous initialization is idempotent, failures can retry, and visual navigation proceeds independently.
 ```
 
 ---
 
 ### P1-03 — Create application navigation state
 
-- [ ] Define child-facing app states.
-- [ ] Implement internal navigation or hash routing.
-- [ ] Avoid history fallback requirements.
-- [ ] Add typed room IDs.
-- [ ] Add guarded transitions.
-- [ ] Add safe return-to-home behavior.
+- [x] Define child-facing app states.
+- [x] Implement internal navigation or hash routing.
+- [x] Avoid history fallback requirements.
+- [x] Add typed room IDs.
+- [x] Add guarded transitions.
+- [x] Add safe return-to-home behavior.
 
 Dependencies: P1-01
 
 Verification:
 
-- [ ] App can transition from startup to playroom.
-- [ ] App can enter and exit a placeholder room.
-- [ ] Rapid repeated navigation does not duplicate transitions.
+- [x] App can transition from startup to playroom.
+- [x] App can enter and exit a placeholder room.
+- [x] Rapid repeated navigation does not duplicate transitions.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by pure reducer tests and desktop/tablet Playwright start → train → replay → home flows. Stale and duplicate events preserve the current guarded state.
 ```
 
 ---
 
 ### P1-04 — Create central playroom shell
 
-- [ ] Add the root 3D canvas.
-- [ ] Add basic lighting.
-- [ ] Add controlled camera.
-- [ ] Add five room portal placeholders.
-- [ ] Give each portal a distinct visual identity.
-- [ ] Add oversized pointer targets.
-- [ ] Add gentle idle animations.
+- [x] Add the root 3D canvas.
+- [x] Add basic lighting.
+- [x] Add controlled camera.
+- [x] Add five room portal placeholders.
+- [x] Give each portal a distinct visual identity.
+- [x] Add oversized pointer targets.
+- [x] Add gentle idle animations.
 
 Dependencies: P1-03
 
 Verification:
 
-- [ ] All five portals render.
-- [ ] Portal interaction works on mouse and touch.
-- [ ] Frame rate remains stable on the agreed test machine.
+- [x] All five portals render.
+- [x] Portal interaction works on mouse and touch.
+- [x] Frame rate remains stable on the agreed test machine.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 in desktop and touch-enabled tablet Chromium. All five DOM/Canvas portals render; primary DOM targets exceed 64px. A 45-frame desktop Chromium probe passed with the 95th-percentile interval below 40ms.
 ```
 
 ---
 
 ### P1-05 — Implement room transition system
 
-- [ ] Add camera movement into a selected room.
-- [ ] Add loading cover or decorative transition.
-- [ ] Add transition locking.
-- [ ] Ignore duplicate portal taps safely.
-- [ ] Add reduced-motion transition alternative.
-- [ ] Add transition cancellation or recovery.
+- [x] Add camera movement into a selected room.
+- [x] Add loading cover or decorative transition.
+- [x] Add transition locking.
+- [x] Ignore duplicate portal taps safely.
+- [x] Add reduced-motion transition alternative.
+- [x] Add transition cancellation or recovery.
 
 Dependencies: P1-04
 
 Verification:
 
-- [ ] Normal transition works.
-- [ ] Reduced-motion mode avoids long camera motion.
-- [ ] Rapid repeated taps do not corrupt app state.
-- [ ] Failed room load returns to a safe state.
+- [x] Normal transition works.
+- [x] Reduced-motion mode avoids long camera motion.
+- [x] Rapid repeated taps do not corrupt app state.
+- [x] Failed room load returns to a safe state.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 with reducer, RoomHost, and Playwright tests. Reduced motion replaces the 650ms camera transition with an 80ms fade; owned timers cancel on navigation; room load failures expose Retry and Home.
 ```
 
 ---
 
 ### P1-06 — Implement global child controls
 
-- [ ] Add Home.
-- [ ] Add Replay Instruction placeholder.
-- [ ] Add Settings entry point.
-- [ ] Add accessible DOM equivalents.
-- [ ] Keep controls away from drag areas.
-- [ ] Prevent controls from firing during active drag where required.
+- [x] Add Home.
+- [x] Add Replay Instruction placeholder.
+- [x] Add Settings entry point.
+- [x] Add accessible DOM equivalents.
+- [x] Keep controls away from drag areas.
+- [N/A] Prevent controls from firing during active drag where required.
 
 Dependencies: P1-03
 
 Verification:
 
-- [ ] Controls work with pointer and keyboard.
-- [ ] Home always returns to the playroom.
-- [ ] Controls have visible focus states.
+- [x] Controls work with pointer and keyboard.
+- [x] Home always returns to the playroom.
+- [x] Controls have visible focus states.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by desktop/tablet Playwright, including keyboard Play, Escape-to-close settings, Replay live feedback, Home navigation, 68px controls, and visible focus styling. Phase 1 has no drag state yet.
 ```
 
 ---
 
 ### P1-07 — Add room lazy-loading foundation
 
-- [ ] Define room module contract.
-- [ ] Add asynchronous room loading.
-- [ ] Add per-room loading fallback.
-- [ ] Add per-room error boundary.
-- [ ] Dispose room resources on exit.
-- [ ] Confirm room code is split into separate chunks.
+- [x] Define room module contract.
+- [x] Add asynchronous room loading.
+- [x] Add per-room loading fallback.
+- [x] Add per-room error boundary.
+- [x] Dispose room resources on exit.
+- [x] Confirm room code is split into separate chunks.
 
 Dependencies: P1-03
 
 Verification:
 
-- [ ] Placeholder room loads lazily.
-- [ ] Room bundle is not loaded before selection.
-- [ ] Room disposal removes active listeners and timers.
+- [x] Placeholder room loads lazily.
+- [x] Room bundle is not loaded before selection.
+- [x] Room disposal removes active listeners and timers.
 
 Evidence:
 
 ```text
-Not yet verified.
+Verified 2026-07-18 by RoomHost lifecycle tests and `npm run build:pages`. The startup chunk is 205.59kB, Three.js is isolated behind Play, and five independent 0.28–0.31kB room chunks load only through dynamic imports.
 ```
 
 ---
 
 ## Phase 1 completion gate
 
-- [ ] All Phase 1 tasks are complete and verified.
-- [ ] Startup, playroom entry, room entry, and home return work.
-- [ ] Audio initialization is gesture-safe.
-- [ ] Reduced-motion transitions work.
-- [ ] Navigation survives repeated input.
-- [ ] Phase 1 completion is recorded in the changelog.
+- [x] All Phase 1 tasks are complete and verified.
+- [x] Startup, playroom entry, room entry, and home return work.
+- [x] Audio initialization is gesture-safe.
+- [x] Reduced-motion transitions work.
+- [x] Navigation survives repeated input.
+- [x] Phase 1 completion is recorded in the changelog.
 
 ---
 
@@ -2773,7 +2773,7 @@ Use this section for milestone-level validation summaries.
 ```text
 Status: Complete
 Date: 2026-07-18
-Commit: Phase 0 foundation commit (this commit)
+Commit: f5beca9
 Commands: npm run format:check; npm run lint; npm run typecheck; npm run test; npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e; PLAYWRIGHT_ROOT=1 npm run test:e2e -- --project=desktop-chromium; npm run dev -- --host 127.0.0.1; git diff --check
 Manual checks: Vite dev server reached ready state; production output inspected as static HTML/CSS/JS; desktop and tablet Chromium loaded the repository subpath; retained failure artifacts inspected.
 Known limitations: Live deployment is intentionally outside the implementation-phase verification policy.
@@ -2782,12 +2782,12 @@ Known limitations: Live deployment is intentionally outside the implementation-p
 ## Phase 1 verification
 
 ```text
-Status: Not started
-Date:
-Commit:
-Commands:
-Manual checks:
-Known limitations:
+Status: Complete
+Date: 2026-07-18
+Commit: Phase 1 startup and playroom shell commit (this commit)
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test; npm run test:coverage; npm run build:pages; npm run test:e2e -- --reporter=line; temporary desktop Chromium frame-stability probe; git diff --check
+Manual checks: Desktop and touch-enabled tablet Chromium started the app, rendered five portals, entered the train room, replayed, returned Home, used keyboard settings, and exercised reduced motion. Production chunks were inspected for startup/playroom/room separation.
+Known limitations: Room activities are intentional placeholders until their planned phases; live deployment is outside the implementation-phase policy.
 ```
 
 ## Phase 2 verification
@@ -2957,7 +2957,7 @@ Every agent session that changes implementation status should add an entry.
 ### 2026-07-18 — Phase 0 repository foundation
 
 **Agent or developer:** Codex
-**Commit or branch:** Working tree on `main`
+**Commit or branch:** `f5beca9`
 
 **Completed:**
 - P0-01 through P0-06
@@ -2979,3 +2979,27 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - Live deployment is intentionally deferred to an explicitly requested release operation and does not block Phase 1.
 - The production build contains only static HTML, CSS, and JavaScript and requires no runtime server.
+
+### 2026-07-18 — Phase 1 startup and playroom shell
+
+**Agent or developer:** Codex
+**Commit or branch:** Phase 1 commit (this commit)
+
+**Completed:**
+- P1-01 through P1-07
+
+**In progress:**
+- None
+
+**Verified:**
+- Formatting, lint, strict typecheck, 17 unit/component tests, coverage, and the Pages production build passed.
+- Desktop and touch-enabled tablet Chromium passed 8/8 startup, navigation, settings, reduced-motion, room, replay, and Home checks.
+- A temporary desktop Chromium frame probe confirmed the 95th-percentile animation interval remained below 40ms; the probe was removed after verification.
+- Build output contains a 205.59kB startup chunk, a Play-gated Three.js chunk, and five independent lazy room chunks.
+
+**Blocked:**
+- None
+
+**Notes:**
+- ADR-002 records the guarded reducer, gesture-safe audio, Play-gated 3D scene, and lazy room lifecycle decisions.
+- Each room remains a friendly placeholder until its planned implementation phase.

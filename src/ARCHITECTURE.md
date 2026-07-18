@@ -13,3 +13,5 @@
 - `types`: truly cross-cutting domain types only.
 
 The intended activity flow is generator → serializable definition → typed state machine → render adapter → React scene. Room code must not import from another room.
+
+The startup tier excludes Three.js. Play initializes audio and lazy-loads the playroom scene; room selection then resolves one typed dynamic-import entry. Child navigation is a guarded pure reducer, while per-room rendering and resources live only for the selected room's mount lifecycle.

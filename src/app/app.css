@@ -105,6 +105,320 @@ h1 {
   font-size: clamp(1.1rem, 3vw, 1.45rem);
 }
 
+.startup-message,
+.startup-retry,
+.gentle-notice {
+  margin: 1.5rem auto 0;
+  color: #604c77;
+  font-size: 1.15rem;
+}
+
+.play-button {
+  min-width: 13rem;
+  min-height: 5rem;
+  margin-top: 2rem;
+  background: #e35473;
+  box-shadow: 0 0.45rem 0 #a93458;
+  font-size: 1.45rem;
+}
+
+.play-button span {
+  margin-right: 0.5rem;
+}
+
+.game-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 35rem;
+  overflow: hidden;
+  background: #e6dcff;
+}
+
+.playroom-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-loading {
+  position: absolute;
+  display: grid;
+  color: #5c4779;
+  background: linear-gradient(155deg, #ffe4ee, #e7e0ff, #dcfaf3);
+  font-size: 1.3rem;
+  inset: 0;
+  place-items: center;
+}
+
+.playroom-canvas canvas {
+  display: block;
+  touch-action: manipulation;
+}
+
+.webgl-fallback,
+.room-loading,
+.room-recovery {
+  display: grid;
+  min-height: 100%;
+  place-content: center;
+  padding: 2rem;
+  color: #4a3769;
+  background: linear-gradient(155deg, #ffe4ee, #e7e0ff, #dcfaf3);
+  text-align: center;
+}
+
+.webgl-fallback span,
+.room-loading div,
+.room-recovery > div {
+  font-size: 4rem;
+}
+
+.playroom-heading {
+  position: absolute;
+  top: max(1.2rem, env(safe-area-inset-top));
+  left: max(1.2rem, env(safe-area-inset-left));
+  max-width: calc(100vw - 16rem);
+  padding: 0.8rem 1.2rem;
+  border-radius: 1.4rem;
+  background: rgb(255 255 255 / 78%);
+  box-shadow: 0 0.5rem 1.5rem rgb(66 46 100 / 15%);
+  backdrop-filter: blur(0.75rem);
+}
+
+.playroom-heading h1 {
+  font-size: clamp(1.5rem, 4vw, 2.6rem);
+}
+
+.portal-controls {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(0.45rem, 1.5vw, 1rem);
+}
+
+.portal-button {
+  display: flex;
+  min-width: 0;
+  min-height: 5.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border: 0.18rem solid rgb(255 255 255 / 80%);
+  border-radius: 1.5rem;
+  box-shadow: 0 0.4rem 0 rgb(70 46 93 / 30%);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.portal-button:disabled {
+  cursor: default;
+  filter: saturate(0.7);
+  opacity: 0.75;
+}
+
+.portal-train {
+  background: #c94758;
+}
+
+.portal-critter {
+  background: #684cb3;
+}
+
+.portal-garden {
+  background: #34894e;
+}
+
+.portal-shapes {
+  background: #c56826;
+}
+
+.portal-music {
+  background: #3373a8;
+}
+
+.portal-symbol {
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+}
+
+.portal-title {
+  line-height: 1.1;
+}
+
+.global-controls {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 10;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.global-controls button {
+  width: 4.25rem;
+  min-width: 4.25rem;
+  height: 4.25rem;
+  min-height: 4.25rem;
+  padding: 0;
+  border: 0.16rem solid rgb(255 255 255 / 75%);
+  background: #7252b8;
+  font-size: 2rem;
+}
+
+.global-controls button:disabled {
+  opacity: 0.45;
+}
+
+.transition-cover {
+  position: absolute;
+  z-index: 8;
+  display: grid;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  place-items: center;
+  color: #fff;
+  background: rgb(114 82 184 / 88%);
+  font-size: 4rem;
+  pointer-events: none;
+  animation: magic-cover 650ms ease-in forwards;
+  inset: calc(50% - 3.5rem);
+}
+
+.transition-cover.reduced {
+  animation: gentle-fade 80ms linear forwards;
+}
+
+.placeholder-room {
+  --room-color: #7252b8;
+  display: grid;
+  min-height: 100%;
+  place-content: center;
+  padding: 7rem 2rem 2rem;
+  color: #35245c;
+  background:
+    radial-gradient(circle at center, rgb(255 255 255 / 90%), transparent 40%),
+    color-mix(in srgb, var(--room-color) 28%, #fff);
+  text-align: center;
+}
+
+.room-symbol {
+  width: 8rem;
+  height: 8rem;
+  margin: 0 auto 1.5rem;
+  border: 0.3rem solid #fff;
+  border-radius: 2.5rem;
+  background: var(--room-color);
+  box-shadow: 0 0.8rem 0 rgb(65 43 82 / 18%);
+  font-size: 5rem;
+  line-height: 8rem;
+}
+
+.placeholder-room h1,
+.room-recovery h1 {
+  font-size: clamp(2rem, 7vw, 4.8rem);
+}
+
+.room-instruction,
+.room-recovery p,
+.room-loading p {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.modal-backdrop {
+  position: absolute;
+  z-index: 20;
+  display: grid;
+  background: rgb(48 32 68 / 55%);
+  inset: 0;
+  place-items: center;
+}
+
+.settings-dialog {
+  display: grid;
+  width: min(28rem, calc(100vw - 2rem));
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 0.2rem solid #fff;
+  border-radius: 2rem;
+  background: #fffaf2;
+  box-shadow: 0 1.5rem 4rem rgb(38 25 55 / 30%);
+}
+
+.settings-dialog h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.settings-dialog label {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.25rem;
+}
+
+.settings-dialog input {
+  width: 2rem;
+  height: 2rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes magic-cover {
+  to {
+    border-radius: 0;
+    opacity: 0.96;
+    transform: scale(18);
+  }
+}
+
+@keyframes gentle-fade {
+  to {
+    opacity: 1;
+    transform: scale(18);
+  }
+}
+
+@media (max-width: 700px) {
+  .game-shell {
+    min-height: 31rem;
+  }
+
+  .playroom-heading {
+    max-width: calc(100vw - 14rem);
+  }
+
+  .portal-controls {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .portal-button {
+    min-height: 4.5rem;
+  }
+
+  .portal-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip: rect(0, 0, 0, 0);
+    overflow: hidden;
+  }
+}
+
 .recovery p {
   font-size: 1.25rem;
 }
