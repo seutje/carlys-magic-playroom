@@ -135,7 +135,7 @@ function CargoCar({ hinting }: { readonly hinting: boolean }) {
 
   return (
     <>
-      <group position={[3, -1.48, 0]} scale={0.55}>
+      <group position={[2.7, -1.48, 0]} scale={0.55}>
         {model ? <primitive object={model} /> : <CargoCarFallback />}
       </group>
       {hinting ? (
