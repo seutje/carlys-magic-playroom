@@ -9,6 +9,8 @@ import {
   projectRayToPlane,
   snapSmoothing,
 } from "../../engine/input/pointerDrag";
+import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../../engine/rendering/qualityContext";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -31,6 +33,7 @@ export function TrainScene({
   departing,
   onDrop,
 }: TrainSceneProps) {
+  const quality = useQuality();
   const available = definition.objects.filter((object) => !loadedObjectIds.includes(object.id));
   const loaded = loadedObjectIds
     .map((id) => definition.objects.find((object) => object.id === id))
@@ -40,9 +43,12 @@ export function TrainScene({
     <div className="train-canvas" aria-label="Tiny Delivery Train scene">
       <Canvas
         camera={{ position: [0, 4.8, 11], fov: 42 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
+        gl={{ antialias: quality.antialias, powerPreference: "high-performance" }}
         fallback={<p className="webgl-fallback">The toy pictures are resting.</p>}
       >
+        <FrameDiagnostics scene="train" />
         <color attach="background" args={["#bfe8f2"]} />
         <ambientLight intensity={1.8} />
         <directionalLight position={[2, 8, 5]} intensity={2.1} />

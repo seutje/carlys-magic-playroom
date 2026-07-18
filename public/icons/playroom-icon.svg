@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Carly's Magic Playroom star">
+  <rect width="512" height="512" rx="112" fill="#7252b8"/>
+  <circle cx="256" cy="256" r="174" fill="#eadfff"/>
+  <path d="m256 91 42 106 114 7-88 73 29 111-97-61-97 61 29-111-88-73 114-7z" fill="#ffd45e" stroke="#503878" stroke-width="18" stroke-linejoin="round"/>
+  <circle cx="215" cy="246" r="14" fill="#503878"/>
+  <circle cx="297" cy="246" r="14" fill="#503878"/>
+  <path d="M210 285c27 35 65 35 92 0" fill="none" stroke="#503878" stroke-width="16" stroke-linecap="round"/>
+</svg>

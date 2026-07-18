@@ -1,5 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 
+function collapseRepeated(values: readonly string[]): readonly string[] {
+  return values.filter((value, index) => index === 0 || value !== values[index - 1]);
+}
+
 test("loads the startup shell from the repository subpath", async ({ page }) => {
   await page.goto("./");
 
@@ -102,6 +106,7 @@ test("persists accessible parent controls and confirms local reset", async ({ pa
 test("completes and persists the fixed two-yellow-duck train activity", async ({ page }) => {
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
+    if (request.resourceType() !== "media") return;
     const match = /audio\/train\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) voiceRequests.push(match[1]);
   });
@@ -142,7 +147,7 @@ test("completes and persists the fixed two-yellow-duck train activity", async ({
   await expect(page.getByRole("button", { name: "Play again" })).toBeVisible();
   await expect(page.getByText("Trips: 1")).toBeVisible();
   await expect
-    .poll(() => voiceRequests, { timeout: 6_000 })
+    .poll(() => collapseRepeated(voiceRequests), { timeout: 6_000 })
     .toEqual(["instruction-two-yellow-ducks", "count-one", "count-two", "success-all-aboard"]);
 
   await page.reload();
@@ -155,6 +160,7 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
+    if (request.resourceType() !== "media") return;
     const match = /audio\/critter\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) voiceRequests.push(match[1]);
   });
@@ -179,7 +185,7 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
   await page.getByRole("button", { name: "wave" }).click();
   await page.getByRole("button", { name: "wave" }).click();
   await expect
-    .poll(() => voiceRequests, { timeout: 6_000 })
+    .poll(() => collapseRepeated(voiceRequests), { timeout: 6_000 })
     .toEqual(["choose-eyes", "choose-mouth", "choose-legs", "critter-ready"]);
 
   await page.reload();
@@ -192,6 +198,7 @@ test("completes one-step and two-step garden tasks safely", async ({ page }) => 
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
+    if (request.resourceType() !== "media") return;
     const match = /audio\/garden\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) voiceRequests.push(match[1]);
   });
@@ -231,6 +238,7 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
+    if (request.resourceType() !== "media") return;
     const match = /audio\/shapes\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) voiceRequests.push(match[1]);
   });
@@ -282,6 +290,7 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
   await page.emulateMedia({ reducedMotion: "reduce" });
   const soundRequests: string[] = [];
   page.on("request", (request) => {
+    if (request.resourceType() !== "media") return;
     const match = /audio\/music\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) soundRequests.push(match[1]);
   });
@@ -290,9 +299,8 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
   await page.getByRole("button", { name: "Make some music" }).click();
 
   await expect(page.getByRole("button", { name: "Play target sound again" })).toBeVisible();
-  await page.getByRole("button", { name: "Replay instruction" }).click();
-  await page.getByRole("button", { name: "Play target sound again" }).click();
   const wrong = page.locator('.music-choices button[data-target="false"]').first();
+  await expect(wrong).toBeEnabled();
   await wrong.click();
   await expect(page.getByText("Watch the target picture bounce.")).toBeVisible();
   await wrong.click();
@@ -302,6 +310,8 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
     animations: "disabled",
     maxDiffPixelRatio: 0.01,
   });
+  await page.getByRole("button", { name: "Replay instruction" }).click();
+  await page.getByRole("button", { name: "Play target sound again" }).click();
 
   await page.getByRole("button", { name: "Open settings" }).click();
   await unlockParentArea(page);

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Completed Phase 9 with an offline shell, install manifest/icons, adaptive rendering profiles, bounded local performance diagnostics, enforced build budgets, offline/performance browser gates, and approved physical-tablet performance.
 - Completed Phase 8 parent controls and accessibility with a keyboard/pointer hold gate, persisted cross-room settings, neutral local progress summaries, scoped confirmed deletion, high contrast, and reduced motion/effects behavior.
 - Completed Phase 7 Musical Corner with deterministic instrument/pitch/volume matching, local synthesized cues, coordinated replay, muted visual equivalents, bounded taps, progress recovery, browser coverage, and approved tablet-speaker clarity.
 - Completed Phase 6 Magic Shape Factory with deterministic validated puzzles, forgiving conveyor drag, bounded hints, watchdog recovery, local Ava speech, progress migration, and desktop/tablet visual coverage.

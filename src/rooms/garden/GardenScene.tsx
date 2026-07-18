@@ -1,5 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 
+import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../../engine/rendering/qualityContext";
 import { GROWTH_STAGES, type GardenState } from "./garden.types";
 
 interface GardenSceneProps {
@@ -8,14 +10,18 @@ interface GardenSceneProps {
 }
 
 export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
+  const quality = useQuality();
   const stage = GROWTH_STAGES[state.growth];
   return (
     <div className={`garden-canvas ${state.timeOfDay}`} aria-label={`Garden with a ${stage}`}>
       <Canvas
         camera={{ position: [0, 3.5, 8], fov: 45 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
+        gl={{ antialias: quality.antialias, powerPreference: "high-performance" }}
         fallback={<p className="webgl-fallback">The garden picture is growing.</p>}
       >
+        <FrameDiagnostics scene="garden" />
         <color attach="background" args={[state.timeOfDay === "day" ? "#9edbf0" : "#706da5"]} />
         <ambientLight intensity={state.timeOfDay === "day" ? 2 : 1.2} />
         <directionalLight position={[3, 7, 4]} intensity={state.light > 0 ? 2.8 : 1.4} />
@@ -28,18 +34,20 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
           <sphereGeometry args={[0.8, 20, 14]} />
           <meshStandardMaterial color="#ffe477" emissive="#a86d00" emissiveIntensity={0.35} />
         </mesh>
-        <group position={[2.6, 2.3, -0.5]}>
-          {[-0.6, 0, 0.6].map((x) => (
-            <mesh key={x} position={[x, 0, 0]}>
-              <sphereGeometry args={[0.65, 16, 12]} />
-              <meshStandardMaterial color="#f4f7fa" />
-            </mesh>
-          ))}
-        </group>
+        {quality.decorativeObjects ? (
+          <group position={[2.6, 2.3, -0.5]}>
+            {[-0.6, 0, 0.6].map((x) => (
+              <mesh key={x} position={[x, 0, 0]}>
+                <sphereGeometry args={[0.65, 16, 12]} />
+                <meshStandardMaterial color="#f4f7fa" />
+              </mesh>
+            ))}
+          </group>
+        ) : null}
         {state.visitor !== "none" ? <Visitor kind={state.visitor} /> : null}
         {!reducedEffects && state.lastAction === "water" && state.phase === "evaluating" ? (
           <group position={[2.6, 1.2, 0]}>
-            {[-0.5, 0, 0.5].map((x) => (
+            {[-0.5, 0, 0.5].slice(0, quality.particleCount).map((x) => (
               <mesh key={x} position={[x, -Math.abs(x), 0]}>
                 <sphereGeometry args={[0.1, 10, 8]} />
                 <meshStandardMaterial color="#57aee4" />

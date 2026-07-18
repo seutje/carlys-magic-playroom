@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useReducer, useRef, useState } 
 
 import { audioService, type AudioAvailability } from "../engine/audio/audioService";
 import { BuildDiagnostics } from "../engine/diagnostics/BuildDiagnostics";
+import { QualityProvider } from "../engine/rendering/QualityProvider";
 import { useOwnedTimeout } from "../engine/timing/useOwnedTimeout";
 import { PortalControls } from "../playroom/PortalControls";
 import { RoomHost } from "../rooms/RoomHost";
@@ -32,9 +33,11 @@ const PlayroomScene = lazy(() =>
 
 export function App() {
   return (
-    <SettingsProvider>
-      <AppContent />
-    </SettingsProvider>
+    <QualityProvider>
+      <SettingsProvider>
+        <AppContent />
+      </SettingsProvider>
+    </QualityProvider>
   );
 }
 

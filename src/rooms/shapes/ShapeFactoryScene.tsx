@@ -1,5 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 
+import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../../engine/rendering/qualityContext";
 import type { ShapeFactoryState } from "./shapes.types";
 
 interface ShapeFactorySceneProps {
@@ -8,14 +10,18 @@ interface ShapeFactorySceneProps {
 }
 
 export function ShapeFactoryScene({ state, reducedMotion }: ShapeFactorySceneProps) {
+  const quality = useQuality();
   const active = !state.conveyorPaused && !reducedMotion && state.phase !== "complete";
   return (
     <div className="shape-factory-canvas" aria-label="A friendly shape factory">
       <Canvas
         camera={{ position: [0, 2.8, 9], fov: 44 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
+        gl={{ antialias: quality.antialias, powerPreference: "high-performance" }}
         fallback={<p className="webgl-fallback">The friendly shape machine is ready.</p>}
       >
+        <FrameDiagnostics scene="shapes" />
         <color attach="background" args={["#ffd59a"]} />
         <ambientLight intensity={2.2} />
         <directionalLight position={[4, 7, 5]} intensity={2.3} />

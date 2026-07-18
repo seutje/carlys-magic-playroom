@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { diagnostics } from "../engine/diagnostics/diagnostics";
+import { performanceDiagnostics } from "../engine/diagnostics/performanceDiagnostics";
 import type { RoomId } from "../types/domain";
 import { RoomErrorBoundary } from "./RoomErrorBoundary";
 import { ROOM_LOADERS } from "./roomLoaders";
@@ -34,6 +35,7 @@ export function RoomHost({
   };
 
   useEffect(() => {
+    const loadStartedAt = performance.now();
     let active = true;
     let session: RoomSession | undefined;
     void loader().then(
@@ -49,6 +51,7 @@ export function RoomHost({
           if (!active) return;
           session = room.createSession();
           session.start();
+          performanceDiagnostics.recordRoomLoad(roomId, performance.now() - loadStartedAt);
           setState({ kind: "ready", room, session });
         } catch {
           if (!active) return;

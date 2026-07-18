@@ -1,5 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 
+import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../../engine/rendering/qualityContext";
 import type { InstrumentId, MusicState } from "./music.types";
 
 export function MusicScene({
@@ -9,13 +11,17 @@ export function MusicScene({
   readonly state: MusicState;
   readonly reducedEffects: boolean;
 }) {
+  const quality = useQuality();
   return (
     <div className="music-canvas" aria-label="A stage with a drum, bell, and xylophone">
       <Canvas
         camera={{ position: [0, 2.8, 9], fov: 45 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
+        gl={{ antialias: quality.antialias, powerPreference: "high-performance" }}
         fallback={<p className="webgl-fallback">The musical picture is ready.</p>}
       >
+        <FrameDiagnostics scene="music" />
         <color attach="background" args={["#384f8b"]} />
         <ambientLight intensity={2} />
         <directionalLight position={[2, 7, 4]} intensity={2.5} />
@@ -39,15 +45,17 @@ export function MusicScene({
           active={Boolean(state.selectedChoiceId?.startsWith("xylophone"))}
         />
         {!reducedEffects &&
-          [-4, -2, 0, 2, 4].map((x, index) => (
-            <pointLight
-              key={x}
-              position={[x, 3, 1]}
-              color={(["#ff87a6", "#ffd45e", "#70d2dd"] as const)[index % 3] ?? "#fff"}
-              intensity={2}
-              distance={5}
-            />
-          ))}
+          [-4, -2, 0, 2, 4]
+            .slice(0, quality.particleCount)
+            .map((x, index) => (
+              <pointLight
+                key={x}
+                position={[x, 3, 1]}
+                color={(["#ff87a6", "#ffd45e", "#70d2dd"] as const)[index % 3] ?? "#fff"}
+                intensity={2}
+                distance={5}
+              />
+            ))}
       </Canvas>
     </div>
   );

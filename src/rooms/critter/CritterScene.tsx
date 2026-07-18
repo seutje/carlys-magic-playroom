@@ -2,6 +2,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import type { Group } from "three";
 
+import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../../engine/rendering/qualityContext";
 import type { CritterAssemblyState } from "./critter.types";
 
 interface CritterSceneProps {
@@ -12,13 +14,17 @@ interface CritterSceneProps {
 const BODY_COLORS = { lavender: "#9b7fd1", mint: "#66bd9a", peach: "#ee9d78" } as const;
 
 export function CritterScene({ creature, reducedMotion }: CritterSceneProps) {
+  const quality = useQuality();
   return (
     <div className="critter-canvas" aria-label="Build-a-Critter preview">
       <Canvas
         camera={{ position: [0, 1.2, 7], fov: 42 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
+        gl={{ antialias: quality.antialias, powerPreference: "high-performance" }}
         fallback={<p className="webgl-fallback">The critter is smiling in its picture.</p>}
       >
+        <FrameDiagnostics scene="critter" />
         <color attach="background" args={["#ddcff5"]} />
         <ambientLight intensity={2} />
         <directionalLight position={[3, 5, 5]} intensity={2.2} />
@@ -27,10 +33,12 @@ export function CritterScene({ creature, reducedMotion }: CritterSceneProps) {
           <meshStandardMaterial color="#f4d06f" />
         </mesh>
         <Critter creature={creature} reducedMotion={reducedMotion} />
-        <mesh position={[3.4, 0.4, -1.2]}>
-          <boxGeometry args={[1.8, 4.5, 0.2]} />
-          <meshStandardMaterial color="#b9ddec" metalness={0.25} roughness={0.3} />
-        </mesh>
+        {quality.decorativeObjects ? (
+          <mesh position={[3.4, 0.4, -1.2]}>
+            <boxGeometry args={[1.8, 4.5, 0.2]} />
+            <meshStandardMaterial color="#b9ddec" metalness={0.25} roughness={0.3} />
+          </mesh>
+        ) : null}
       </Canvas>
     </div>
   );

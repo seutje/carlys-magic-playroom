@@ -5,18 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run report:budgets",
     "build:pages": "VITE_BASE_PATH=/carlys-magic-playroom/ npm run build",
+    "assets:icons": "node scripts/render-pwa-icons.mjs",
+    "report:budgets": "node scripts/report-budgets.mjs",
     "preview": "vite preview",
     "preview:root": "npm run build && vite preview --host 127.0.0.1 --base /",
     "preview:pages": "npm run build:pages && vite preview --host 127.0.0.1 --base /carlys-magic-playroom/",
+    "preview:device": "npm run build:pages && vite preview --host 0.0.0.0 --base /carlys-magic-playroom/",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:performance": "playwright test --config playwright.performance.config.ts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.1",

@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef } from "react";
 import type { Group, Mesh } from "three";
 import { Vector3 } from "three";
 
+import { FrameDiagnostics } from "../engine/rendering/FrameDiagnostics";
+import { useQuality } from "../engine/rendering/qualityContext";
 import type { RoomId } from "../types/domain";
 import { PORTALS, type PortalDefinition } from "./portalDefinitions";
 
@@ -21,6 +23,7 @@ export function PlayroomScene({
   enabledRooms = PORTALS.map((portal) => portal.id),
   onSelectRoom,
 }: PlayroomSceneProps) {
+  const quality = useQuality();
   useEffect(
     () => () => {
       document.body.style.cursor = "default";
@@ -32,10 +35,12 @@ export function PlayroomScene({
     <div className="playroom-canvas" aria-label="Magical playroom scene">
       <Canvas
         camera={{ position: [0, 4.8, 10.5], fov: 42 }}
-        dpr={[1, 1.5]}
+        dpr={quality.dpr}
+        shadows={quality.shadows}
         fallback={<WebGLFallback />}
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        gl={{ antialias: quality.antialias, alpha: false, powerPreference: "high-performance" }}
       >
+        <FrameDiagnostics scene="playroom" />
         <color attach="background" args={["#e6dcff"]} />
         <ambientLight intensity={1.7} />
         <directionalLight position={[3, 8, 6]} intensity={2.2} />
@@ -46,7 +51,7 @@ export function PlayroomScene({
             key={portal.id}
             portal={portal}
             idleOffset={index * 0.8}
-            reducedMotion={reducedMotion}
+            reducedMotion={reducedMotion || !quality.decorativeMotion}
             disabled={interactionLocked}
             onSelect={onSelectRoom}
           />

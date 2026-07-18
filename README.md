@@ -1,6 +1,6 @@
 # Carly's Magic Playroom
 
-A browser-only educational 3D game for young children. The project is currently establishing its repository foundation; product requirements live in [DESIGN.md](DESIGN.md) and implementation status lives in [PLAN.md](PLAN.md).
+A browser-only educational 3D game for young children. Product requirements live in [DESIGN.md](DESIGN.md) and implementation status lives in [PLAN.md](PLAN.md).
 
 ## Requirements
 
@@ -25,9 +25,12 @@ npm run typecheck
 npm run test
 npm run build
 npm run test:e2e
+npm run test:performance
 ```
 
 `npm run test:e2e` builds and serves the app under `/carlys-magic-playroom/` and runs desktop and tablet-sized Chromium projects. Failure traces, screenshots, and videos are written to ignored Playwright artifact directories.
+
+`npm run test:performance` serially enters and exits every room twice at low quality, checks sampled frame and draw-call metrics, collects browser garbage, and bounds retained heap growth. Every production build also writes `dist/bundle-report.json` and fails if a documented bundle or asset budget is exceeded.
 
 The root-hosted production path can be exercised separately with `PLAYWRIGHT_ROOT=1 npm run test:e2e`.
 
@@ -52,3 +55,17 @@ The Pages workflow validates the project, builds with the repository subpath, up
 In GitHub, open **Settings → Pages** and set **Source** to **GitHub Actions**. The repository name must remain `carlys-magic-playroom`, or `build:pages` and the documented preview path must be updated together. No server, secret, database, or external runtime service is used.
 
 Build metadata is available only when `?diagnostics=1` is added to the application URL.
+
+## Offline and device preview
+
+The production build emits a base-aware manifest and service worker. After one successful online load and service-worker activation, startup, all lazy room chunks, icons, and local audio are available offline. A failed registration or missing cached asset does not prevent ordinary online play or the room recovery controls.
+
+For a physical device on the same trusted network, run:
+
+```bash
+npm run preview:device
+```
+
+Open `http://<development-machine-address>:4173/carlys-magic-playroom/?diagnostics=1` on the device. This LAN HTTP preview is for frame-rate and interaction review; browsers require a secure origin for service-worker installation, so offline behavior is verified through the local automated HTTPS-equivalent browser origin instead. Add `&quality=low` or `&quality=high` for a diagnostics-only override. The grown-up controls do not persist a quality override.
+
+PWA icons are generated reproducibly from the local SVG with `npm run assets:icons`.

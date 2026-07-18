@@ -2,6 +2,7 @@ node_modules/
 dist/
 coverage/
 playwright-report/
+performance-report/
 test-results/
 *.local
 .DS_Store

@@ -1321,6 +1321,22 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.build-diagnostics h2 {
+  font-size: 0.95rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.build-diagnostics ul,
+.build-diagnostics p {
+  margin: 0.35rem 0;
+  padding-left: 1.25rem;
+}
+
+.build-diagnostics button {
+  min-height: 36px;
+  margin-top: 0.4rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

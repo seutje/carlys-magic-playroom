@@ -21,3 +21,9 @@ Each lazy room module declares capabilities, preload work, and a session factory
 Shared instruction templates, hint plans, pointer lifecycle helpers, channel-priority audio, owned timers, and deterministic test doubles are engine services rather than curriculum decisions. IndexedDB stores a validated versioned root record; invalid room subsections recover independently and legacy train progress migrates into the root.
 
 The root settings provider owns validated parent preferences and persists complete settings snapshots optimistically. Lazy rooms consume motion, effects, hint timing, and audio policy through shared hooks rather than importing persistence. The grown-up area reads bounded room progress for a neutral local summary and exposes separately confirmed reset scopes; it never owns curriculum state.
+
+The root quality provider chooses one non-persisted low, medium, or high rendering profile from coarse device capability signals. A diagnostics-only query override supports reproducible profiling. Every canvas consumes the same DPR, antialiasing, shadow, decoration, and bounded effect policy; activity definitions and reducers never see quality.
+
+Production builds emit a versioned service worker from the exact Vite bundle plus local public audio/icons. Hashed chunks and room assets use cache-first lookup, navigations use network-first with an offline shell fallback, failed responses are never cached, and a new worker waits for the next safe page lifecycle instead of interrupting play. Registration runs after React renders and failure is recorded locally without becoming a startup dependency.
+
+Frame probes aggregate only one sample per 30 frames. The bounded in-memory performance store tracks frame time, draw calls, optional heap indicators, and the latest 20 room-load timings. Metrics are visible only through build diagnostics and contain no child or device identity.
