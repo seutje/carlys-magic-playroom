@@ -202,7 +202,8 @@ test("completes one-step and two-step garden tasks safely", async ({ page }) => 
     const match = /audio\/garden\/([^/.]+)\.(?:ogg|mp3)$/.exec(request.url());
     if (match?.[1]) voiceRequests.push(match[1]);
   });
-  await page.goto("./");
+  // Keep this visual baseline independent of the runner's hardware signals.
+  await page.goto("./?diagnostics=1&quality=high");
   await page.getByRole("button", { name: "Play" }).click();
   await page.getByRole("button", { name: "Visit the garden" }).click();
 
