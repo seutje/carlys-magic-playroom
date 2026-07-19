@@ -1494,7 +1494,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-19 by desktop/tablet Chromium baselines. Six independently loaded, happy-faced Blender GLBs cover seed, sprout, bud, flower, sun, and cloud, while local primitive fallbacks preserve growth during partial or complete asset loss. Their compact shared geometry totals 95,952 bytes; the garden chunk is 11.59kB minified and all project models remain within budget at 1,954,560 bytes. Butterfly/ladybug visitors, day/night lighting, and WebGL recovery remain rendering-independent; reduced motion removes lighting transitions and rain particles.
+Verified 2026-07-19 by desktop/tablet Chromium baselines. Seven independently loaded, happy-faced Blender GLBs cover seed, sprout, bud, flower, sun, cloud, and a playful anthropomorphic bee at the second growth step, while local primitive fallbacks preserve growth during partial or complete asset loss. The bee batches 393 triangles into six material meshes and is 44,664 bytes; all garden models total 140,616 bytes, the garden chunk is 12.66kB minified, and all project models remain within budget at 1,999,224 bytes. Bee/ladybug visitors, day/night lighting, and WebGL recovery remain rendering-independent; reduced motion removes lighting transitions and rain particles.
 ```
 
 ---
@@ -1593,7 +1593,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-19 in desktop/tablet Chromium under the repository subpath. The fixed flow pauses/resumes, double-dispatches a helper safely, completes one then two steps, requests all three cue assets, reloads two games, survives complete garden-model loss, and matches deterministic happy-character growth baselines.
+Verified 2026-07-19 in desktop/tablet Chromium under the repository subpath. The fixed flow pauses/resumes, double-dispatches a helper safely, completes one then two steps, requests all three cue assets, reloads two games, survives complete garden-model loss, and matches deterministic happy-character growth and second-step bee baselines.
 ```
 
 ---
@@ -2828,10 +2828,10 @@ Known limitations: The approved Ava neural TTS remains replaceable interim voice
 
 ```text
 Status: Complete
-Date: 2026-07-18
+Date: 2026-07-19
 Commit: Phase 5 Little Garden commit (this commit)
-Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (61 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "garden tasks" --update-snapshots=all --reporter=line; npm run test:e2e -- --reporter=line; git diff --check
-Manual checks: Desktop and tablet Chromium paused/resumed, safely double-clicked a helper, completed one- and two-step tasks, requested cloud/sun/success assets, displayed deterministic growth/day-night/visitor states, reloaded two completions, and matched reduced-effects screenshots. Six garden audio files were decoded and inspected.
+Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (107 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "garden tasks" --update-snapshots=all --reporter=line (2 passed); npm run test:e2e -- --workers=2 --reporter=line (34 passed); npm run test:performance (4 passed); git diff --check
+Manual checks: Desktop and tablet Chromium paused/resumed, safely double-clicked a helper, completed one- and two-step tasks, requested cloud/sun/success assets, displayed deterministic growth/day-night/visitor states, reloaded two completions, and matched reduced-effects growth and bee screenshots. The Blender viewport and both in-game baselines were inspected for the bee's scale, expression, stripes, wings, wave, bow tie, arms, legs, and shoes.
 Known limitations: The approved neural voice remains replaceable interim artwork. Reduced-effects currently follows reduced-motion until Phase 8 exposes its independent parent setting.
 ```
 

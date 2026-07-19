@@ -3,7 +3,7 @@ import type { ActivityPhase } from "../../engine/activity/activityState";
 export type GardenLevel = 0 | 1 | 2 | 3;
 export type GrowthStage = "seed" | "sprout" | "bud" | "flower";
 export type TimeOfDay = "day" | "night";
-export type GardenVisitor = "none" | "butterfly" | "ladybug";
+export type GardenVisitor = "none" | "bee" | "ladybug";
 export type GardenAction = "water" | "sun";
 
 export interface GardenActivityDefinition {

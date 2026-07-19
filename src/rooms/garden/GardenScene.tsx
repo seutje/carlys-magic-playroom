@@ -50,7 +50,7 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
             <GardenCharacterModel source={models.cloud} fallback={<CloudFallback />} />
           </group>
         ) : null}
-        {state.visitor !== "none" ? <Visitor kind={state.visitor} /> : null}
+        {state.visitor !== "none" ? <Visitor kind={state.visitor} beeSource={models.bee} /> : null}
         {!reducedEffects && state.lastAction === "water" && state.phase === "evaluating" ? (
           <group position={[2.6, 1.2, 0]}>
             {[-0.5, 0, 0.5].slice(0, quality.particleCount).map((x) => (
@@ -181,17 +181,64 @@ function useOwnedGardenModels(): GardenModelSources {
   return models;
 }
 
-function Visitor({ kind }: { readonly kind: Exclude<GardenState["visitor"], "none"> }) {
+function Visitor({
+  kind,
+  beeSource,
+}: {
+  readonly kind: Exclude<GardenState["visitor"], "none">;
+  readonly beeSource: Group | undefined;
+}) {
+  if (kind === "bee") {
+    return (
+      <group position={[2, 0.8, 1]} rotation={[0, 0, -0.08]} scale={0.58}>
+        <GardenCharacterModel source={beeSource} fallback={<BeeFallback />} />
+      </group>
+    );
+  }
+
   return (
     <group position={[2, 0.8, 1]}>
       <mesh>
         <sphereGeometry args={[0.25, 14, 10]} />
-        <meshStandardMaterial color={kind === "butterfly" ? "#8d65cf" : "#dd5151"} />
+        <meshStandardMaterial color="#dd5151" />
       </mesh>
       {[-0.35, 0.35].map((x) => (
         <mesh key={x} position={[x, 0.1, 0]} scale={[1, 1.3, 0.3]}>
           <sphereGeometry args={[0.28, 14, 10]} />
-          <meshStandardMaterial color={kind === "butterfly" ? "#f5a9d0" : "#47354d"} />
+          <meshStandardMaterial color="#47354d" />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function BeeFallback() {
+  return (
+    <group>
+      {[-0.52, 0.52].map((x) => (
+        <mesh key={x} position={[x, 0.08, -0.12]} scale={[0.42, 0.62, 0.12]}>
+          <sphereGeometry args={[0.75, 8, 6]} />
+          <meshStandardMaterial color="#9fe2ef" />
+        </mesh>
+      ))}
+      <mesh scale={[0.46, 0.7, 0.38]}>
+        <sphereGeometry args={[1, 10, 8]} />
+        <meshStandardMaterial color="#ffa315" />
+      </mesh>
+      {[-0.14, -0.42].map((y) => (
+        <mesh key={y} position={[0, y, 0.35]} scale={[0.44, 0.07, 0.08]}>
+          <sphereGeometry args={[1, 8, 6]} />
+          <meshStandardMaterial color="#241520" />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.55, 0]} scale={[0.48, 0.44, 0.4]}>
+        <sphereGeometry args={[1, 10, 8]} />
+        <meshStandardMaterial color="#ffc14a" />
+      </mesh>
+      {[-0.18, 0.18].map((x) => (
+        <mesh key={x} position={[x, 0.64, 0.38]} scale={[0.07, 0.1, 0.04]}>
+          <sphereGeometry args={[1, 8, 6]} />
+          <meshStandardMaterial color="#241520" />
         </mesh>
       ))}
     </group>

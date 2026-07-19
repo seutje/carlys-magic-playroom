@@ -27,7 +27,7 @@ describe("deterministic garden simulation", () => {
     const first = runStateMachine(reduceGarden, createGardenState(definition), events);
     const second = runStateMachine(reduceGarden, createGardenState(definition), events);
     expect(first).toEqual(second);
-    expect(first).toMatchObject({ phase: "celebrating", growth: 2, visitor: "butterfly" });
+    expect(first).toMatchObject({ phase: "celebrating", growth: 2, visitor: "bee" });
   });
 
   it("bounds rapid and excess input without harming or resetting the plant", () => {

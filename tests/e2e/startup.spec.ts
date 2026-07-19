@@ -88,6 +88,11 @@ test("keeps garden growth playable when its character models are unavailable", a
 
   await (await expectedGardenHelper(page)).click();
   await expect(page.getByText("Growth 1/3")).toBeVisible();
+
+  await page.getByRole("button", { name: "Try two steps" }).click();
+  await (await expectedGardenHelper(page)).click();
+  await (await expectedGardenHelper(page)).click();
+  await expect(page.getByText("Growth 2/3")).toBeVisible();
 });
 
 test("supports keyboard settings and reduced-motion room transitions", async ({ page }) => {
@@ -283,6 +288,10 @@ test("completes one-step and two-step garden tasks safely", async ({ page }) => 
   await (await expectedGardenHelper(page)).click();
   await (await expectedGardenHelper(page)).click();
   await expect(page.getByText("Garden games: 2")).toBeVisible();
+  await expect(page).toHaveScreenshot("garden-bee.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
   await expect
     .poll(() => [...new Set(voiceRequests)].sort())
     .toEqual(["flower-grew", "tap-cloud", "tap-sun"]);

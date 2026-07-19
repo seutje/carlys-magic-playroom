@@ -10,6 +10,7 @@ export default tseslint.config(
       "dist",
       "coverage",
       "playwright-report",
+      "performance-report",
       "test-results",
       "public/assets",
       "eslint.config.js",

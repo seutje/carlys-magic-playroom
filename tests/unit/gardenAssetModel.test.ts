@@ -23,21 +23,22 @@ describe("garden character models", () => {
     });
   });
 
-  it("isolates a missing stage while retaining the other garden characters", async () => {
+  it("isolates a missing bee while retaining the growth-stage characters", async () => {
     const loader: GardenModelLoader = {
       loadAsync: vi
         .fn()
         .mockImplementation((url: string) =>
-          url.endsWith("bud.glb")
+          url.endsWith("bee.glb")
             ? Promise.reject(new Error("missing model"))
             : Promise.resolve({ scene: new Group() }),
         ),
     };
 
     const result = await loadGardenModels(loader);
-    expect(result.failedIds).toEqual(["bud"]);
-    expect(result.models.bud).toBeUndefined();
+    expect(result.failedIds).toEqual(["bee"]);
+    expect(result.models.bee).toBeUndefined();
     expect(result.models.seed).toBeInstanceOf(Group);
+    expect(result.models.bud).toBeInstanceOf(Group);
     expect(result.models.sun).toBeInstanceOf(Group);
     expect(result.models.cloud).toBeInstanceOf(Group);
   });

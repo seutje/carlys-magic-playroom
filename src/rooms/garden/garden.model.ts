@@ -3,9 +3,9 @@ import { BufferGeometry, type Group, Material, type Object3D, Texture } from "th
 import { assetUrl } from "../../engine/assets/assetUrl";
 import type { GrowthStage } from "./garden.types";
 
-export type GardenModelId = GrowthStage | "sun" | "cloud";
+export type GardenModelId = GrowthStage | "sun" | "cloud" | "bee";
 
-export const GARDEN_MODEL_IDS = ["seed", "sprout", "bud", "flower", "sun", "cloud"] as const;
+export const GARDEN_MODEL_IDS = ["seed", "sprout", "bud", "flower", "sun", "cloud", "bee"] as const;
 
 export const GARDEN_MODEL_PATHS: Readonly<Record<GardenModelId, string>> = {
   seed: "models/garden/seed.glb",
@@ -14,6 +14,7 @@ export const GARDEN_MODEL_PATHS: Readonly<Record<GardenModelId, string>> = {
   flower: "models/garden/flower.glb",
   sun: "models/garden/sun.glb",
   cloud: "models/garden/cloud.glb",
+  bee: "models/garden/bee.glb",
 };
 
 export type GardenModelSources = Partial<Readonly<Record<GardenModelId, Group>>>;
