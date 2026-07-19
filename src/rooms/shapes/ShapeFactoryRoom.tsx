@@ -7,22 +7,25 @@ import { useSettings } from "../../ui/settings/settingsContext";
 import { useReducedMotion } from "../../ui/useReducedMotion";
 import type { RoomComponentProps } from "../roomModule";
 import { ShapeAudioController } from "./shapes.audio";
-import { generateShapePuzzle, matchesRule } from "./shapes.generator";
-import { createShapeFactoryState, reduceShapeFactory } from "./shapes.machine";
+import { generateShapeFactory, matchesRule } from "./shapes.generator";
+import { activeStep, createShapeFactoryState, reduceShapeFactory } from "./shapes.machine";
 import {
   defaultShapeProgress,
   loadShapeProgress,
   recordShapeCompletion,
 } from "./shapes.persistence";
-import type { ShapeItem, ShapeRule } from "./shapes.types";
+import type { ShapeFactoryStep, ShapeItem, ShapeRule } from "./shapes.types";
 import { ShapeFactoryScene } from "./ShapeFactoryScene";
 
-const INTRO_TARGET = { kind: "square", size: "small", color: "red" } as const;
-const INITIAL_PUZZLE = generateShapePuzzle("factory-welcome", INTRO_TARGET);
+const INITIAL_FACTORY = generateShapeFactory("factory-welcome");
 
 export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps) {
   const [round, setRound] = useState(0);
-  const [state, dispatch] = useReducer(reduceShapeFactory, INITIAL_PUZZLE, createShapeFactoryState);
+  const [state, dispatch] = useReducer(
+    reduceShapeFactory,
+    INITIAL_FACTORY,
+    createShapeFactoryState,
+  );
   const [progress, setProgress] = useState(defaultShapeProgress);
   const [shapeAudio] = useState(
     () =>
@@ -36,10 +39,12 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
   const lastReplay = useRef(replayRequest);
   const savedCompletion = useRef<string | undefined>(undefined);
   const { schedule, watchdog, cancelAll } = useOwnedTimeout();
+  const step = activeStep(state);
+  const puzzle = step.puzzle;
   const visibleItems =
     state.hintLevel >= 2
-      ? state.definition.items.filter((item) => matchesRule(item, state.definition.target))
-      : state.definition.items;
+      ? puzzle.items.filter((item) => matchesRule(item, puzzle.target))
+      : puzzle.items;
 
   useEffect(() => {
     let active = true;
@@ -80,15 +85,15 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
   ]);
 
   useEffect(() => {
-    if (state.phase === "waiting") shapeAudio.instruct(state.definition.target, true);
+    if (state.phase === "waiting") shapeAudio.instruct(puzzle.target, true);
     if (state.phase === "celebrating") shapeAudio.celebrate();
-  }, [shapeAudio, state.definition.target, state.phase]);
+  }, [puzzle.target, shapeAudio, state.phase]);
 
   useEffect(() => {
     if (replayRequest === lastReplay.current) return;
     lastReplay.current = replayRequest;
-    shapeAudio.instruct(state.definition.target, true);
-  }, [replayRequest, shapeAudio, state.definition.target]);
+    shapeAudio.instruct(puzzle.target, true);
+  }, [puzzle.target, replayRequest, shapeAudio]);
 
   useEffect(() => {
     if (state.phase !== "complete") return;
@@ -111,16 +116,20 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
         <span aria-hidden="true">◇</span>
         <div>
           <p className="eyebrow">Magic Shape Factory</p>
-          <strong>{instructionText(state.definition.target, state.phase)}</strong>
+          <strong>{instructionText(puzzle.target, state.phase)}</strong>
           <p>{feedbackText(state.feedback, state.hintLevel)}</p>
         </div>
       </div>
-      <div
-        className={`shape-opening hint-${state.hintLevel}`}
-        data-testid="shape-opening"
-        aria-label="Big glowing machine opening"
-      >
-        <ShapeGlyph rule={state.definition.target} />
+      <div className="shape-machine-slots" aria-label="Four shape openings">
+        {state.definition.steps.map((candidate, index) => (
+          <MachineSlot
+            key={candidate.id}
+            step={candidate}
+            active={index === state.stepIndex && state.phase !== "complete"}
+            complete={index < state.stepIndex || state.phase === "complete"}
+            hintLevel={index === state.stepIndex ? state.hintLevel : 0}
+          />
+        ))}
       </div>
       <div
         className={`shape-tray ${state.conveyorPaused ? "paused" : "moving"}`}
@@ -131,7 +140,7 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
             key={item.id}
             item={item}
             disabled={locked}
-            hinted={state.hintLevel >= 1 && matchesRule(item, state.definition.target)}
+            hinted={state.hintLevel >= 1 && matchesRule(item, puzzle.target)}
             onDragStart={() => dispatch({ type: "DRAG_STARTED" })}
             onDrop={(inside) =>
               dispatch({ type: "ITEM_DROPPED", itemId: item.id, insideOpening: inside })
@@ -140,7 +149,10 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
           />
         ))}
       </div>
-      <p className="shape-progress">Shapes made: {progress.completedActivities}</p>
+      <p className="shape-progress">
+        Step {state.stepIndex + 1} of {state.definition.steps.length} · Factories finished:{" "}
+        {progress.completedActivities}
+      </p>
       {state.phase === "celebrating" ? (
         <div className="shape-celebration" role="status">
           ★ Shape made! ★
@@ -156,7 +168,7 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
             savedCompletion.current = undefined;
             dispatch({
               type: "RESET",
-              definition: generateShapePuzzle(`factory-round-${nextRound}`, INTRO_TARGET),
+              definition: generateShapeFactory(`factory-round-${nextRound}`),
             });
           }}
         >
@@ -164,6 +176,29 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
         </button>
       ) : null}
     </section>
+  );
+}
+
+function MachineSlot({
+  step,
+  active,
+  complete,
+  hintLevel,
+}: {
+  readonly step: ShapeFactoryStep;
+  readonly active: boolean;
+  readonly complete: boolean;
+  readonly hintLevel: 0 | 1 | 2;
+}) {
+  return (
+    <div
+      className={`shape-opening slot-${step.slot} ${active ? `active hint-${hintLevel}` : ""} ${complete ? "complete" : ""}`}
+      data-testid={active ? "shape-opening" : undefined}
+      role="img"
+      aria-label={`${active ? "Active" : complete ? "Filled" : "Upcoming"} ${step.slot.replace("-", " ")} opening for a ${step.puzzle.target.color} ${step.puzzle.target.kind}`}
+    >
+      <ShapeGlyph rule={step.puzzle.target} />
+    </div>
   );
 }
 
@@ -197,9 +232,9 @@ function ShapeButton({
         ?.getBoundingClientRect();
       onDrop(Boolean(bounds && isInsideTarget({ x: event.clientX, y: event.clientY }, bounds, 24)));
     }
-    window.setTimeout(() => {
+    queueMicrotask(() => {
       dragged.current = false;
-    }, 0);
+    });
   };
   return (
     <button

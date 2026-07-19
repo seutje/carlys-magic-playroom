@@ -24,16 +24,21 @@ Repeated completion events are idempotently ignored, and explicit recovery retur
 waiting state. Pointer capture tracks drag movement; a DOM opening larger than the visible artwork
 performs forgiving hit testing, while tap remains an accessible equivalent.
 
-The introductory curriculum target remains a small red square while interim Ava speech is in use.
-The full vocabulary remains generator-tested, but a new child-facing target requires a matching
-reviewed local prompt before it is enabled.
+One factory activity contains four ordered steps. Each step owns a distinct target and one of four
+stable machine-slot identifiers, so insertion position is curriculum data rather than a rendered
+coordinate. The introductory sequence is a small red square, big blue circle, small yellow
+triangle, and big green diamond. A successful celebration advances automatically to the next slot;
+only the fourth step completes and persists the activity. Hints and mismatch reduction reset for
+each new step while the persisted attempt count covers the whole sequence.
+
+Each target has a stable, locally bundled Ava instruction cue in OGG and MP3 formats. Spoken and
+visible targets therefore remain synchronized without runtime text-to-speech or network access.
 
 ## Consequences
 
 Puzzles and machine transitions can be property-tested without WebGL, reproduced from a seed, and
-recovered without deadlock. Rendering can change without altering curriculum behavior. The fixed
-introductory target limits current variety, intentionally favoring accurate local instruction over
-runtime TTS or a generic spoken prompt.
+recovered without deadlock. Rendering can change without altering curriculum behavior. Four-step
+completion is longer than the original single insertion and adds six small bundled audio files.
 
 ## Alternatives Considered
 

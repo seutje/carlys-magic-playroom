@@ -1,7 +1,7 @@
 import "fake-indexeddb/auto";
 
 import { resetSaveData, updateSaveData } from "../../src/persistence/saveData";
-import { generateShapePuzzle } from "../../src/rooms/shapes/shapes.generator";
+import { generateShapeFactory } from "../../src/rooms/shapes/shapes.generator";
 import {
   loadShapeProgress,
   migrateShapeProgress,
@@ -12,7 +12,7 @@ describe("shape progress", () => {
   beforeEach(() => resetSaveData());
 
   it("records skill outcomes and completion idempotently", async () => {
-    const puzzle = generateShapePuzzle("progress");
+    const puzzle = generateShapeFactory("progress");
     const first = await recordShapeCompletion(puzzle, 2, "shape:1");
     const duplicate = await recordShapeCompletion(puzzle, 2, "shape:1");
     expect(first).toMatchObject({ completedActivities: 1, skillAttempts: 3, skillSuccesses: 1 });

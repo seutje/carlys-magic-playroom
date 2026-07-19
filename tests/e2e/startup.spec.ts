@@ -345,14 +345,28 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
     { steps: 8 },
   );
   await page.mouse.up();
+  await expect(page.getByText("Step 2 of 4")).toBeVisible();
+  await page.getByRole("button", { name: "big blue circle" }).click();
+  await expect(page.getByText("Step 3 of 4")).toBeVisible();
+  await page.getByRole("button", { name: "small yellow triangle" }).click();
+  await expect(page.getByText("Step 4 of 4")).toBeVisible();
+  await page.getByRole("button", { name: "big green diamond" }).click();
   await expect(page.getByRole("button", { name: "Make another" })).toBeVisible();
-  await expect(page.getByText("Shapes made: 1")).toBeVisible();
-  await expect.poll(() => [...new Set(voiceRequests)]).toEqual(["instruction", "success"]);
+  await expect(page.getByText(/Factories finished:\s*1/)).toBeVisible();
+  await expect
+    .poll(() => [...new Set(voiceRequests)].sort())
+    .toEqual([
+      "instruction",
+      "instruction-blue-circle",
+      "instruction-green-diamond",
+      "instruction-yellow-triangle",
+      "success",
+    ]);
 
   await page.reload();
   await page.getByRole("button", { name: "Play" }).click();
   await page.getByRole("button", { name: "Visit the shape factory" }).click();
-  await expect(page.getByText("Shapes made: 1")).toBeVisible();
+  await expect(page.getByText(/Factories finished:\s*1/)).toBeVisible();
 });
 
 test("replays, mutes, bounds taps, and matches a musical target", async ({ page }) => {

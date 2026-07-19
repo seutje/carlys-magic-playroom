@@ -1,13 +1,16 @@
 import { matchesRule } from "./shapes.generator";
-import type { ShapeFactoryEvent, ShapeFactoryState, ShapePuzzleDefinition } from "./shapes.types";
+import type { ShapeFactoryDefinition, ShapeFactoryEvent, ShapeFactoryState } from "./shapes.types";
 
-export function createShapeFactoryState(definition: ShapePuzzleDefinition): ShapeFactoryState {
+export function createShapeFactoryState(definition: ShapeFactoryDefinition): ShapeFactoryState {
   return {
     phase: "intro",
     definition,
+    stepIndex: 0,
     mismatchCount: 0,
+    stepMismatchCount: 0,
     hintLevel: 0,
     conveyorPaused: false,
+    completedStepIds: [],
     feedback: "ready",
   };
 }
@@ -32,9 +35,12 @@ export function reduceShapeFactory(
       return {
         phase: "waiting",
         definition: state.definition,
+        stepIndex: state.stepIndex,
         mismatchCount: state.mismatchCount,
+        stepMismatchCount: state.stepMismatchCount,
         hintLevel: state.hintLevel,
         conveyorPaused: false,
+        completedStepIds: state.completedStepIds,
         feedback: "recovered",
       };
     case "INTRO_FINISHED":
@@ -61,7 +67,21 @@ export function reduceShapeFactory(
     case "OUTPUT_FINISHED":
       return state.phase === "output" ? { ...state, phase: "celebrating" } : state;
     case "CELEBRATION_FINISHED":
-      return state.phase === "celebrating" ? { ...state, phase: "complete" } : state;
+      if (state.phase !== "celebrating") return state;
+      if (state.stepIndex >= state.definition.steps.length - 1) {
+        return { ...state, phase: "complete" };
+      }
+      return {
+        phase: "waiting",
+        definition: state.definition,
+        stepIndex: state.stepIndex + 1,
+        mismatchCount: state.mismatchCount,
+        stepMismatchCount: 0,
+        conveyorPaused: false,
+        completedStepIds: [...state.completedStepIds, activeStep(state).id],
+        hintLevel: 0,
+        feedback: "ready",
+      };
     case "HINT_TIMEOUT":
       return canInteract(state)
         ? {
@@ -81,15 +101,18 @@ function dropItem(
   insideOpening: boolean,
 ): ShapeFactoryState {
   if (!canInteract(state)) return state;
-  const item = state.definition.items.find((candidate) => candidate.id === itemId);
-  if (!insideOpening || !item || !matchesRule(item, state.definition.target)) {
+  const puzzle = activeStep(state).puzzle;
+  const item = puzzle.items.find((candidate) => candidate.id === itemId);
+  if (!insideOpening || !item || !matchesRule(item, puzzle.target)) {
     const mismatchCount = state.mismatchCount + 1;
+    const stepMismatchCount = state.stepMismatchCount + 1;
     return {
       ...state,
       phase: "waiting",
       conveyorPaused: false,
       mismatchCount,
-      hintLevel: mismatchCount >= 2 ? 2 : (Math.max(1, state.hintLevel) as 1 | 2),
+      stepMismatchCount,
+      hintLevel: stepMismatchCount >= 2 ? 2 : (Math.max(1, state.hintLevel) as 1 | 2),
       feedback: "returning",
     };
   }
@@ -105,4 +128,10 @@ function dropItem(
 
 function canInteract(state: ShapeFactoryState): boolean {
   return state.phase === "waiting" || state.phase === "hint";
+}
+
+export function activeStep(state: ShapeFactoryState) {
+  const step = state.definition.steps[state.stepIndex];
+  if (!step) throw new Error(`Missing shape factory step ${state.stepIndex}`);
+  return step;
 }

@@ -3121,6 +3121,28 @@ Every agent session that changes implementation status should add an entry.
 - ADR-007 records the deterministic puzzle/render adapter boundary and watchdog-owned processing sequence.
 - Two guided lines use approved bundled Ava OGG/MP3 assets; no runtime speech or network dependency was added.
 
+### 2026-07-19 — Four-step Magic Shape Factory expansion
+
+**Agent or developer:** Codex
+
+**Completed:**
+- Expanded one factory activity from one insertion to four automatically advancing steps.
+- Assigned the red square, blue circle, yellow triangle, and green diamond to four stable machine slots.
+- Kept hints step-local and persisted completion only after the fourth successful insertion.
+
+**Verified:**
+- Deterministic definition/reducer tests cover four unique target/slot pairs and full-sequence completion.
+- Desktop and tablet reduced-motion E2E flows complete all four steps under the Pages base path.
+- Updated visual baselines show one four-slot machine face with 80 CSS-pixel minimum targets.
+
+**Blocked:**
+- None.
+
+**Notes:**
+- ADR-007 and the bundled shape-audio README document the sequence and four matching local prompts.
+- The three added Ava prompts were generated with the approved build-time workflow, then bundled as
+  trimmed, normalized 48 kHz mono OGG/MP3 pairs; runtime remains fully local and offline.
+
 
 ### 2026-07-18 — Phase 7 Musical Corner
 

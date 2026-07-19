@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
+import { activeStep } from "./shapes.machine";
 import type { ShapeFactoryState } from "./shapes.types";
 
 interface ShapeFactorySceneProps {
@@ -11,6 +12,7 @@ interface ShapeFactorySceneProps {
 
 export function ShapeFactoryScene({ state, reducedMotion }: ShapeFactorySceneProps) {
   const quality = useQuality();
+  const step = activeStep(state);
   const active = !state.conveyorPaused && !reducedMotion && state.phase !== "complete";
   return (
     <div className="shape-factory-canvas" aria-label="A friendly shape factory">
@@ -33,10 +35,6 @@ export function ShapeFactoryScene({ state, reducedMotion }: ShapeFactoryScenePro
           <mesh>
             <boxGeometry args={[3.1, 4.3, 2.2]} />
             <meshStandardMaterial color="#7b65b5" roughness={0.7} />
-          </mesh>
-          <mesh position={[0, 0.4, 1.15]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[1.05, 1.05, 0.3, 32]} />
-            <meshStandardMaterial color={state.phase === "processing" ? "#ffdc62" : "#d8d1f2"} />
           </mesh>
           <mesh position={[-0.45, 1.45, 1.16]}>
             <sphereGeometry args={[0.13, 12, 8]} />
@@ -66,7 +64,11 @@ export function ShapeFactoryScene({ state, reducedMotion }: ShapeFactoryScenePro
         {state.outputItemId ? (
           <mesh position={[3.7, -1.1, 0.2]}>
             <sphereGeometry args={[0.58, 20, 14]} />
-            <meshStandardMaterial color="#68b8ec" emissive="#4c83a8" emissiveIntensity={0.25} />
+            <meshStandardMaterial
+              color={step.puzzle.target.color}
+              emissive={step.puzzle.target.color}
+              emissiveIntensity={0.25}
+            />
           </mesh>
         ) : null}
       </Canvas>

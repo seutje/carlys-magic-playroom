@@ -1,6 +1,6 @@
 import { diagnostics } from "../../engine/diagnostics/diagnostics";
 import { loadSaveData, updateSaveData } from "../../persistence/saveData";
-import type { ShapePuzzleDefinition } from "./shapes.types";
+import type { ShapeFactoryDefinition } from "./shapes.types";
 
 export interface ShapeProgress {
   readonly schemaVersion: 1;
@@ -50,7 +50,7 @@ export async function loadShapeProgress(): Promise<ShapeProgress> {
 }
 
 export async function recordShapeCompletion(
-  _definition: ShapePuzzleDefinition,
+  _definition: ShapeFactoryDefinition,
   mismatchCount: number,
   completionId: string,
 ): Promise<ShapeProgress> {
