@@ -88,11 +88,10 @@ test("keeps garden growth playable when its character models are unavailable", a
 
   await (await expectedGardenHelper(page)).click();
   await expect(page.getByText("Growth 1/3")).toBeVisible();
-
-  await page.getByRole("button", { name: "Try two steps" }).click();
   await (await expectedGardenHelper(page)).click();
   await (await expectedGardenHelper(page)).click();
-  await expect(page.getByText("Growth 2/3")).toBeVisible();
+  await expect(page.getByText("Growth 3/3")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Grow another" })).toBeVisible();
 });
 
 test("supports keyboard settings and reduced-motion room transitions", async ({ page }) => {
@@ -257,7 +256,7 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
   await expect(page.getByText("Saved critters: 1")).toBeVisible();
 });
 
-test("completes one-step and two-step garden tasks safely", async ({ page }) => {
+test("completes three-step garden tasks safely", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
@@ -278,13 +277,16 @@ test("completes one-step and two-step garden tasks safely", async ({ page }) => 
   const firstHelper = await expectedGardenHelper(page);
   await firstHelper.click({ clickCount: 2 });
   await expect(page.getByText("Growth 1/3")).toBeVisible();
+  await (await expectedGardenHelper(page)).click();
+  await (await expectedGardenHelper(page)).click();
   await expect(page.getByText("Garden games: 1")).toBeVisible();
   await expect(page).toHaveScreenshot("garden-growth.png", {
     animations: "disabled",
     maxDiffPixelRatio: 0.01,
   });
 
-  await page.getByRole("button", { name: "Try two steps" }).click();
+  await page.getByRole("button", { name: "Grow another" }).click();
+  await (await expectedGardenHelper(page)).click();
   await (await expectedGardenHelper(page)).click();
   await (await expectedGardenHelper(page)).click();
   await expect(page.getByText("Garden games: 2")).toBeVisible();

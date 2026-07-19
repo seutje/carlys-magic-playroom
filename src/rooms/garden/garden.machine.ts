@@ -64,7 +64,7 @@ function applyAction(state: GardenState, action: GardenAction): GardenState {
     actionIndex: correct ? state.actionIndex + 1 : state.actionIndex,
     growth,
     timeOfDay: action === "sun" ? "day" : state.actionIndex % 2 === 0 ? "night" : "day",
-    visitor: growth >= 3 ? "ladybug" : growth >= 2 ? "bee" : state.visitor,
+    visitor: growth >= 2 ? "bee" : state.visitor,
     mismatchCount: state.mismatchCount + (correct ? 0 : 1),
     hintLevel: correct
       ? 0

@@ -12,13 +12,13 @@ describe("garden progress", () => {
   beforeEach(() => resetSaveData());
 
   it("records activities, concepts, and skills idempotently", async () => {
-    const definition = generateGardenActivity("progress", 2);
+    const definition = generateGardenActivity("progress");
     const first = await recordGardenCompletion(definition, 1, "garden:1");
     const duplicate = await recordGardenCompletion(definition, 1, "garden:1");
     expect(first).toMatchObject({
       completedActivities: 1,
-      skillAttempts: 3,
-      skillSuccesses: 2,
+      skillAttempts: 4,
+      skillSuccesses: 3,
     });
     expect([...first.concepts].sort()).toEqual(["sun", "water"]);
     expect(duplicate).toEqual(first);

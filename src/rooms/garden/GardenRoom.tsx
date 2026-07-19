@@ -20,7 +20,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
   const [round, setRound] = useState(0);
   const [state, dispatch] = useReducer(
     reduceGarden,
-    generateGardenActivity("garden-round-0", 1),
+    generateGardenActivity("garden-round-0"),
     createGardenState,
   );
   const [progress, setProgress] = useState(defaultGardenProgress);
@@ -167,14 +167,11 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
             savedCompletion.current = undefined;
             dispatch({
               type: "RESET",
-              definition: generateGardenActivity(
-                `garden-round-${nextRound}`,
-                nextRound === 1 ? 2 : 1,
-              ),
+              definition: generateGardenActivity(`garden-round-${nextRound}`),
             });
           }}
         >
-          {round === 0 ? "Try two steps" : "Grow another"}
+          Grow another
         </button>
       ) : null}
       <p className="garden-saved">Garden games: {progress.completedActivities}</p>

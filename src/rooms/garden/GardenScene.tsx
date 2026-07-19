@@ -50,7 +50,7 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
             <GardenCharacterModel source={models.cloud} fallback={<CloudFallback />} />
           </group>
         ) : null}
-        {state.visitor !== "none" ? <Visitor kind={state.visitor} beeSource={models.bee} /> : null}
+        {state.visitor === "bee" ? <BeeVisitor source={models.bee} /> : null}
         {!reducedEffects && state.lastAction === "water" && state.phase === "evaluating" ? (
           <group position={[2.6, 1.2, 0]}>
             {[-0.5, 0, 0.5].slice(0, quality.particleCount).map((x) => (
@@ -181,33 +181,10 @@ function useOwnedGardenModels(): GardenModelSources {
   return models;
 }
 
-function Visitor({
-  kind,
-  beeSource,
-}: {
-  readonly kind: Exclude<GardenState["visitor"], "none">;
-  readonly beeSource: Group | undefined;
-}) {
-  if (kind === "bee") {
-    return (
-      <group position={[2, 0.8, 1]} rotation={[0, 0, -0.08]} scale={0.58}>
-        <GardenCharacterModel source={beeSource} fallback={<BeeFallback />} />
-      </group>
-    );
-  }
-
+function BeeVisitor({ source }: { readonly source: Group | undefined }) {
   return (
-    <group position={[2, 0.8, 1]}>
-      <mesh>
-        <sphereGeometry args={[0.25, 14, 10]} />
-        <meshStandardMaterial color="#dd5151" />
-      </mesh>
-      {[-0.35, 0.35].map((x) => (
-        <mesh key={x} position={[x, 0.1, 0]} scale={[1, 1.3, 0.3]}>
-          <sphereGeometry args={[0.28, 14, 10]} />
-          <meshStandardMaterial color="#47354d" />
-        </mesh>
-      ))}
+    <group position={[2, 0.8, 1]} rotation={[0, 0, -0.08]} scale={0.58}>
+      <GardenCharacterModel source={source} fallback={<BeeFallback />} />
     </group>
   );
 }

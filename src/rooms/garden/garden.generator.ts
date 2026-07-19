@@ -1,12 +1,12 @@
 import { createRandomSource } from "../../engine/random/randomSource";
 import type { GardenAction, GardenActivityDefinition } from "./garden.types";
 
-export function generateGardenActivity(seed: string, steps: 1 | 2): GardenActivityDefinition {
+export function generateGardenActivity(seed: string): GardenActivityDefinition {
   const random = createRandomSource(seed);
   const first = random.pick(["water", "sun"] as const);
-  const task: readonly GardenAction[] =
-    steps === 1 ? [first] : [first, first === "water" ? "sun" : "water"];
-  return { schemaVersion: 1, id: `garden:${seed}:${steps}`, seed, task };
+  const other: GardenAction = first === "water" ? "sun" : "water";
+  const task: readonly GardenAction[] = [first, other, first];
+  return { schemaVersion: 1, id: `garden:${seed}:3`, seed, task };
 }
 
 export function validateGardenDefinition(value: unknown): value is GardenActivityDefinition {
@@ -17,7 +17,7 @@ export function validateGardenDefinition(value: unknown): value is GardenActivit
     typeof candidate.id === "string" &&
     typeof candidate.seed === "string" &&
     Array.isArray(candidate.task) &&
-    (candidate.task.length === 1 || candidate.task.length === 2) &&
+    candidate.task.length === 3 &&
     candidate.task.every((action) => action === "water" || action === "sun")
   );
 }
