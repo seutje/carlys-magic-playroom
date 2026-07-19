@@ -71,7 +71,7 @@ const limits = {
   initialGzipBytes: 100_000,
   roomBytes: 40_000,
   audioBytes: 600_000,
-  modelBytes: 2_000_000,
+  modelBytes: 4_000_000,
   sharedThreeExceptionBytes: 900_000,
 };
 const violations = [

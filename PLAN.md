@@ -1494,7 +1494,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-19 by desktop/tablet Chromium baselines. Seven independently loaded, happy-faced Blender GLBs cover seed, sprout, bud, flower, sun, cloud, and a playful anthropomorphic bee at the second growth step, while local primitive fallbacks preserve growth during partial or complete asset loss. The bee batches 393 triangles into six material meshes and is 44,664 bytes; all garden models total 140,616 bytes, the garden chunk is 12.66kB minified, and all project models remain within budget at 1,999,224 bytes. Bee/ladybug visitors, day/night lighting, and WebGL recovery remain rendering-independent; reduced motion removes lighting transitions and rain particles.
+Verified 2026-07-19 by desktop/tablet Chromium baselines. Seven independently loaded, happy-faced Blender GLBs cover seed, sprout, bud, flower, sun, cloud, and a playful bee at the second growth step, while local primitive fallbacks preserve growth during partial or complete asset loss. The bee was rebuilt from scratch without decimation or limbs: its sun-like face, antennae, striped body, and two wings retain 1,672 triangles in five material batches and total 149,036 bytes. All garden models total 244,988 bytes, the garden chunk is 12.66kB minified, and all project models use 2,103,596 bytes against the maintainer-authorized 4MB model budget. Bee/ladybug visitors, day/night lighting, and WebGL recovery remain rendering-independent; reduced motion removes lighting transitions and rain particles.
 ```
 
 ---
@@ -2831,7 +2831,7 @@ Status: Complete
 Date: 2026-07-19
 Commit: Phase 5 Little Garden commit (this commit)
 Commands: npm run format:check; npm run lint; npm run typecheck; npm run test (107 passed); npm run test:coverage; npm run build; npm run build:pages; npm run test:e2e -- --grep "garden tasks" --update-snapshots=all --reporter=line (2 passed); npm run test:e2e -- --workers=2 --reporter=line (34 passed); npm run test:performance (4 passed); git diff --check
-Manual checks: Desktop and tablet Chromium paused/resumed, safely double-clicked a helper, completed one- and two-step tasks, requested cloud/sun/success assets, displayed deterministic growth/day-night/visitor states, reloaded two completions, and matched reduced-effects growth and bee screenshots. The Blender viewport and both in-game baselines were inspected for the bee's scale, expression, stripes, wings, wave, bow tie, arms, legs, and shoes.
+Manual checks: Desktop and tablet Chromium paused/resumed, safely double-clicked a helper, completed one- and two-step tasks, requested cloud/sun/success assets, displayed deterministic growth/day-night/visitor states, reloaded two completions, and matched reduced-effects growth and bee screenshots. The isolated Blender viewport and both in-game baselines were inspected for the bee's scale, two antennae, sun-like eyes/smile/cheeks, intact striped body, two wings, and intentionally limb-free silhouette.
 Known limitations: The approved neural voice remains replaceable interim artwork. Reduced-effects currently follows reduced-motion until Phase 8 exposes its independent parent setting.
 ```
 
