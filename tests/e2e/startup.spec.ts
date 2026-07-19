@@ -80,6 +80,16 @@ test("keeps musical matching playable when its instrument models are unavailable
   await expect(page.getByText("Songs matched: 1")).toBeVisible();
 });
 
+test("keeps garden growth playable when its character models are unavailable", async ({ page }) => {
+  await page.route("**/models/garden/*.glb", (route) => route.abort("failed"));
+  await page.goto("./");
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Visit the garden" }).click();
+
+  await (await expectedGardenHelper(page)).click();
+  await expect(page.getByText("Growth 1/3")).toBeVisible();
+});
+
 test("supports keyboard settings and reduced-motion room transitions", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");

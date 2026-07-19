@@ -1494,7 +1494,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 by desktop/tablet Chromium baselines. Shared primitives render the bed, four growth stages, sun/cloud, butterfly/ladybug, day/night lighting, and WebGL fallback; reduced motion removes lighting transitions and rain particles.
+Verified 2026-07-19 by desktop/tablet Chromium baselines. Six independently loaded, happy-faced Blender GLBs cover seed, sprout, bud, flower, sun, and cloud, while local primitive fallbacks preserve growth during partial or complete asset loss. Their compact shared geometry totals 95,952 bytes; the garden chunk is 11.59kB minified and all project models remain within budget at 1,954,560 bytes. Butterfly/ladybug visitors, day/night lighting, and WebGL recovery remain rendering-independent; reduced motion removes lighting transitions and rain particles.
 ```
 
 ---
@@ -1593,7 +1593,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 in desktop/tablet Chromium under the repository subpath. The fixed flow pauses/resumes, double-dispatches a helper safely, completes one then two steps, requests all three cue assets, reloads two games, and matches deterministic growth baselines.
+Verified 2026-07-19 in desktop/tablet Chromium under the repository subpath. The fixed flow pauses/resumes, double-dispatches a helper safely, completes one then two steps, requests all three cue assets, reloads two games, survives complete garden-model loss, and matches deterministic happy-character growth baselines.
 ```
 
 ---

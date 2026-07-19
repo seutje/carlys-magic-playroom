@@ -1,7 +1,18 @@
 import { Canvas } from "@react-three/fiber";
+import { useEffect, useMemo, useState } from "react";
+import type { Group } from "three";
 
+import { diagnostics } from "../../engine/diagnostics/diagnostics";
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
+import {
+  createGardenModelInstance,
+  disposeGardenModelInstance,
+  disposeGardenModelSources,
+  loadGardenModels,
+  type GardenModelId,
+  type GardenModelSources,
+} from "./garden.model";
 import { GROWTH_STAGES, type GardenState } from "./garden.types";
 
 interface GardenSceneProps {
@@ -12,6 +23,7 @@ interface GardenSceneProps {
 export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
   const quality = useQuality();
   const stage = GROWTH_STAGES[state.growth];
+  const models = useOwnedGardenModels();
   return (
     <div className={`garden-canvas ${state.timeOfDay}`} aria-label={`Garden with a ${stage}`}>
       <Canvas
@@ -29,19 +41,13 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
           <cylinderGeometry args={[3.4, 3.8, 0.7, 32]} />
           <meshStandardMaterial color="#79533c" roughness={1} />
         </mesh>
-        <Plant growth={state.growth} />
-        <mesh position={[-3.2, 2.2, -1]}>
-          <sphereGeometry args={[0.8, 20, 14]} />
-          <meshStandardMaterial color="#ffe477" emissive="#a86d00" emissiveIntensity={0.35} />
-        </mesh>
+        <Plant growth={state.growth} source={models[stage]} />
+        <group position={[-3.2, 2.2, -1]} scale={0.68}>
+          <GardenCharacterModel source={models.sun} fallback={<SunFallback />} />
+        </group>
         {quality.decorativeObjects ? (
           <group position={[2.6, 2.3, -0.5]}>
-            {[-0.6, 0, 0.6].map((x) => (
-              <mesh key={x} position={[x, 0, 0]}>
-                <sphereGeometry args={[0.65, 16, 12]} />
-                <meshStandardMaterial color="#f4f7fa" />
-              </mesh>
-            ))}
+            <GardenCharacterModel source={models.cloud} fallback={<CloudFallback />} />
           </group>
         ) : null}
         {state.visitor !== "none" ? <Visitor kind={state.visitor} /> : null}
@@ -60,10 +66,46 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
   );
 }
 
-function Plant({ growth }: { readonly growth: GardenState["growth"] }) {
+function Plant({
+  growth,
+  source,
+}: {
+  readonly growth: GardenState["growth"];
+  readonly source: Group | undefined;
+}) {
+  const stage = GROWTH_STAGES[growth];
+  const scale = stage === "flower" ? 1.15 : stage === "bud" ? 1.05 : 1;
+  return (
+    <group position={[0, -1.3, 0]} scale={scale}>
+      <GardenCharacterModel source={source} fallback={<PlantFallback growth={growth} />} />
+    </group>
+  );
+}
+
+function GardenCharacterModel({
+  source,
+  fallback,
+}: {
+  readonly source: Group | undefined;
+  readonly fallback: React.ReactNode;
+}) {
+  const instance = useMemo(
+    () => (source ? createGardenModelInstance(source) : undefined),
+    [source],
+  );
+  useEffect(
+    () => () => {
+      if (instance) disposeGardenModelInstance(instance);
+    },
+    [instance],
+  );
+  return instance ? <primitive object={instance} /> : fallback;
+}
+
+function PlantFallback({ growth }: { readonly growth: GardenState["growth"] }) {
   const height = [0.15, 1, 1.8, 2.5][growth] ?? 0.15;
   return (
-    <group position={[0, -1.3, 0]}>
+    <>
       <mesh position={[0, height / 2, 0]}>
         <cylinderGeometry args={[0.1, 0.16, height, 12]} />
         <meshStandardMaterial color="#4d934d" />
@@ -86,8 +128,57 @@ function Plant({ growth }: { readonly growth: GardenState["growth"] }) {
           <meshStandardMaterial color="#ffd65b" />
         </mesh>
       ) : null}
-    </group>
+    </>
   );
+}
+
+function SunFallback() {
+  return (
+    <mesh scale={1 / 0.68}>
+      <sphereGeometry args={[0.8, 20, 14]} />
+      <meshStandardMaterial color="#ffe477" emissive="#a86d00" emissiveIntensity={0.35} />
+    </mesh>
+  );
+}
+
+function CloudFallback() {
+  return (
+    <>
+      {[-0.6, 0, 0.6].map((x) => (
+        <mesh key={x} position={[x, 0, 0]}>
+          <sphereGeometry args={[0.65, 16, 12]} />
+          <meshStandardMaterial color="#f4f7fa" />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+function useOwnedGardenModels(): GardenModelSources {
+  const [models, setModels] = useState<GardenModelSources>({});
+
+  useEffect(() => {
+    let disposed = false;
+    let ownedModels: GardenModelSources = {};
+    void loadGardenModels().then(({ models: loadedModels, failedIds }) => {
+      if (disposed) {
+        disposeGardenModelSources(loadedModels);
+        return;
+      }
+      ownedModels = loadedModels;
+      failedIds.forEach((id: GardenModelId) => {
+        diagnostics.record({ category: "asset", code: `garden-model-load-failed:${id}` });
+      });
+      setModels(loadedModels);
+    });
+
+    return () => {
+      disposed = true;
+      disposeGardenModelSources(ownedModels);
+    };
+  }, []);
+
+  return models;
 }
 
 function Visitor({ kind }: { readonly kind: Exclude<GardenState["visitor"], "none"> }) {
