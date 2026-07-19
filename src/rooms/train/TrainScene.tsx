@@ -21,6 +21,7 @@ import {
   loadTrainModel,
 } from "./train.model";
 import { nextTrainDepartureX } from "./train.animation";
+import { trainPlankToyX } from "./train.layout";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -70,10 +71,11 @@ export function TrainScene({
           loaded={loaded}
           duckModel={duckModel}
         />
-        {available.map((object) => (
+        {available.map((object, index) => (
           <DraggableToy
             key={object.id}
             object={object}
+            plankX={trainPlankToyX(index, available.length)}
             disabled={interactionLocked}
             reducedMotion={reducedMotion}
             highlighted={hintLevel >= 2 && isMatchingObject(definition, object)}
@@ -253,6 +255,7 @@ function CargoCarFallback() {
 
 interface DraggableToyProps {
   readonly object: TrainObjectDefinition;
+  readonly plankX: number;
   readonly disabled: boolean;
   readonly reducedMotion: boolean;
   readonly highlighted: boolean;
@@ -263,6 +266,7 @@ interface DraggableToyProps {
 
 function DraggableToy({
   object,
+  plankX,
   disabled,
   reducedMotion,
   highlighted,
@@ -273,10 +277,7 @@ function DraggableToy({
   const mesh = useRef<Mesh>(null);
   const drag = useRef(new PointerDragTracker());
   const target = useRef(new Vector3());
-  const origin = useMemo(
-    () => new Vector3(-4.5 + object.startSlot * 1.35, -0.75, 0.65),
-    [object.startSlot],
-  );
+  const origin = useMemo(() => new Vector3(plankX, -0.75, 0.65), [plankX]);
   const interactionPlane = useMemo(() => new Plane(new Vector3(0, 0, 1), -0.65), []);
 
   useEffect(() => {
