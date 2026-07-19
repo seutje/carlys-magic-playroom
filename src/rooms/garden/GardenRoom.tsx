@@ -97,13 +97,21 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
 
   const act = (action: GardenAction) => dispatch({ type: "ACT", action });
   const interactionLocked = state.phase !== "waiting";
+  const waterEnabled = !interactionLocked && (state.hintLevel !== 2 || expectedAction === "water");
+  const sunEnabled = !interactionLocked && (state.hintLevel !== 2 || expectedAction === "sun");
 
   return (
     <section className="garden-room" aria-labelledby="garden-title">
       <h1 id="garden-title" className="sr-only">
         Little Garden
       </h1>
-      <GardenScene state={state} reducedEffects={reducedEffects} />
+      <GardenScene
+        state={state}
+        reducedEffects={reducedEffects}
+        waterEnabled={waterEnabled}
+        sunEnabled={sunEnabled}
+        onAction={act}
+      />
       <div className="garden-guide" aria-live="polite">
         <span aria-hidden="true">*</span>
         <div>
@@ -115,7 +123,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
       <div className={`garden-controls hint-${state.hintLevel}`} aria-label="Garden helpers">
         <button
           type="button"
-          disabled={interactionLocked || (state.hintLevel === 2 && expectedAction !== "water")}
+          disabled={!waterEnabled}
           onClick={() => act("water")}
           aria-label="Tap rain cloud"
         >
@@ -124,7 +132,7 @@ export function GardenRoom({ replayRequest, session }: RoomComponentProps) {
         </button>
         <button
           type="button"
-          disabled={interactionLocked || (state.hintLevel === 2 && expectedAction !== "sun")}
+          disabled={!sunEnabled}
           onClick={() => act("sun")}
           aria-label="Tap warm sun"
         >

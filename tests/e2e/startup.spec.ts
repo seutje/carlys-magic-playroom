@@ -277,8 +277,8 @@ test("completes three-step garden tasks safely", async ({ page }) => {
   const firstHelper = await expectedGardenHelper(page);
   await firstHelper.click({ clickCount: 2 });
   await expect(page.getByText("Growth 1/3")).toBeVisible();
-  await (await expectedGardenHelper(page)).click();
-  await (await expectedGardenHelper(page)).click();
+  await tapExpectedGardenModel(page);
+  await tapExpectedGardenModel(page);
   await expect(page.getByText("Garden games: 1")).toBeVisible();
   await expect(page).toHaveScreenshot("garden-growth.png", {
     animations: "disabled",
@@ -286,9 +286,9 @@ test("completes three-step garden tasks safely", async ({ page }) => {
   });
 
   await page.getByRole("button", { name: "Grow another" }).click();
-  await (await expectedGardenHelper(page)).click();
-  await (await expectedGardenHelper(page)).click();
-  await (await expectedGardenHelper(page)).click();
+  await tapExpectedGardenModel(page);
+  await tapExpectedGardenModel(page);
+  await tapExpectedGardenModel(page);
   await expect(page.getByText("Garden games: 2")).toBeVisible();
   await expect(page).toHaveScreenshot("garden-bee.png", {
     animations: "disabled",
@@ -411,6 +411,18 @@ async function expectedGardenHelper(page: Page) {
   await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
   return page.getByRole("button", { name: wantsWater ? "Tap rain cloud" : "Tap warm sun" });
+}
+
+async function tapExpectedGardenModel(page: Page) {
+  await expect(page.getByRole("button", { name: "Pause garden" })).toBeEnabled();
+  const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
+  const canvas = page.locator(".garden-canvas canvas");
+  const bounds = await canvas.boundingBox();
+  if (!bounds) throw new Error("Garden canvas is unavailable");
+  await page.mouse.click(
+    bounds.x + bounds.width * (wantsWater ? 0.76 : 0.25),
+    bounds.y + bounds.height * 0.16,
+  );
 }
 
 async function unlockParentArea(page: Page) {

@@ -13,14 +13,23 @@ import {
   type GardenModelId,
   type GardenModelSources,
 } from "./garden.model";
-import { GROWTH_STAGES, type GardenState } from "./garden.types";
+import { GROWTH_STAGES, type GardenAction, type GardenState } from "./garden.types";
 
 interface GardenSceneProps {
   readonly state: GardenState;
   readonly reducedEffects: boolean;
+  readonly waterEnabled: boolean;
+  readonly sunEnabled: boolean;
+  readonly onAction: (action: GardenAction) => void;
 }
 
-export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
+export function GardenScene({
+  state,
+  reducedEffects,
+  waterEnabled,
+  sunEnabled,
+  onAction,
+}: GardenSceneProps) {
   const quality = useQuality();
   const stage = GROWTH_STAGES[state.growth];
   const models = useOwnedGardenModels();
@@ -42,14 +51,21 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
           <meshStandardMaterial color="#79533c" roughness={1} />
         </mesh>
         <Plant growth={state.growth} source={models[stage]} />
-        <group position={[-3.2, 2.2, -1]} scale={0.68}>
+        <InteractiveHelper
+          position={[-3.2, 2.2, -1]}
+          scale={0.68}
+          enabled={sunEnabled}
+          onActivate={() => onAction("sun")}
+        >
           <GardenCharacterModel source={models.sun} fallback={<SunFallback />} />
-        </group>
-        {quality.decorativeObjects ? (
-          <group position={[2.6, 2.3, -0.5]}>
-            <GardenCharacterModel source={models.cloud} fallback={<CloudFallback />} />
-          </group>
-        ) : null}
+        </InteractiveHelper>
+        <InteractiveHelper
+          position={[2.6, 2.3, -0.5]}
+          enabled={waterEnabled}
+          onActivate={() => onAction("water")}
+        >
+          <GardenCharacterModel source={models.cloud} fallback={<CloudFallback />} />
+        </InteractiveHelper>
         {state.visitor === "bee" ? <BeeVisitor source={models.bee} /> : null}
         {!reducedEffects && state.lastAction === "water" && state.phase === "evaluating" ? (
           <group position={[2.6, 1.2, 0]}>
@@ -63,6 +79,38 @@ export function GardenScene({ state, reducedEffects }: GardenSceneProps) {
         ) : null}
       </Canvas>
     </div>
+  );
+}
+
+function InteractiveHelper({
+  position,
+  scale = 1,
+  enabled,
+  onActivate,
+  children,
+}: {
+  readonly position: [number, number, number];
+  readonly scale?: number;
+  readonly enabled: boolean;
+  readonly onActivate: () => void;
+  readonly children: React.ReactNode;
+}) {
+  return (
+    <group
+      position={position}
+      scale={scale}
+      onPointerDown={(event) => {
+        if (!enabled) return;
+        event.stopPropagation();
+        onActivate();
+      }}
+    >
+      {children}
+      <mesh>
+        <sphereGeometry args={[1.35, 12, 8]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      </mesh>
+    </group>
   );
 }
 
