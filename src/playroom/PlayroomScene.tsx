@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import type { Group, Mesh } from "three";
-import { Vector3 } from "three";
+import type { Group } from "three";
+import { CanvasTexture, LinearFilter, SRGBColorSpace, Vector3 } from "three";
 
 import { FrameDiagnostics } from "../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../engine/rendering/qualityContext";
@@ -116,7 +116,7 @@ interface RoomPortalProps {
 
 function RoomPortal({ portal, idleOffset, reducedMotion, disabled, onSelect }: RoomPortalProps) {
   const group = useRef<Group>(null);
-  const face = useRef<Mesh>(null);
+  const face = useRef<Group>(null);
 
   useFrame(({ clock }) => {
     if (!group.current || reducedMotion) return;
@@ -143,14 +143,49 @@ function RoomPortal({ portal, idleOffset, reducedMotion, disabled, onSelect }: R
         <boxGeometry args={[1.9, 2.5, 1.1]} />
         <meshStandardMaterial color={portal.color} roughness={0.65} />
       </mesh>
-      <mesh ref={face} position={[0, 0.15, 0.61]}>
-        <circleGeometry args={[0.62, 32]} />
-        <meshStandardMaterial color={portal.accent} roughness={0.8} />
-      </mesh>
+      <group ref={face} position={[0, 0.15, 0.61]}>
+        <mesh>
+          <circleGeometry args={[0.62, 32]} />
+          <meshStandardMaterial color={portal.accent} roughness={0.8} />
+        </mesh>
+        <PortalLetter letter={portal.letter} />
+      </group>
       <mesh position={[0, -1.3, 0.1]}>
         <boxGeometry args={[2.3, 0.28, 1.5]} />
         <meshStandardMaterial color="#fff7e9" roughness={0.9} />
       </mesh>
     </group>
+  );
+}
+
+function PortalLetter({ letter }: { readonly letter: PortalDefinition["letter"] }) {
+  const texture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+
+    const context = canvas.getContext("2d");
+    if (context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#49345f";
+      context.font = "900 176px ui-rounded, 'Avenir Next', system-ui, sans-serif";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(letter, canvas.width / 2, canvas.height / 2 + 5);
+    }
+
+    const letterTexture = new CanvasTexture(canvas);
+    letterTexture.colorSpace = SRGBColorSpace;
+    letterTexture.minFilter = LinearFilter;
+    return letterTexture;
+  }, [letter]);
+
+  useEffect(() => () => texture.dispose(), [texture]);
+
+  return (
+    <mesh position={[0, 0, 0.012]}>
+      <planeGeometry args={[0.82, 0.82]} />
+      <meshBasicMaterial map={texture} transparent toneMapped={false} />
+    </mesh>
   );
 }

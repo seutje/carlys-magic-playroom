@@ -2,6 +2,7 @@ import type { RoomId } from "../types/domain";
 
 export interface PortalDefinition {
   readonly id: RoomId;
+  readonly letter: "C" | "A" | "R" | "L" | "Y";
   readonly title: string;
   readonly spokenLabel: string;
   readonly color: string;
@@ -13,6 +14,7 @@ export interface PortalDefinition {
 export const PORTALS: readonly PortalDefinition[] = [
   {
     id: "train",
+    letter: "C",
     title: "Tiny Delivery Train",
     spokenLabel: "Play with the train",
     color: "#ef6b62",
@@ -22,6 +24,7 @@ export const PORTALS: readonly PortalDefinition[] = [
   },
   {
     id: "critter",
+    letter: "A",
     title: "Build-a-Critter Lab",
     spokenLabel: "Build a critter",
     color: "#8268c8",
@@ -31,6 +34,7 @@ export const PORTALS: readonly PortalDefinition[] = [
   },
   {
     id: "garden",
+    letter: "R",
     title: "Little Garden",
     spokenLabel: "Visit the garden",
     color: "#55a965",
@@ -40,6 +44,7 @@ export const PORTALS: readonly PortalDefinition[] = [
   },
   {
     id: "shapes",
+    letter: "L",
     title: "Magic Shape Factory",
     spokenLabel: "Visit the shape factory",
     color: "#e88b3d",
@@ -49,6 +54,7 @@ export const PORTALS: readonly PortalDefinition[] = [
   },
   {
     id: "music",
+    letter: "Y",
     title: "Musical Corner",
     spokenLabel: "Make some music",
     color: "#4f8fc5",
