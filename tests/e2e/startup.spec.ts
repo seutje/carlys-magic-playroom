@@ -200,6 +200,10 @@ test("completes and persists the fixed two-yellow-duck train activity", async ({
     .poll(() => collapseRepeated(voiceRequests), { timeout: 6_000 })
     .toEqual(["instruction-two-yellow-ducks", "count-one", "count-two", "success-all-aboard"]);
 
+  await page.getByRole("button", { name: "Play again" }).click();
+  await expect(page.getByLabel("0 toys loaded")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Load yellow duck" }).first()).toBeEnabled();
+
   await page.reload();
   await page.getByRole("button", { name: "Play" }).click();
   await page.getByRole("button", { name: "Play with the train" }).click();

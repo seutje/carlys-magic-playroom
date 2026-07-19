@@ -20,6 +20,7 @@ import {
   loadDuckModel,
   loadTrainModel,
 } from "./train.model";
+import { nextTrainDepartureX } from "./train.animation";
 import type { TrainActivityDefinition, TrainObjectDefinition } from "./train.types";
 import { isMatchingObject } from "./train.validation";
 
@@ -62,7 +63,13 @@ export function TrainScene({
         <color attach="background" args={["#bfe8f2"]} />
         <ambientLight intensity={1.8} />
         <directionalLight position={[2, 8, 5]} intensity={2.1} />
-        <TrainWorld departing={departing} reducedMotion={reducedMotion} hinting={hintLevel > 0} />
+        <TrainWorld
+          departing={departing}
+          reducedMotion={reducedMotion}
+          hinting={hintLevel > 0}
+          loaded={loaded}
+          duckModel={duckModel}
+        />
         {available.map((object) => (
           <DraggableToy
             key={object.id}
@@ -75,15 +82,6 @@ export function TrainScene({
             onDrop={onDrop}
           />
         ))}
-        {loaded.map((object, index) => (
-          <ToyVisual
-            key={object.id}
-            object={object}
-            position={[2.45 + index * 0.55, -0.62, 0.2]}
-            scale={0.48}
-            duckModel={duckModel}
-          />
-        ))}
       </Canvas>
     </div>
   );
@@ -93,15 +91,24 @@ function TrainWorld({
   departing,
   reducedMotion,
   hinting,
+  loaded,
+  duckModel,
 }: {
   departing: boolean;
   reducedMotion: boolean;
   hinting: boolean;
+  loaded: readonly TrainObjectDefinition[];
+  duckModel: Group | undefined;
 }) {
   const train = useRef<Group>(null);
   useFrame((_, delta) => {
-    if (!train.current || !departing || reducedMotion) return;
-    train.current.position.x += delta * 4.5;
+    if (!train.current) return;
+    train.current.position.x = nextTrainDepartureX(
+      train.current.position.x,
+      delta,
+      departing,
+      reducedMotion,
+    );
   });
 
   return (
@@ -117,6 +124,15 @@ function TrainWorld({
       <group ref={train}>
         <TrainEngine />
         <CargoCar hinting={hinting} />
+        {loaded.map((object, index) => (
+          <ToyVisual
+            key={object.id}
+            object={object}
+            position={[2.45 + index * 0.55, -0.62, 0.2]}
+            scale={0.48}
+            duckModel={duckModel}
+          />
+        ))}
       </group>
       <mesh position={[6, 0.2, -1.3]}>
         <boxGeometry args={[1.8, 3.4, 0.4]} />
