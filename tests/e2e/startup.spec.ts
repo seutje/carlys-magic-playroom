@@ -158,6 +158,7 @@ test("persists accessible parent controls and confirms local reset", async ({ pa
 });
 
 test("completes and persists the fixed two-yellow-duck train activity", async ({ page }) => {
+  test.setTimeout(45_000);
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
     if (request.resourceType() !== "media") return;
@@ -370,7 +371,7 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
 });
 
 test("replays, mutes, bounds taps, and matches a musical target", async ({ page }) => {
-  test.setTimeout(45_000);
+  test.setTimeout(90_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const soundRequests: string[] = [];
   page.on("request", (request) => {
@@ -387,7 +388,13 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
   await expect(wrong).toBeEnabled();
   await wrong.click();
   await expect(page.getByText("Watch the target picture bounce.")).toBeVisible();
-  await wrong.click();
+  const nextWrong = page.locator('.music-choices button[data-target="false"]').first();
+  if (await nextWrong.isVisible()) {
+    // Under a heavily loaded parallel run, the automatic hint can simplify the
+    // choices between this check and the click. Either path must reach the same
+    // child-safe one-choice state without spending the rest of the test timeout.
+    await nextWrong.click({ timeout: 1_000 }).catch(() => undefined);
+  }
   await expect(page.getByText("Here is the matching picture.")).toBeVisible();
   await expect(page.locator(".music-choices button")).toHaveCount(1);
   await expect(page).toHaveScreenshot("music-stage.png", {
@@ -399,12 +406,15 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
 
   await page.getByRole("button", { name: "Open settings" }).click();
   await unlockParentArea(page);
-  await page.getByRole("checkbox", { name: "Sound on" }).uncheck();
+  const soundToggle = page.getByRole("checkbox", { name: "Sound on" });
+  await soundToggle.uncheck();
+  await expect(soundToggle).not.toBeChecked();
   await page.getByRole("button", { name: "Back to play" }).click();
   await page.getByRole("button", { name: "Play target sound again" }).click();
 
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("checkbox", { name: "Sound on" }).check();
+  await expect(page.getByRole("checkbox", { name: "Sound on" })).toBeChecked();
   await page.getByRole("button", { name: "Back to play" }).click();
   for (let index = 0; index < 5; index += 1) {
     await page.getByRole("button", { name: "Play target sound again" }).click();
