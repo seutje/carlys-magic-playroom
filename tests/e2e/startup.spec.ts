@@ -306,6 +306,9 @@ test("completes three-step garden tasks safely", async ({ page }) => {
 });
 
 test("reduces choices and completes the fixed shape factory puzzle", async ({ page }) => {
+  // This flow intentionally exercises four processing cycles and two visual baselines. Give
+  // software-rendered CI enough headroom when the other WebGL rooms run concurrently.
+  test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {

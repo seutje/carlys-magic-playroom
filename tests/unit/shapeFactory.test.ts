@@ -10,8 +10,77 @@ import {
   createShapeFactoryState,
   reduceShapeFactory,
 } from "../../src/rooms/shapes/shapes.machine";
+import {
+  calculateGearAngles,
+  FACTORY_GEARS,
+  factoryDriveSpeed,
+  gearPitchRadius,
+} from "../../src/rooms/shapes/shapeFactory.model";
 
 describe("deterministic shape factory", () => {
+  it("meshes the factory gears at tangent pitch circles", () => {
+    for (let index = 1; index < FACTORY_GEARS.length; index += 1) {
+      const previous = FACTORY_GEARS[index - 1];
+      const current = FACTORY_GEARS[index];
+      expect(previous).toBeDefined();
+      expect(current).toBeDefined();
+      if (!previous || !current) return;
+      const distance = Math.hypot(
+        current.position[0] - previous.position[0],
+        current.position[1] - previous.position[1],
+      );
+      expect(distance).toBeCloseTo(
+        gearPitchRadius(previous.teeth) + gearPitchRadius(current.teeth),
+        3,
+      );
+    }
+  });
+
+  it("turns meshed gears in alternating directions at tooth-count ratios", () => {
+    const driveAngle = 1.75;
+    const resting = calculateGearAngles(0);
+    const angles = calculateGearAngles(driveAngle);
+    const travel = {
+      drive: angles.drive - resting.drive,
+      idler: angles.idler - resting.idler,
+      output: angles.output - resting.output,
+    };
+    expect(travel.drive).toBe(driveAngle);
+    expect(travel.idler).toBeCloseTo(-(driveAngle * 14) / 22);
+    expect(travel.output).toBeCloseTo((driveAngle * 14) / 16);
+    expect(Math.abs(travel.drive * 14)).toBeCloseTo(Math.abs(travel.idler * 22));
+    expect(Math.abs(travel.idler * 22)).toBeCloseTo(Math.abs(travel.output * 16));
+
+    for (let index = 1; index < FACTORY_GEARS.length; index += 1) {
+      const driver = FACTORY_GEARS[index - 1];
+      const driven = FACTORY_GEARS[index];
+      expect(driver).toBeDefined();
+      expect(driven).toBeDefined();
+      if (!driver || !driven) return;
+      const lineAngle = Math.atan2(
+        driven.position[1] - driver.position[1],
+        driven.position[0] - driver.position[0],
+      );
+      const contactPhase =
+        driver.teeth * (lineAngle - angles[driver.id]) +
+        driven.teeth * (lineAngle + Math.PI - angles[driven.id]);
+      expect(Math.cos(contactPhase)).toBeCloseTo(-1);
+    }
+  });
+
+  it("stops motion for drag, pause, completion, and reduced motion", () => {
+    expect(factoryDriveSpeed({ phase: "waiting", conveyorPaused: false }, false)).toBeGreaterThan(
+      0,
+    );
+    expect(factoryDriveSpeed({ phase: "waiting", conveyorPaused: true }, false)).toBe(0);
+    expect(factoryDriveSpeed({ phase: "processing", conveyorPaused: true }, false)).toBeGreaterThan(
+      1,
+    );
+    expect(factoryDriveSpeed({ phase: "paused", conveyorPaused: false }, false)).toBe(0);
+    expect(factoryDriveSpeed({ phase: "complete", conveyorPaused: false }, false)).toBe(0);
+    expect(factoryDriveSpeed({ phase: "processing", conveyorPaused: true }, true)).toBe(0);
+  });
+
   it("reproduces serializable, unambiguous, solvable puzzles across many seeds", () => {
     for (let index = 0; index < 250; index += 1) {
       const seed = `shape-property-${index}`;
