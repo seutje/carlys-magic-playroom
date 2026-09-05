@@ -14,11 +14,12 @@ import {
   calculateGearAngles,
   FACTORY_GEARS,
   factoryDriveSpeed,
+  GEAR_MESH_CLEARANCE,
   gearPitchRadius,
 } from "../../src/rooms/shapes/shapeFactory.model";
 
 describe("deterministic shape factory", () => {
-  it("meshes the factory gears at tangent pitch circles", () => {
+  it("keeps a small visual clearance between each pair of chunky toy gears", () => {
     for (let index = 1; index < FACTORY_GEARS.length; index += 1) {
       const previous = FACTORY_GEARS[index - 1];
       const current = FACTORY_GEARS[index];
@@ -30,7 +31,7 @@ describe("deterministic shape factory", () => {
         current.position[1] - previous.position[1],
       );
       expect(distance).toBeCloseTo(
-        gearPitchRadius(previous.teeth) + gearPitchRadius(current.teeth),
+        gearPitchRadius(previous.teeth) + gearPitchRadius(current.teeth) + GEAR_MESH_CLEARANCE,
         3,
       );
     }

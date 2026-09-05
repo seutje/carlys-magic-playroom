@@ -8,15 +8,16 @@ export interface FactoryGearSpec {
 }
 
 export const GEAR_MODULE = 0.062;
+export const GEAR_MESH_CLEARANCE = 0.055;
 
 /**
- * A three-gear external train. Adjacent pitch circles are tangent, so the rendered teeth
- * turn in opposite directions at tooth-count-derived speeds instead of merely spinning.
+ * A three-gear external train. Adjacent pitch circles have a small visual clearance suited to
+ * the chunky toy teeth, while rotations still use tooth-count-derived ratios and phasing.
  */
 export const FACTORY_GEARS: readonly FactoryGearSpec[] = [
-  { id: "drive", teeth: 14, position: [-1.45, -0.18, 1.34], color: "#f4a340" },
+  { id: "drive", teeth: 14, position: [-1.505, -0.18, 1.34], color: "#f4a340" },
   { id: "idler", teeth: 22, position: [-0.334, -0.18, 1.35], color: "#62c6bd" },
-  { id: "output", teeth: 16, position: [0.499, 0.653, 1.36], color: "#f2768b" },
+  { id: "output", teeth: 16, position: [0.538, 0.692, 1.36], color: "#f2768b" },
 ] as const;
 
 export function gearPitchRadius(teeth: number): number {
