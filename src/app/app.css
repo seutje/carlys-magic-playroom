@@ -202,8 +202,8 @@
   }
 
   .critter-customize button {
-    min-width: 3.8rem;
-    min-height: 3.7rem;
+    min-width: 4rem;
+    min-height: 4rem;
     font-size: 0.78rem;
   }
 
@@ -240,7 +240,7 @@
 
 .garden-guide {
   position: absolute;
-  top: 5.5rem;
+  bottom: max(7.25rem, calc(env(safe-area-inset-bottom) + 6.25rem));
   left: 50%;
   z-index: 3;
   display: flex;
@@ -384,17 +384,14 @@
 }
 
 @media (max-width: 760px) {
-  .garden-guide {
-    top: 4.8rem;
-  }
-
   .garden-levels,
   .garden-pause {
     top: 12.5rem;
   }
 
   .garden-saved {
-    bottom: 6.8rem;
+    top: 17.5rem;
+    bottom: auto;
   }
 }
 
@@ -1275,7 +1272,9 @@ h1 {
     display: none;
   }
   .music-target {
-    top: 29%;
+    top: max(12rem, 29%);
+    min-width: 7rem;
+    min-height: 5rem;
   }
 }
 
@@ -1349,10 +1348,24 @@ h1 {
 }
 
 @media (max-width: 700px) {
+  .critter-guide,
+  .shape-factory-guide,
+  .music-guide,
   .train-instruction {
-    max-width: calc(100vw - 14rem);
+    top: max(5.75rem, calc(env(safe-area-inset-top) + 5.25rem));
+    right: max(1rem, env(safe-area-inset-right));
+    left: max(1rem, env(safe-area-inset-left));
+    width: auto;
+    max-width: none;
+    transform: none;
   }
 
+  .critter-guide .eyebrow,
+  .critter-guide p:last-child,
+  .shape-factory-guide .eyebrow,
+  .shape-factory-guide p:last-child,
+  .music-guide .eyebrow,
+  .music-guide p:last-child,
   .train-feedback {
     display: none;
   }
@@ -1579,12 +1592,62 @@ h1 {
 
 @media (max-width: 700px) {
   .shape-factory-guide {
-    max-width: calc(100vw - 13rem);
+    top: max(5.75rem, calc(env(safe-area-inset-top) + 5.25rem));
+    right: max(1rem, env(safe-area-inset-right));
+    left: max(1rem, env(safe-area-inset-left));
+    width: auto;
+    max-width: none;
+    transform: none;
   }
 
   .shape-factory-guide p:last-child,
   .shape-progress {
     display: none;
+  }
+
+  .shape-opening.slot-upper-left,
+  .shape-opening.slot-upper-right {
+    top: 45%;
+  }
+
+  .shape-opening.slot-lower-left,
+  .shape-opening.slot-lower-right {
+    top: 63%;
+  }
+}
+
+/* Short landscape screens use a target-free left rail for instructions because there is not
+   enough vertical space to stack a guide, a scene target, and the bottom interaction tray. */
+@media (max-width: 700px) and (max-height: 450px) and (orientation: landscape) {
+  .game-shell,
+  .train-room {
+    min-height: 100dvh;
+  }
+
+  .critter-guide,
+  .shape-factory-guide,
+  .music-guide,
+  .train-instruction {
+    right: auto;
+    width: min(40vw, 16.5rem);
+  }
+
+  .music-target {
+    right: 12%;
+    left: auto;
+    transform: none;
+  }
+
+  .garden-levels,
+  .garden-saved {
+    display: none;
+  }
+
+  .garden-pause {
+    top: auto;
+    right: auto;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
   }
 }
 

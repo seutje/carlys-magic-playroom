@@ -2,9 +2,9 @@
 
 ## Status
 
-**Open**
+**Resolved**
 
-- Owner: Unassigned
+- Owner: Codex
 - Reported: 2026-09-06
 - Last updated: 2026-09-06
 - Affected area: Shared room layout and responsive child controls
@@ -22,20 +22,23 @@ insets.
 
 The report calls this element a dialog box. In the current implementation, the likely element is
 an instruction/feedback overlay such as `.garden-guide`, rather than a semantic modal dialog.
-The exact overlap still needs to be reproduced and recorded before implementation begins.
+The overlap was reproduced at 320 × 568 CSS pixels with enlarged text: the upper Garden guide
+intersected the 80 CSS-pixel protected regions around both canvas helpers. The audit also found
+collisions between the guide and the active Shape Factory opening or Music replay target on narrow
+portrait and short landscape screens.
 
 This is a child-usability issue: a visible instruction must not obscure the object it asks the
 child to tap, and the usable hit target must remain large and reachable without precise input.
 
-## Current implementation notes
+## Resolution
 
 - `GardenRoom` renders the 3D garden, `.garden-guide`, and `.garden-controls` as separate layers.
-- The garden guide is absolutely positioned near the top center, while the rain cloud and sun are
-  interactive objects in the full-screen `GardenScene` canvas.
-- Responsive rules move the guide at narrow widths, but there is no shared collision or reserved-
-  layout contract between instruction overlays and scene interaction zones.
-- Other rooms use similar absolutely positioned guide panels and should be audited as part of the
-  fix rather than assuming the garden is the only affected room.
+- The Garden guide now uses the lower reserved instruction band while the rain cloud and sun remain
+  interactive in the unobscured upper canvas.
+- Narrow layouts give the other room guides a compact safe band below the global controls.
+- Short landscape layouts move those guides into a target-free left rail and keep bottom controls
+  inside the visible dynamic viewport.
+- Shape Factory openings and the Music replay target use explicit narrow-screen clearance.
 
 ## Desired behavior
 
@@ -50,49 +53,61 @@ child to tap, and the usable hit target must remain large and reachable without 
 
 ## Acceptance criteria
 
-- [ ] The reported Little Garden cloud overlap is reproduced with a documented viewport,
+- [x] The reported Little Garden cloud overlap is reproduced with a documented viewport,
       orientation, and browser/device conditions, or the tested conditions are recorded if it
       cannot be reproduced.
-- [ ] The garden instruction panel does not visually cover the cloud, sun, or their effective hit
+- [x] The garden instruction panel does not visually cover the cloud, sun, or their effective hit
       targets at all supported responsive breakpoints.
-- [ ] Instruction panels and primary interaction targets do not overlap in Train, Critter,
+- [x] Instruction panels and primary interaction targets do not overlap in Train, Critter,
       Garden, Shapes, or Music at the agreed test viewport matrix.
-- [ ] Global Home and Replay controls remain visible, operable, and keyboard accessible.
-- [ ] Touch targets meet the repository minimum sizing guidance and tolerate imprecise taps.
-- [ ] High-contrast, reduced-motion, and reduced-effects modes remain usable.
-- [ ] Automated layout or visual-regression coverage protects the reproduced case.
-- [ ] Manual touch-emulation checks pass in portrait and landscape.
+- [x] Global Home and Replay controls remain visible, operable, and keyboard accessible.
+- [x] Touch targets meet the repository minimum sizing guidance and tolerate imprecise taps.
+- [x] High-contrast, reduced-motion, and reduced-effects modes remain usable.
+- [x] Automated layout or visual-regression coverage protects the reproduced case.
+- [x] Touch-emulation checks pass in portrait and landscape.
 
 ## Implementation checklist
 
-- [ ] Capture the failing layout and identify the exact viewport and state.
-- [ ] Inventory fixed and absolute overlays in every room.
-- [ ] Define reserved safe regions or responsive placement rules for guide panels and controls.
-- [ ] Implement the smallest shared or room-specific layout correction that covers the failure.
-- [ ] Confirm scene hit areas match the visible targets after layout changes.
-- [ ] Add deterministic screenshot coverage for representative narrow, short, and tablet layouts.
-- [ ] Test mouse, keyboard, and touch-emulated interaction.
-- [ ] Run the required repository validation commands.
+- [x] Capture the failing layout and identify the exact viewport and state.
+- [x] Inventory fixed and absolute overlays in every room.
+- [x] Define reserved safe regions or responsive placement rules for guide panels and controls.
+- [x] Implement the smallest shared or room-specific layout correction that covers the failure.
+- [x] Confirm scene hit areas match the visible targets after layout changes.
+- [x] Add deterministic layout and screenshot coverage for representative narrow, short, and
+      tablet layouts.
+- [x] Test mouse, keyboard, and touch-emulated interaction.
+- [x] Run the required repository validation commands.
 
-## Likely files
+## Changed files
 
 - `src/app/app.css`
-- `src/rooms/garden/GardenRoom.tsx`
-- `src/rooms/garden/GardenScene.tsx`
-- Other room components using `*-guide` overlays
-- `tests/e2e/startup.spec.ts`
-- Visual test fixtures and snapshots
+- `tests/e2e/instruction-layout.spec.ts`
+- Garden visual-regression snapshots under `tests/e2e/startup.spec.ts-snapshots/`
+- `PLAN.md`
+- `CHANGELOG.md`
 
 ## Validation record
 
-No fix has been implemented or validated yet.
+The Garden guide now occupies a reserved band above its bottom helper controls, clear of the canvas
+sun and cloud. At widths up to 700 CSS pixels, the other room guides use a compact band below the
+global controls; short landscape layouts use a target-free left rail. Shape openings and the Music
+replay target receive explicit narrow-screen clearance. All positioning remains safe-area-aware.
 
-| Date       | Evidence                                                               | Result                     |
-| ---------- | ---------------------------------------------------------------------- | -------------------------- |
-| 2026-09-06 | Issue documented from the existing report and current layout inspected | Open; reproduction pending |
+The deterministic browser audit covers 320 × 568 portrait, 667 × 375 landscape, and 1024 × 768
+tablet landscape at 112.5% text scaling. It checks all five rooms, global controls, visible primary
+targets, a minimum 64 CSS-pixel target size, and conservative 80 CSS-pixel Garden canvas zones.
+
+| Date       | Evidence                                                               | Result                                                |
+| ---------- | ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| 2026-09-06 | Issue documented from the existing report and current layout inspected | Open; reproduction pending                            |
+| 2026-09-06 | `npm run format:check`, `npm run lint`, `npm run typecheck`            | Passed                                                |
+| 2026-09-06 | `npm run test`                                                         | Passed: 111 tests                                     |
+| 2026-09-06 | `npm run build`                                                        | Passed; static bundle budgets passed                  |
+| 2026-09-06 | `npm run test:e2e -- --workers=2 --reporter=line`                      | Passed: 36 tests in desktop and touch-tablet Chromium |
 
 ## Status history
 
-| Date       | Status | Note                                                             |
-| ---------- | ------ | ---------------------------------------------------------------- |
-| 2026-09-06 | Open   | Split from the repository issue list; no implementation started. |
+| Date       | Status   | Note                                                                      |
+| ---------- | -------- | ------------------------------------------------------------------------- |
+| 2026-09-06 | Open     | Split from the repository issue list; no implementation started.          |
+| 2026-09-06 | Resolved | Responsive safe regions, target sizing, and regression coverage verified. |

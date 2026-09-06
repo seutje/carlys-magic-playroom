@@ -2610,7 +2610,11 @@ Verification:
 Evidence:
 
 ```text
-Not yet verified.
+CMP-001 partial evidence (2026-09-06): the responsive instruction-panel audit passed across all five
+rooms at 320x568 portrait, 667x375 landscape, and 1024x768 tablet landscape with 112.5% text scaling.
+The audit checks global-control clearance, 64 CSS-pixel minimum primary targets, and protected 80
+CSS-pixel Garden canvas helper regions in desktop and touch-tablet Chromium. The broader P10-04
+release audit remains open.
 ```
 
 ---
@@ -3213,3 +3217,25 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - ADR-010 records the partial-failure-tolerant versioned offline shell and safe update lifecycle.
 - ADR-011 records non-persisted adaptive quality, bounded local performance metrics, and why the physical device gate remains necessary.
+
+### 2026-09-06 — Resolve CMP-001 instruction-panel overlap
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- CMP-001 responsive instruction safe regions and target-clearance regression coverage.
+
+**In progress:**
+- Phase 10 remains open outside this focused issue.
+
+**Verified:**
+- `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test` (111 passed), and `npm run build` passed.
+- `npm run test:e2e -- --workers=2 --reporter=line` passed 36 desktop/touch-tablet tests under `/carlys-magic-playroom/`.
+- Visual inspection confirmed the Garden guide remains clear of the sun, cloud, global controls, and bottom actions.
+
+**Blocked:**
+- None
+
+**Notes:**
+- The browser matrix covers all rooms at 320x568, 667x375, and 1024x768 with 112.5% text scaling.
