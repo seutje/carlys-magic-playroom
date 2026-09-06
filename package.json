@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build && npm run report:budgets",
     "build:pages": "VITE_BASE_PATH=/carlys-magic-playroom/ npm run build",
     "assets:icons": "node scripts/render-pwa-icons.mjs",
+    "assets:music": "node scripts/generate-music-audio.mjs",
     "report:budgets": "node scripts/report-budgets.mjs",
     "preview": "vite preview",
     "preview:root": "npm run build && vite preview --host 127.0.0.1 --base /",

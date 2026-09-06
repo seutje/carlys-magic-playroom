@@ -4,7 +4,20 @@ export const INSTRUMENTS = ["drum", "bell", "xylophone"] as const;
 export type InstrumentId = (typeof INSTRUMENTS)[number];
 export type SoundVariant = "normal" | "high" | "low" | "loud" | "soft";
 export type MusicConcept = "instrument" | "pitch" | "volume";
-export type SoundId = `${InstrumentId}-${SoundVariant}`;
+export const MUSIC_SOUND_IDS = [
+  "drum-normal",
+  "bell-normal",
+  "xylophone-normal",
+  "bell-high",
+  "bell-low",
+  "drum-loud",
+  "drum-soft",
+] as const;
+export type SoundId = (typeof MUSIC_SOUND_IDS)[number];
+
+export function isMusicSoundId(value: unknown): value is SoundId {
+  return typeof value === "string" && MUSIC_SOUND_IDS.some((soundId) => soundId === value);
+}
 
 export interface MusicChoice {
   readonly id: string;

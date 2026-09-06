@@ -15,7 +15,7 @@ export class MusicAudioController {
     player?: AudioClipPlayer<SoundId>,
   ) {
     this.audio = new AudioCoordinator(
-      player ?? createHtmlAudioPlayer((cue, format) => assetUrl(`audio/music/${cue}.${format}`)),
+      player ?? createHtmlAudioPlayer(resolveMusicAudioUrl),
       getSettings,
       resume,
     );
@@ -41,6 +41,10 @@ export class MusicAudioController {
   public stop(): void {
     this.audio.stopOwner(MUSIC_OWNER);
   }
+}
+
+export function resolveMusicAudioUrl(soundId: SoundId, format: "ogg" | "mp3"): string {
+  return assetUrl(`audio/music/${soundId}.${format}`);
 }
 
 const MUSIC_OWNER = "music";

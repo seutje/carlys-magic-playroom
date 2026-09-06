@@ -6,7 +6,7 @@ import type {
   MusicRoundDefinition,
   SoundVariant,
 } from "./music.types";
-import { INSTRUMENTS } from "./music.types";
+import { INSTRUMENTS, isMusicSoundId } from "./music.types";
 
 export function generateMusicRound(seed: string, difficulty: 1 | 2 | 3): MusicRoundDefinition {
   const random = createRandomSource(seed);
@@ -64,11 +64,13 @@ function choice(instrument: InstrumentId, variant: SoundVariant): MusicChoice {
     loud: "big",
     soft: "small",
   } as const;
+  const soundId = `${instrument}-${variant}`;
+  if (!isMusicSoundId(soundId)) throw new Error(`Unsupported Musical Corner sound: ${soundId}`);
   return {
     id: `${instrument}-${variant}`,
     instrument,
     variant,
-    soundId: `${instrument}-${variant}`,
+    soundId,
     visualPattern: variant === "normal" ? patterns[instrument] : patterns[variant],
   };
 }
@@ -80,6 +82,7 @@ function validChoice(value: unknown): value is MusicChoice {
     typeof item.id === "string" &&
     INSTRUMENTS.includes(item.instrument as InstrumentId) &&
     ["normal", "high", "low", "loud", "soft"].includes(item.variant as string) &&
+    isMusicSoundId(item.soundId) &&
     item.soundId === `${String(item.instrument)}-${String(item.variant)}` &&
     ["boom", "ring", "sparkle", "up", "down", "big", "small"].includes(item.visualPattern as string)
   );

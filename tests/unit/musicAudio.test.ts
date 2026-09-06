@@ -1,6 +1,16 @@
 import type { AudioClipPlayer } from "../../src/engine/audio/audioCoordinator";
-import { MusicAudioController } from "../../src/rooms/music/music.audio";
-import type { SoundId } from "../../src/rooms/music/music.types";
+import { MusicAudioController, resolveMusicAudioUrl } from "../../src/rooms/music/music.audio";
+import { MUSIC_SOUND_IDS, type SoundId } from "../../src/rooms/music/music.types";
+
+describe("music audio URLs", () => {
+  it.each(MUSIC_SOUND_IDS)("resolves both formats for %s beneath the Vite base path", (soundId) => {
+    for (const format of ["ogg", "mp3"] as const) {
+      expect(resolveMusicAudioUrl(soundId, format)).toBe(
+        `${import.meta.env.BASE_URL}audio/music/${soundId}.${format}`,
+      );
+    }
+  });
+});
 
 describe("MusicAudioController", () => {
   it("interrupts for target replay, resumes audio, and throttles rapid selections", async () => {

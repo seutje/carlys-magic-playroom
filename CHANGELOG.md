@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Address CMP-004 with regenerated, perceptually contrasted Musical Corner cues, corrected
+  loud/soft dynamics, reproducible local synthesis, and decoded-audio regression coverage; final
+  physical-speaker listening approval remains recorded as pending.
 - Resolve CMP-003 by making rendered Musical Corner instruments directly tappable, retaining
   labeled accessible equivalents, and using small/large bells and drums to distinguish pitch and
   loudness without relying on words or color.

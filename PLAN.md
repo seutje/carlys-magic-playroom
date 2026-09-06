@@ -1895,6 +1895,11 @@ Evidence:
 
 ```text
 Verified 2026-07-18. Seven 48 kHz mono cues provide OGG/MP3 fallbacks, additive timbres, -18 LUFS normal targets, intentional -14/-28 LUFS volume contrast, base-aware URLs, 0.85–1.45 second duration, and files under 9 KB. The maintainer confirmed clarity on the intended physical tablet speakers.
+
+CMP-004 superseded these files on 2026-09-06 after an audit found that the encoded loud drum was
+quieter than the soft drum. The revised deterministic sources measure -14/-24 LUFS, use more
+distinct instrument envelopes, remain under 9 KB per file, and pass decoded-audio checks in desktop
+and tablet Chromium. A fresh human listening review of the revised files remains pending.
 ```
 
 ---
@@ -1996,6 +2001,9 @@ Evidence:
 
 ```text
 Verified 2026-09-06. Seeded difficulty two uses bell cues separated by over an octave and presents a small high bell beside a large low bell. Difficulty three uses a 14 LU drum contrast and presents a large loud drum beside a small soft drum. The scale contrast applies to loaded models, primitive fallbacks, target pictures, and accessible DOM equivalents, so neither concept depends on color or reading.
+
+CMP-004 revised the bundled cues later on 2026-09-06: high/low bells are now separated by about 17
+semitones and loud/soft drums by 10 LU. The visual mappings and stable sound IDs are unchanged.
 ```
 
 ---

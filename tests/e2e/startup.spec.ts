@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { MUSIC_SOUND_IDS } from "../../src/rooms/music/music.types";
 
 function collapseRepeated(values: readonly string[]): readonly string[] {
   return values.filter((value, index) => index === 0 || value !== values[index - 1]);
@@ -10,6 +11,61 @@ test("loads the startup shell from the repository subpath", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Carly's Magic Playroom" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
   await expect(page.locator("main")).toHaveCSS("min-height", /\d+px/);
+});
+
+test("serves every Musical Corner cue format from the repository subpath", async ({ request }) => {
+  for (const soundId of MUSIC_SOUND_IDS) {
+    for (const format of ["ogg", "mp3"] as const) {
+      const response = await request.get(`audio/music/${soundId}.${format}`);
+      expect(response.ok(), `${soundId}.${format}`).toBe(true);
+      expect((await response.body()).byteLength, `${soundId}.${format}`).toBeGreaterThan(1_000);
+    }
+  }
+});
+
+test("keeps Musical Corner pitch, volume, and envelope contrasts pronounced", async ({ page }) => {
+  await page.goto("./");
+  const metrics = await page.evaluate(async () => {
+    const context = new AudioContext();
+    const measure = async (soundId: string) => {
+      const response = await fetch(`audio/music/${soundId}.ogg`);
+      const buffer = await context.decodeAudioData(await response.arrayBuffer());
+      const samples = buffer.getChannelData(0);
+      let squareSum = 0;
+      let peak = 0;
+      let zeroCrossings = 0;
+      for (let index = 0; index < samples.length; index += 1) {
+        const sample = samples[index] ?? 0;
+        squareSum += sample * sample;
+        peak = Math.max(peak, Math.abs(sample));
+        if (index > 0 && (samples[index - 1] ?? 0) <= 0 && sample > 0) zeroCrossings += 1;
+      }
+      return {
+        duration: buffer.duration,
+        peak,
+        rms: Math.sqrt(squareSum / samples.length),
+        zeroCrossingsPerSecond: zeroCrossings / buffer.duration,
+      };
+    };
+    const result = {
+      loud: await measure("drum-loud"),
+      soft: await measure("drum-soft"),
+      high: await measure("bell-high"),
+      low: await measure("bell-low"),
+      bell: await measure("bell-normal"),
+      xylophone: await measure("xylophone-normal"),
+    };
+    await context.close();
+    return result;
+  });
+
+  expect(metrics.loud.rms / metrics.soft.rms).toBeGreaterThan(2.5);
+  expect(metrics.soft.rms).toBeGreaterThan(0.05);
+  expect(metrics.loud.peak).toBeLessThan(0.85);
+  expect(metrics.high.zeroCrossingsPerSecond / metrics.low.zeroCrossingsPerSecond).toBeGreaterThan(
+    2.2,
+  );
+  expect(metrics.xylophone.duration / metrics.bell.duration).toBeLessThan(0.6);
 });
 
 test("keeps diagnostics out of the ordinary child-facing view", async ({ page }) => {

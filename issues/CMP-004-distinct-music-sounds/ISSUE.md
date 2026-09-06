@@ -2,7 +2,7 @@
 
 ## Status
 
-**Open**
+**Ready for auditory review**
 
 - Owner: Unassigned
 - Reported: 2026-09-06
@@ -50,30 +50,31 @@ where bass response, loudness, and short transients may be limited.
 
 ## Acceptance criteria
 
-- [ ] Every defined `SoundId` has working OGG and MP3 assets loaded through the existing base-aware
+- [x] Every defined `SoundId` has working OGG and MP3 assets loaded through the existing base-aware
       resolver.
 - [ ] Instrument cues are reliably distinguishable in a documented listening review on at least a
       tablet-class speaker and a desktop/laptop speaker.
-- [ ] High/low bell cues have a clearly documented pitch contrast.
-- [ ] Loud/soft drum cues have a clear perceived-volume contrast without clipping, startling peaks,
+- [x] High/low bell cues have a clearly documented pitch contrast.
+- [x] Loud/soft drum cues have a clear measured-volume contrast without clipping, startling peaks,
       or an inaudible soft cue at the default volume.
-- [ ] No cue contains speech, negative feedback, or a misleading secondary instrument.
-- [ ] Playback remains bounded under rapid taps and target replay interrupts cleanly.
-- [ ] Muted and failed-audio states retain usable visual equivalents.
-- [ ] Automated asset coverage confirms all cue/format pairs exist and can be requested beneath the
+- [x] No cue contains speech, negative feedback, or a misleading secondary instrument.
+- [x] Playback remains bounded under rapid taps and target replay interrupts cleanly.
+- [x] Muted and failed-audio states retain usable visual equivalents.
+- [x] Automated asset coverage confirms all cue/format pairs exist and can be requested beneath the
       configured GitHub Pages base path.
-- [ ] Human auditory review findings and the final asset provenance/license are recorded here.
+- [ ] Human auditory review findings on physical target speakers are recorded here. Asset provenance
+      and current licensing status are recorded in `public/audio/music/README.md`.
 
 ## Implementation checklist
 
-- [ ] Audit and describe the perceptual problem in each current cue pair.
-- [ ] Record basic cue properties such as duration, peak level, and clipping where tooling permits.
-- [ ] Define safe contrast targets for timbre, pitch, and perceived volume.
-- [ ] Source or produce revised local master cues with documented provenance and license.
-- [ ] Export matching OGG and MP3 fallbacks using stable existing audio keys.
+- [x] Audit and describe the perceptual problem in each current cue pair.
+- [x] Record basic cue properties such as duration, peak level, and clipping where tooling permits.
+- [x] Define safe contrast targets for timbre, pitch, and perceived volume.
+- [x] Produce revised local master cues with documented provenance and current licensing status.
+- [x] Export matching OGG and MP3 fallbacks using stable existing audio keys.
 - [ ] Review on representative small speakers at default and reduced volume.
-- [ ] Confirm the room's visual patterns still correspond to the revised sounds.
-- [ ] Run audio unit tests, end-to-end asset checks, and all required repository validation commands.
+- [x] Confirm the room's visual patterns still correspond to the revised sounds.
+- [x] Run audio unit tests, end-to-end asset checks, and all required repository validation commands.
 
 ## Likely files
 
@@ -88,14 +89,16 @@ where bass response, loudness, and short transients may be limited.
 
 ## Validation record
 
-No replacement audio has been produced or reviewed yet.
-
-| Date       | Evidence                                                                | Result                        |
-| ---------- | ----------------------------------------------------------------------- | ----------------------------- |
-| 2026-09-06 | Existing cue IDs, bundled format pairs, and playback controls inspected | Open; auditory review pending |
+| Date       | Evidence                                                                                                 | Result                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 2026-09-06 | Existing cue IDs, bundled format pairs, and playback controls inspected                                  | Open; auditory review pending                                  |
+| 2026-09-06 | FFmpeg EBU R128 audit found `drum-loud` at -29.5 LUFS and `drum-soft` at -27.9 LUFS                      | Confirmed reversed contrast defect                             |
+| 2026-09-06 | Revised deterministic cues: bell pitch gap ~17 semitones; drum gap 10 LU; encoded peaks below -2.5 dBFS  | Automated acceptance passed; physical listening review pending |
+| 2026-09-06 | Lint, typecheck, 121 unit/integration tests, build/budgets, 42 serial E2E tests, and 4 performance tests | Passed                                                         |
 
 ## Status history
 
-| Date       | Status | Note                                                             |
-| ---------- | ------ | ---------------------------------------------------------------- |
-| 2026-09-06 | Open   | Split from the repository issue list; no implementation started. |
+| Date       | Status                    | Note                                                                                    |
+| ---------- | ------------------------- | --------------------------------------------------------------------------------------- |
+| 2026-09-06 | Open                      | Split from the repository issue list; no implementation started.                        |
+| 2026-09-06 | Ready for auditory review | Revised assets and regression coverage complete; representative-speaker review remains. |
