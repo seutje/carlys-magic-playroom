@@ -1,5 +1,6 @@
 import { generateMusicRound, validateMusicRound } from "../../src/rooms/music/music.generator";
 import { createMusicState, reduceMusic } from "../../src/rooms/music/music.machine";
+import { presentMusicChoices } from "../../src/rooms/music/music.presentation";
 
 describe("deterministic musical activity", () => {
   it("reproduces valid rounds with the target among distinct choices", () => {
@@ -29,6 +30,18 @@ describe("deterministic musical activity", () => {
         .choices.map((choice) => choice.soundId)
         .sort(),
     ).toEqual(["drum-loud", "drum-soft"]);
+  });
+
+  it("presents pitch and loudness with unambiguous small and large instruments", () => {
+    const pitch = presentMusicChoices(generateMusicRound("pitch", 2).choices);
+    const volume = presentMusicChoices(generateMusicRound("volume", 3).choices);
+    const scale = (items: typeof pitch, variant: string) =>
+      items.find(({ choice }) => choice.variant === variant)?.sizeScale;
+
+    expect(scale(pitch, "high")).toBeLessThan(scale(pitch, "low") ?? 0);
+    expect(scale(volume, "soft")).toBeLessThan(scale(volume, "loud") ?? 0);
+    expect(new Set(pitch.map(({ position }) => position[0])).size).toBe(2);
+    expect(new Set(volume.map(({ position }) => position[0])).size).toBe(2);
   });
 
   it("bounds rapid selections, replays after mismatch, simplifies, and completes once", () => {

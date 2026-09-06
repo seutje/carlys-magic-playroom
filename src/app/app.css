@@ -1196,10 +1196,10 @@ h1 {
   line-height: 1;
 }
 .music-icon.up {
-  transform: translateY(-0.35rem);
+  transform: scale(0.7);
 }
 .music-icon.down {
-  transform: translateY(0.35rem);
+  transform: scale(1.2);
 }
 .music-icon.big {
   transform: scale(1.2);

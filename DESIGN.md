@@ -775,12 +775,18 @@ Sounds must be:
 
 1. Dim or pause visual distractions.
 2. Play one sound.
-3. Present two or three possible instruments.
-4. Let the child tap an instrument.
+3. Present two or three possible instruments as large, forgiving stage targets.
+4. Let the child tap the pictured instrument directly. Keep labeled DOM controls as keyboard and
+   assistive-technology equivalents, without requiring the child to read their labels.
 5. Animate and play the selected instrument.
 6. Celebrate a match.
 7. Gently replay the target after a mismatch.
 8. Continue with a new sound.
+
+For high/low pitch, show two bells: the small bell represents the high sound and the large bell
+represents the low sound. For loud/soft volume, show two drums: the large drum represents the loud
+sound and the small drum represents the soft sound. Size and placement must distinguish the two
+answers without relying on color, text, or two identical tap targets.
 
 ## Audio Rules
 

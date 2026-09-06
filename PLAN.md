@@ -1971,7 +1971,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18 by pure reducer and E2E flows. Selection plays its cue, evaluating disables all choices immediately, mismatch replays the target, two mismatches reduce to one picture, correct completion is idempotent, and a 180 ms controller gate bounds audio requests.
+Verified 2026-09-06 by pure reducer and desktop/tablet E2E flows. A child can tap the rendered instrument through an oversized scene collider; loaded GLBs and primitive fallbacks share the guarded selection path. Selection plays its cue, evaluating disables scene and DOM choices immediately, mismatch replays the target, two mismatches reduce to one picture, correct completion is idempotent, and a 180 ms controller gate bounds audio requests.
 ```
 
 ---
@@ -1995,7 +1995,7 @@ Verification:
 Evidence:
 
 ```text
-Verified 2026-07-18. Seeded difficulty two uses bell cues separated by over an octave; difficulty three uses a 14 LU drum contrast; both have up/down and big/small visual patterns and muted fallback. The maintainer confirmed target-hardware distinguishability.
+Verified 2026-09-06. Seeded difficulty two uses bell cues separated by over an octave and presents a small high bell beside a large low bell. Difficulty three uses a 14 LU drum contrast and presents a large loud drum beside a small soft drum. The scale contrast applies to loaded models, primitive fallbacks, target pictures, and accessible DOM equivalents, so neither concept depends on color or reading.
 ```
 
 ---

@@ -99,7 +99,12 @@ export function MusicRoom({ replayRequest, session }: RoomComponentProps) {
       <h1 id="music-title" className="sr-only">
         Musical Corner
       </h1>
-      <MusicScene state={state} reducedEffects={reducedEffects} />
+      <MusicScene
+        state={state}
+        choices={choices}
+        reducedEffects={reducedEffects}
+        onSelectChoice={choose}
+      />
       <div className="music-guide" aria-live="polite">
         <span aria-hidden="true">♫</span>
         <div>
@@ -135,7 +140,7 @@ export function MusicRoom({ replayRequest, session }: RoomComponentProps) {
             <span className={`music-icon ${choice.visualPattern}`} aria-hidden="true">
               {instrumentSymbol(choice)}
             </span>
-            <span>{choiceLabel(choice)}</span>
+            <span className="sr-only">{choiceLabel(choice)}</span>
           </button>
         ))}
       </div>

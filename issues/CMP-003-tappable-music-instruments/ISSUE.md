@@ -2,9 +2,9 @@
 
 ## Status
 
-**Open**
+**Resolved**
 
-- Owner: Unassigned
+- Owner: Codex
 - Reported: 2026-09-06
 - Last updated: 2026-09-06
 - Affected area: Musical Corner input and accessibility
@@ -24,12 +24,27 @@ DOM controls must remain available as accessible equivalents for keyboard and as
 technology users. Direct scene interaction should route through the same typed selection event and
 audio-throttling path as the existing choice controls.
 
-Pitch and volume rounds currently contain multiple choices for the same instrument (high/low bell
-or loud/soft drum). Direct instrument tapping is unambiguous for instrument-identification rounds,
-but the intended scene interaction for same-instrument variants must be decided before expanding
-this behavior to those rounds.
+Pitch and volume rounds contain multiple choices for the same instrument (high/low bell or
+loud/soft drum). Those variants must remain visually and spatially distinct when the instrument is
+the tap target.
 
-## Current implementation notes
+## Resolution
+
+- Every currently available choice is rendered as a directly tappable stage instrument. A large
+  invisible hit sphere makes the target forgiving for mouse and touch, independent of model size.
+- The scene sends the selected `MusicChoice` through `MusicRoom`'s existing audio throttle and typed
+  state-machine event. Evaluating, celebrating, complete, and other non-input phases ignore scene
+  taps safely.
+- Pitch uses a small high bell and a large low bell. Loudness uses a large loud drum and a small
+  soft drum. The choices also occupy separate stage positions, so no two answers share a target.
+- Selection enlarges the responding instrument immediately. This shape change does not depend on
+  color and is retained when decorative effects or motion are reduced.
+- Visible word labels were removed from the child-facing picture controls. Labeled DOM buttons
+  remain synchronized, keyboard operable, focusable, and available to assistive technology.
+- Loaded GLBs and primitive fallbacks use the same render wrapper, size mapping, hit target, and
+  selection callback.
+
+## Pre-fix implementation notes
 
 - `MusicScene` renders the three instruments as visual React Three Fiber groups without pointer
   handlers or enlarged interaction colliders.
@@ -56,30 +71,30 @@ this behavior to those rounds.
 
 ## Acceptance criteria
 
-- [ ] Tapping the drum, bell, or xylophone in an instrument round invokes the same selection path as
+- [x] Tapping the drum, bell, or xylophone in an instrument round invokes the same selection path as
       its corresponding choice button.
-- [ ] Scene targets provide forgiving hit regions sized for young children.
-- [ ] Mouse click, touch emulation, pointer cancellation, and repeated rapid taps behave safely.
-- [ ] The instrument gives immediate visible feedback and plays at most the bounded audio response.
-- [ ] Interaction is disabled whenever the typed activity state is not accepting a choice.
-- [ ] Direct tapping works when a GLB loads and when its primitive fallback is shown.
-- [ ] Accessible DOM controls remain keyboard operable, labeled, and synchronized with scene state.
-- [ ] A documented interaction decision exists for pitch and volume rounds; it must not make two
+- [x] Scene targets provide forgiving hit regions sized for young children.
+- [x] Mouse click, touch emulation, pointer cancellation, and repeated rapid taps behave safely.
+- [x] The instrument gives immediate visible feedback and plays at most the bounded audio response.
+- [x] Interaction is disabled whenever the typed activity state is not accepting a choice.
+- [x] Direct tapping works when a GLB loads and when its primitive fallback is shown.
+- [x] Accessible DOM controls remain keyboard operable, labeled, and synchronized with scene state.
+- [x] A documented interaction decision exists for pitch and volume rounds; it must not make two
       answers share one indistinguishable tap target.
-- [ ] Unit/integration coverage verifies choice mapping and guards invalid or duplicate selection.
-- [ ] End-to-end coverage taps a rendered instrument and completes an instrument round.
+- [x] Unit/integration coverage verifies choice mapping and guards invalid or duplicate selection.
+- [x] End-to-end coverage taps a rendered instrument and completes an instrument round.
 
 ## Implementation checklist
 
-- [ ] Define a typed scene-to-room selection callback using `InstrumentId` or a choice identifier.
-- [ ] Decide the scope and presentation for pitch and volume choices.
-- [ ] Add explicit, oversized hit meshes or equivalent pointer targets to every instrument.
-- [ ] Route scene taps through `MusicRoom`'s existing guarded `choose` behavior.
-- [ ] Add pressed/selected feedback that respects reduced effects and does not rely only on color.
-- [ ] Preserve accessible DOM equivalents without forcing visible word reading for child play.
-- [ ] Test loaded-model and missing-model paths.
-- [ ] Add unit, integration, and end-to-end regression coverage.
-- [ ] Run the required repository validation commands.
+- [x] Define a typed scene-to-room selection callback using `InstrumentId` or a choice identifier.
+- [x] Decide the scope and presentation for pitch and volume choices.
+- [x] Add explicit, oversized hit meshes or equivalent pointer targets to every instrument.
+- [x] Route scene taps through `MusicRoom`'s existing guarded `choose` behavior.
+- [x] Add pressed/selected feedback that respects reduced effects and does not rely only on color.
+- [x] Preserve accessible DOM equivalents without forcing visible word reading for child play.
+- [x] Test loaded-model and missing-model paths.
+- [x] Add unit, integration, and end-to-end regression coverage.
+- [x] Run the required repository validation commands.
 
 ## Likely files
 
@@ -93,14 +108,14 @@ this behavior to those rounds.
 
 ## Validation record
 
-No fix has been implemented or validated yet.
-
 | Date       | Evidence                                                                   | Result                           |
 | ---------- | -------------------------------------------------------------------------- | -------------------------------- |
 | 2026-09-06 | Scene rendering, choice mapping, fallback models, and input path inspected | Open; interaction design pending |
+| 2026-09-06 | Unit, build, and desktop/tablet direct-scene Playwright coverage           | Resolved                         |
 
 ## Status history
 
-| Date       | Status | Note                                                             |
-| ---------- | ------ | ---------------------------------------------------------------- |
-| 2026-09-06 | Open   | Split from the repository issue list; no implementation started. |
+| Date       | Status   | Note                                                             |
+| ---------- | -------- | ---------------------------------------------------------------- |
+| 2026-09-06 | Open     | Split from the repository issue list; no implementation started. |
+| 2026-09-06 | Resolved | Stage instruments are tappable; size distinguishes variants.     |

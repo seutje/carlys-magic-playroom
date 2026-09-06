@@ -74,9 +74,7 @@ test("keeps musical matching playable when its instrument models are unavailable
   await page.getByRole("button", { name: "Play" }).click();
   await page.getByRole("button", { name: "Make some music" }).click();
 
-  const target = page.locator('.music-choices button[data-target="true"]');
-  await expect(target).toBeEnabled();
-  await target.click();
+  await tapExpectedMusicInstrument(page);
   await expect(page.getByText("Songs matched: 1")).toBeVisible();
 });
 
@@ -447,7 +445,7 @@ test("replays, mutes, bounds taps, and matches a musical target", async ({ page 
     await page.getByRole("button", { name: "Play target sound again" }).click();
   }
   await expect(page.locator(".music-choices button")).toHaveCount(1);
-  await page.locator('.music-choices button[data-target="true"]').click();
+  await tapExpectedMusicInstrument(page);
   await expect(page.getByRole("button", { name: "Try another sound" })).toBeVisible();
   await expect(page.getByText("Songs matched: 1")).toBeVisible();
   await expect.poll(() => new Set(soundRequests).size).toBeGreaterThanOrEqual(2);
@@ -462,6 +460,33 @@ async function expectedGardenHelper(page: Page) {
   await expect(page.getByRole("button", { name: "Tap rain cloud" })).toBeEnabled();
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
   return page.getByRole("button", { name: wantsWater ? "Tap rain cloud" : "Tap warm sun" });
+}
+
+async function tapExpectedMusicInstrument(page: Page) {
+  const target = page.locator('.music-choices button[data-target="true"]');
+  await expect(target).toBeEnabled();
+  const label = await target.getAttribute("aria-label");
+  const canvas = page.locator(".music-canvas canvas");
+  const bounds = await canvas.boundingBox();
+  if (!bounds) throw new Error("Musical Corner canvas is unavailable");
+  const visibleChoices = page.locator(".music-choices button");
+  const count = await visibleChoices.count();
+  const xRatio =
+    count === 1
+      ? 0.5
+      : count === 2
+        ? label?.startsWith("high") || label?.startsWith("loud")
+          ? 0.35
+          : 0.65
+        : label === "drum"
+          ? 0.27
+          : label === "bell"
+            ? 0.5
+            : 0.73;
+  const x = bounds.x + bounds.width * xRatio;
+  const y = bounds.y + bounds.height * 0.63;
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await page.touchscreen.tap(x, y);
+  else await page.mouse.click(x, y);
 }
 
 async function tapExpectedGardenModel(page: Page) {

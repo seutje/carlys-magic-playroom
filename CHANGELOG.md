@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Resolve CMP-003 by making rendered Musical Corner instruments directly tappable, retaining
+  labeled accessible equivalents, and using small/large bells and drums to distinguish pitch and
+  loudness without relying on words or color.
 - Resolve CMP-002 with a prominent chute-to-focus Shape Factory reveal, a motion-free equivalent,
   adaptive bounded effects, and standard/reduced desktop/tablet visual coverage.
 - Resolve CMP-001 by reserving responsive instruction regions away from child tap targets, adding

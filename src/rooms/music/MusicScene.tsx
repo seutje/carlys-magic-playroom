@@ -12,19 +12,26 @@ import {
   loadMusicModels,
   type MusicModelSources,
 } from "./music.model";
-import type { InstrumentId, MusicState } from "./music.types";
+import { presentMusicChoices } from "./music.presentation";
+import type { InstrumentId, MusicChoice, MusicState } from "./music.types";
 
 export function MusicScene({
   state,
+  choices,
   reducedEffects,
+  onSelectChoice,
 }: {
   readonly state: MusicState;
+  readonly choices: readonly MusicChoice[];
   readonly reducedEffects: boolean;
+  readonly onSelectChoice: (choice: MusicChoice) => void;
 }) {
   const quality = useQuality();
   const models = useOwnedMusicModels();
+  const presentations = presentMusicChoices(choices);
+  const selectionEnabled = state.phase === "waiting" || state.phase === "hint";
   return (
-    <div className="music-canvas" aria-label="A stage with a drum, bell, and xylophone">
+    <div className="music-canvas" aria-label="A stage with tappable musical instruments">
       <Canvas
         camera={{ position: [0, 2.8, 9], fov: 45 }}
         dpr={quality.dpr}
@@ -40,24 +47,18 @@ export function MusicScene({
           <cylinderGeometry args={[6, 6.8, 0.8, 32]} />
           <meshStandardMaterial color="#80509a" />
         </mesh>
-        <Instrument
-          instrument="drum"
-          position={[-3, -0.8, 0]}
-          active={Boolean(state.selectedChoiceId?.startsWith("drum"))}
-          source={models.drum}
-        />
-        <Instrument
-          instrument="bell"
-          position={[0, -0.6, 0]}
-          active={Boolean(state.selectedChoiceId?.startsWith("bell"))}
-          source={models.bell}
-        />
-        <Instrument
-          instrument="xylophone"
-          position={[3, -0.8, 0]}
-          active={Boolean(state.selectedChoiceId?.startsWith("xylophone"))}
-          source={models.xylophone}
-        />
+        {presentations.map(({ choice, position, sizeScale }) => (
+          <Instrument
+            key={choice.id}
+            instrument={choice.instrument}
+            position={[...position]}
+            sizeScale={sizeScale}
+            active={state.selectedChoiceId === choice.id}
+            enabled={selectionEnabled}
+            source={models[choice.instrument]}
+            onActivate={() => onSelectChoice(choice)}
+          />
+        ))}
         {!reducedEffects &&
           [-4, -2, 0, 2, 4]
             .slice(0, quality.particleCount)
@@ -78,26 +79,44 @@ export function MusicScene({
 function Instrument({
   instrument,
   position,
+  sizeScale,
   active,
+  enabled,
   source,
+  onActivate,
 }: {
   readonly instrument: InstrumentId;
   readonly position: [number, number, number];
+  readonly sizeScale: number;
   readonly active: boolean;
+  readonly enabled: boolean;
   readonly source: Group | undefined;
+  readonly onActivate: () => void;
 }) {
   const baseScale = instrument === "xylophone" ? 0.9 : instrument === "bell" ? 0.94 : 1;
   return (
     <group
       position={position}
-      scale={baseScale * (active ? 1.08 : 1)}
-      rotation={instrument === "xylophone" ? [0, 0, -0.12] : [0, 0, 0]}
+      onPointerDown={(event) => {
+        if (!enabled) return;
+        event.stopPropagation();
+        onActivate();
+      }}
     >
-      {source ? (
-        <MusicInstrumentModel source={source} />
-      ) : (
-        <InstrumentFallback instrument={instrument} />
-      )}
+      <group
+        scale={baseScale * sizeScale * (active ? 1.1 : 1)}
+        rotation={instrument === "xylophone" ? [0, 0, -0.12] : [0, 0, 0]}
+      >
+        {source ? (
+          <MusicInstrumentModel source={source} />
+        ) : (
+          <InstrumentFallback instrument={instrument} />
+        )}
+      </group>
+      <mesh>
+        <sphereGeometry args={[1.45, 12, 8]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      </mesh>
     </group>
   );
 }
