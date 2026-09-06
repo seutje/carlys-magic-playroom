@@ -9,6 +9,7 @@ import type { RoomComponentProps } from "../roomModule";
 import { ShapeAudioController } from "./shapes.audio";
 import { generateShapeFactory, matchesRule } from "./shapes.generator";
 import { activeStep, createShapeFactoryState, reduceShapeFactory } from "./shapes.machine";
+import { factoryPhaseDuration } from "./shapeFactory.model";
 import {
   defaultShapeProgress,
   loadShapeProgress,
@@ -66,11 +67,20 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
     } else if (state.phase === "waiting" || state.phase === "hint") {
       schedule(() => dispatch({ type: "HINT_TIMEOUT" }), settings.hintDelayMs);
     } else if (state.phase === "processing") {
-      watchdog(() => dispatch({ type: "PROCESSING_FINISHED" }), reducedMotion ? 150 : 1_100);
+      watchdog(
+        () => dispatch({ type: "PROCESSING_FINISHED" }),
+        factoryPhaseDuration("processing", reducedMotion),
+      );
     } else if (state.phase === "output") {
-      watchdog(() => dispatch({ type: "OUTPUT_FINISHED" }), reducedMotion ? 100 : 700);
+      watchdog(
+        () => dispatch({ type: "OUTPUT_FINISHED" }),
+        factoryPhaseDuration("output", reducedMotion),
+      );
     } else if (state.phase === "celebrating") {
-      schedule(() => dispatch({ type: "CELEBRATION_FINISHED" }), reducedMotion ? 200 : 1_100);
+      schedule(
+        () => dispatch({ type: "CELEBRATION_FINISHED" }),
+        factoryPhaseDuration("celebrating", reducedMotion),
+      );
     }
     return cancelAll;
   }, [
@@ -155,7 +165,9 @@ export function ShapeFactoryRoom({ replayRequest, session }: RoomComponentProps)
       </p>
       {state.phase === "celebrating" ? (
         <div className="shape-celebration" role="status">
-          ★ Shape made! ★
+          <span aria-hidden="true">★</span>
+          <span className="sr-only">Shape made!</span>
+          <span aria-hidden="true">★</span>
         </div>
       ) : null}
       {state.phase === "complete" ? (

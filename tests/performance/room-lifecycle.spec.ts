@@ -25,6 +25,17 @@ test("keeps low-quality room lifecycles responsive and bounded", async ({ page, 
       await expect(page.getByRole("heading", { name: heading })).toBeVisible();
       await expect(page.locator("canvas")).toHaveCount(1);
       await page.waitForTimeout(600);
+      if (cycle === 0 && heading === "Magic Shape Factory") {
+        for (const shape of [
+          "small red square",
+          "big blue circle",
+          "small yellow triangle",
+          "big green diamond",
+        ]) {
+          await page.getByRole("button", { name: shape }).click();
+        }
+        await expect(page.getByRole("button", { name: "Make another" })).toBeVisible();
+      }
       await page.getByRole("button", { name: "Go home" }).click();
       await expect(page.getByRole("heading", { name: "Where shall we play?" })).toBeVisible();
     }

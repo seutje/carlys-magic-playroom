@@ -373,6 +373,30 @@ test("reduces choices and completes the fixed shape factory puzzle", async ({ pa
   await expect(page.getByText(/Factories finished:\s*1/)).toBeVisible();
 });
 
+test("shows a clear final shape with standard and reduced motion", async ({ page }) => {
+  test.setTimeout(45_000);
+
+  for (const reducedMotion of [false, true]) {
+    await page.emulateMedia({ reducedMotion: reducedMotion ? "reduce" : "no-preference" });
+    await page.goto("./");
+    await page.getByRole("button", { name: "Play" }).click();
+    await page.getByRole("button", { name: "Visit the shape factory" }).click();
+    const correctShape = page.getByRole("button", { name: "small red square" });
+    await expect(correctShape).toBeEnabled();
+    // The standard-motion tray intentionally drifts a few pixels like a conveyor. A real tap does
+    // not require the target to become stationary, so bypass Playwright's stability heuristic.
+    await correctShape.click({ force: true });
+    await expect(page.getByRole("status")).toContainText("Shape made!");
+    await expect(page).toHaveScreenshot(
+      reducedMotion ? "shape-factory-output-reduced.png" : "shape-factory-output-standard.png",
+      {
+        animations: "disabled",
+        maxDiffPixelRatio: 0.01,
+      },
+    );
+  }
+});
+
 test("replays, mutes, bounds taps, and matches a musical target", async ({ page }) => {
   test.setTimeout(90_000);
   await page.emulateMedia({ reducedMotion: "reduce" });

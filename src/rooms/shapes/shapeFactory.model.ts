@@ -1,5 +1,60 @@
 import type { ShapeFactoryState } from "./shapes.types";
 
+export type ShapeOutputPhase = "output" | "celebrating" | "complete";
+
+export interface ShapeProductPresentation {
+  readonly position: readonly [number, number, number];
+  readonly rotation: readonly [number, number, number];
+  readonly scale: number;
+}
+
+export const FACTORY_PHASE_DURATION_MS = {
+  processing: { standard: 1_100, reduced: 150 },
+  output: { standard: 900, reduced: 300 },
+  celebrating: { standard: 2_200, reduced: 2_200 },
+} as const;
+
+export function factoryPhaseDuration(
+  phase: keyof typeof FACTORY_PHASE_DURATION_MS,
+  reducedMotion: boolean,
+): number {
+  const duration = FACTORY_PHASE_DURATION_MS[phase];
+  return reducedMotion ? duration.reduced : duration.standard;
+}
+
+/**
+ * Rendering-only pose for the made shape. State-owned watchdogs remain authoritative for phase
+ * progression; elapsed time can only interpolate the visual reveal within the current phase.
+ */
+export function shapeProductPresentation(
+  phase: ShapeOutputPhase,
+  elapsedSeconds: number,
+  size: "small" | "big",
+  reducedMotion: boolean,
+): ShapeProductPresentation {
+  const restingScale = size === "big" ? 1.08 : 0.78;
+  if (reducedMotion || phase !== "output") {
+    return {
+      position: [3.45, 0.15, 0.72],
+      rotation: [0.08, -0.18, phase === "celebrating" && !reducedMotion ? -0.06 : 0],
+      scale: restingScale,
+    };
+  }
+
+  const durationSeconds = FACTORY_PHASE_DURATION_MS.output.standard / 1_000;
+  const progress = Math.min(1, Math.max(0, elapsedSeconds / durationSeconds));
+  const eased = 1 - (1 - progress) ** 3;
+  return {
+    position: [
+      2.72 + (3.45 - 2.72) * eased,
+      -1.27 + (0.15 + 1.27) * eased,
+      0.42 + (0.72 - 0.42) * eased,
+    ],
+    rotation: [0.08, -0.18 + Math.PI * 2 * (1 - progress), -0.18 * (1 - eased)],
+    scale: restingScale * (0.28 + 0.72 * eased),
+  };
+}
+
 export interface FactoryGearSpec {
   readonly id: "drive" | "idler" | "output";
   readonly teeth: number;

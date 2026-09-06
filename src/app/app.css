@@ -1563,12 +1563,12 @@ h1 {
 .shape-celebration {
   position: absolute;
   z-index: 8;
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: #fff;
-  font-size: clamp(2rem, 7vw, 4.5rem);
-  inset: 16% 8%;
-  place-content: center;
-  text-align: center;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  inset: 25% 5% 30%;
   text-shadow: 0 0.25rem 0 #624b97;
   pointer-events: none;
   animation: celebration-pop 500ms ease-out both;

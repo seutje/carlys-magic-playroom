@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useRef } from "react";
-import { Object3D, type Group, type InstancedMesh } from "three";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { Object3D, type Group, type InstancedMesh, type Mesh } from "three";
 
 import { FrameDiagnostics } from "../../engine/rendering/FrameDiagnostics";
 import { useQuality } from "../../engine/rendering/qualityContext";
@@ -11,7 +11,9 @@ import {
   factoryDriveSpeed,
   gearOuterRadius,
   gearPitchRadius,
+  shapeProductPresentation,
   type FactoryGearSpec,
+  type ShapeOutputPhase,
 } from "./shapeFactory.model";
 import type { ShapeFactoryState, ShapeKind, ShapeRule } from "./shapes.types";
 
@@ -40,7 +42,14 @@ export function ShapeFactoryScene({ state, reducedMotion }: ShapeFactoryScenePro
         <FactoryFloor />
         <FactoryMachine state={state} reducedMotion={reducedMotion} />
         <FactoryConveyor state={state} reducedMotion={reducedMotion} />
-        {state.outputItemId ? <ShapeProduct rule={step.puzzle.target} /> : null}
+        {state.outputItemId && isOutputPhase(state.phase) ? (
+          <ShapeProduct
+            rule={step.puzzle.target}
+            phase={state.phase}
+            reducedMotion={reducedMotion}
+            effectCount={quality.particleCount}
+          />
+        ) : null}
       </Canvas>
     </div>
   );
@@ -276,20 +285,78 @@ function FactoryConveyor({ state, reducedMotion }: ShapeFactorySceneProps) {
   );
 }
 
-function ShapeProduct({ rule }: { readonly rule: ShapeRule }) {
-  const scale = rule.size === "big" ? 0.68 : 0.52;
+function ShapeProduct({
+  rule,
+  phase,
+  reducedMotion,
+  effectCount,
+}: {
+  readonly rule: ShapeRule;
+  readonly phase: ShapeOutputPhase;
+  readonly reducedMotion: boolean;
+  readonly effectCount: number;
+}) {
+  const product = useRef<Group>(null);
+  const halo = useRef<Mesh>(null);
+  const elapsed = useRef(0);
+
+  useEffect(() => {
+    elapsed.current = 0;
+  }, [phase]);
+
+  useFrame((_, delta) => {
+    elapsed.current += Math.min(delta, 0.05);
+    const pose = shapeProductPresentation(phase, elapsed.current, rule.size, reducedMotion);
+    product.current?.position.set(...pose.position);
+    product.current?.rotation.set(...pose.rotation);
+    product.current?.scale.setScalar(pose.scale);
+    if (halo.current && !reducedMotion && phase === "output") {
+      halo.current.rotation.z = elapsed.current * 0.8;
+    }
+  });
+
+  const initialPose = shapeProductPresentation(phase, 0, rule.size, reducedMotion);
+  const sparkleCount = reducedMotion ? 0 : effectCount;
   return (
-    <mesh position={[3.75, -1.05, 0.35]} rotation={[0.2, -0.25, 0.08]} scale={scale}>
-      <ProductGeometry kind={rule.kind} />
-      <meshStandardMaterial
-        color={rule.color}
-        emissive={rule.color}
-        emissiveIntensity={0.18}
-        metalness={0.08}
-        roughness={0.32}
-      />
-    </mesh>
+    <group
+      ref={product}
+      position={initialPose.position}
+      rotation={initialPose.rotation}
+      scale={initialPose.scale}
+    >
+      <mesh ref={halo} position={[0, 0, -0.32]}>
+        <ringGeometry args={[1.02, 1.25, 32]} />
+        <meshBasicMaterial color="#fff1a8" transparent opacity={0.82} depthWrite={false} />
+      </mesh>
+      <mesh castShadow>
+        <ProductGeometry kind={rule.kind} />
+        <meshStandardMaterial
+          color={rule.color}
+          emissive={rule.color}
+          emissiveIntensity={0.24}
+          metalness={0.08}
+          roughness={0.28}
+        />
+      </mesh>
+      {Array.from({ length: sparkleCount }, (_, index) => {
+        const angle = (index / Math.max(1, sparkleCount)) * Math.PI * 2 + 0.35;
+        return (
+          <mesh
+            key={index}
+            position={[Math.cos(angle) * 1.55, Math.sin(angle) * 1.4, -0.05]}
+            scale={0.12 + (index % 2) * 0.04}
+          >
+            <octahedronGeometry args={[1, 0]} />
+            <meshBasicMaterial color={index % 2 === 0 ? "#fff7c7" : "#ffffff"} />
+          </mesh>
+        );
+      })}
+    </group>
   );
+}
+
+function isOutputPhase(phase: ShapeFactoryState["phase"]): phase is ShapeOutputPhase {
+  return phase === "output" || phase === "celebrating" || phase === "complete";
 }
 
 function ProductGeometry({ kind }: { readonly kind: ShapeKind }) {

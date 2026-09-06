@@ -3239,3 +3239,29 @@ Every agent session that changes implementation status should add an entry.
 
 **Notes:**
 - The browser matrix covers all rooms at 320x568, 667x375, and 1024x768 with 112.5% text scaling.
+
+### 2026-09-06 — Resolve CMP-002 Shape Factory final animation
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- CMP-002 prominent state-derived product reveal, reduced-motion parity, and regression coverage.
+
+**In progress:**
+- Phase 10 remains open outside this focused issue.
+
+**Verified:**
+- Formatting, lint, strict typecheck, 113 unit/integration tests, and the root production build pass.
+- All 38 desktop/touch-tablet E2E tests pass serially under `/carlys-magic-playroom/`.
+- Standard and reduced-motion output baselines pass at both configured viewports.
+- Low-quality completion/exit lifecycle profiles pass on desktop and tablet with bounded heap,
+  frame samples, draw calls, and cleanup.
+
+**Blocked:**
+- None for CMP-002. The separate unchanged playroom-only performance sample remained marginally
+  variable in this environment and is recorded in the issue validation table.
+
+**Notes:**
+- Watchdogs still own all state progression; per-frame work only interpolates the current output
+  pose. Low quality retains the focal halo while optional sparkles follow the quality budget.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Resolve CMP-002 with a prominent chute-to-focus Shape Factory reveal, a motion-free equivalent,
+  adaptive bounded effects, and standard/reduced desktop/tablet visual coverage.
 - Resolve CMP-001 by reserving responsive instruction regions away from child tap targets, adding
   narrow/short-screen placement rules, and covering all rooms with an enlarged-text viewport matrix.
 - Completed Phase 9 with an offline shell, install manifest/icons, adaptive rendering profiles, bounded local performance diagnostics, enforced build budgets, offline/performance browser gates, and approved physical-tablet performance.

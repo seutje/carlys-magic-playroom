@@ -13,9 +13,11 @@ import {
 import {
   calculateGearAngles,
   FACTORY_GEARS,
+  factoryPhaseDuration,
   factoryDriveSpeed,
   GEAR_MESH_CLEARANCE,
   gearPitchRadius,
+  shapeProductPresentation,
 } from "../../src/rooms/shapes/shapeFactory.model";
 
 describe("deterministic shape factory", () => {
@@ -80,6 +82,37 @@ describe("deterministic shape factory", () => {
     expect(factoryDriveSpeed({ phase: "paused", conveyorPaused: false }, false)).toBe(0);
     expect(factoryDriveSpeed({ phase: "complete", conveyorPaused: false }, false)).toBe(0);
     expect(factoryDriveSpeed({ phase: "processing", conveyorPaused: true }, true)).toBe(0);
+  });
+
+  it("moves a prominent product from the chute to a stable focal pose", () => {
+    const start = shapeProductPresentation("output", 0, "small", false);
+    const middle = shapeProductPresentation("output", 0.45, "small", false);
+    const end = shapeProductPresentation(
+      "output",
+      factoryPhaseDuration("output", false) / 1_000,
+      "small",
+      false,
+    );
+    const celebration = shapeProductPresentation("celebrating", 0, "small", false);
+
+    expect(start.position[1]).toBeLessThan(middle.position[1]);
+    expect(middle.position[1]).toBeLessThan(end.position[1]);
+    expect(start.scale).toBeLessThan(middle.scale);
+    expect(middle.scale).toBeLessThan(end.scale);
+    end.position.forEach((coordinate, index) => {
+      expect(coordinate).toBeCloseTo(celebration.position[index] ?? Number.NaN);
+    });
+    expect(end.scale).toBe(celebration.scale);
+  });
+
+  it("uses the same clear static focal pose at every reduced-motion output stage", () => {
+    const output = shapeProductPresentation("output", 0, "big", true);
+    expect(shapeProductPresentation("output", 20, "big", true)).toEqual(output);
+    expect(shapeProductPresentation("celebrating", 0, "big", true)).toEqual(output);
+    expect(shapeProductPresentation("complete", 0, "big", true)).toEqual(output);
+    expect(output.scale).toBeGreaterThan(
+      shapeProductPresentation("complete", 0, "small", true).scale,
+    );
   });
 
   it("reproduces serializable, unambiguous, solvable puzzles across many seeds", () => {
