@@ -3301,3 +3301,31 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - Blender changes were unnecessary because the component geometry and origins were internally
   consistent; the defect was in the renderer's one-size-fits-all placement.
+
+### 2026-09-07 — Resolve CMP-006 Build-a-Critter mouth orientation
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- Removed the primitive mouth's incorrect out-of-plane X rotation.
+- Added a typed fallback pose that keeps the round ring front-facing and turns the smile upward.
+- Added unit coverage and true missing-model smile/round baselines at both configured viewports.
+
+**In progress:**
+- Phase 10 remains open outside this focused issue.
+
+**Verified:**
+- Formatting, lint, strict typecheck, 123 unit/integration tests, and production build budgets pass.
+- All 42 desktop/touch-tablet E2E tests pass under `/carlys-magic-playroom/`.
+- The low-quality all-room lifecycle performance checks pass on desktop and tablet.
+- The local Pages preview returned HTTP 200 at `/carlys-magic-playroom/`.
+
+**Blocked:**
+- None for CMP-006. The unchanged playroom-only performance samples measured 18.6 ms against an
+  18.5 ms desktop limit and 34.4 ms against a 34 ms tablet limit; that environment-sensitive path
+  does not render a Critter or exercise this change.
+
+**Notes:**
+- Blender changes were unnecessary because both bundled mouth GLBs already face the camera; only
+  the procedural fallback applied the incorrect rotation.

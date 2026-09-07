@@ -127,6 +127,14 @@ test("keeps critter assembly playable when its component models are unavailable"
     animations: "disabled",
     maxDiffPixelRatio: 0.01,
   });
+  await page.getByRole("button", { name: "Build another" }).click();
+  await page.getByRole("button", { name: "Choose eyes-round" }).click();
+  await page.getByRole("button", { name: "Choose mouth-o" }).click();
+  await page.getByRole("button", { name: "Choose legs-stompy" }).click();
+  await expect(page).toHaveScreenshot("critter-fallback-round-mouth.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
 });
 
 test("keeps musical matching playable when its instrument models are unavailable", async ({

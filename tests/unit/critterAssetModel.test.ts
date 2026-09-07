@@ -7,11 +7,17 @@ import {
   CRITTER_MODEL_PATHS,
   disposeCritterModelInstance,
   getCritterLegPositionY,
+  getCritterMouthFallbackRotation,
   loadCritterModels,
   type CritterModelLoader,
 } from "../../src/rooms/critter/critter.model";
 
 describe("critter component models", () => {
+  it("keeps fallback mouths front-facing with the smile opening upward", () => {
+    expect(getCritterMouthFallbackRotation("mouth-smile")).toEqual([0, 0, Math.PI]);
+    expect(getCritterMouthFallbackRotation("mouth-o")).toEqual([0, 0, 0]);
+  });
+
   it("aligns every valid leg source to the selected body's attachment plane", () => {
     const expectedConnectionY = { round: -0.98, tall: -1.14 } as const;
     const modelAttachmentY = {

@@ -10,10 +10,12 @@ import {
   disposeCritterModelInstance,
   disposeCritterModelSources,
   getCritterLegPositionY,
+  getCritterMouthFallbackRotation,
   loadCritterModels,
   type CritterLegId,
   type CritterModelId,
   type CritterModelSources,
+  type CritterMouthId,
 } from "./critter.model";
 import type { CritterAssemblyState } from "./critter.types";
 
@@ -63,6 +65,7 @@ function Critter({
 }: CritterSceneProps & { readonly models: CritterModelSources }) {
   const group = useRef<Group>(null);
   const legs = creature.parts.legs;
+  const mouth = creature.parts.mouth;
   useFrame(({ clock }) => {
     if (!group.current || !creature.reaction || reducedMotion) return;
     const wave = Math.sin(clock.elapsedTime * 10);
@@ -87,11 +90,11 @@ function Critter({
           />
         </group>
       ) : null}
-      {creature.parts.mouth ? (
+      {mouth && isCritterMouthId(mouth) ? (
         <group position={[0, -0.25, 1.31]}>
           <CritterComponentModel
-            source={models[creature.parts.mouth]}
-            fallback={<MouthFallback round={creature.parts.mouth === "mouth-o"} />}
+            source={models[mouth]}
+            fallback={<MouthFallback partId={mouth} />}
           />
         </group>
       ) : null}
@@ -172,9 +175,10 @@ function EyesFallback({ stars }: { readonly stars: boolean }) {
   );
 }
 
-function MouthFallback({ round }: { readonly round: boolean }) {
+function MouthFallback({ partId }: { readonly partId: CritterMouthId }) {
+  const round = partId === "mouth-o";
   return (
-    <mesh rotation={[Math.PI / 2, 0, 0]}>
+    <mesh rotation={getCritterMouthFallbackRotation(partId)}>
       <torusGeometry
         args={[round ? 0.22 : 0.35, 0.07, 10, round ? 24 : 12, round ? Math.PI * 2 : Math.PI]}
       />
@@ -200,6 +204,10 @@ function LegsFallback({ partId }: { readonly partId: CritterLegId }) {
 
 function isCritterLegId(partId: string): partId is CritterLegId {
   return partId === "legs-bouncy" || partId === "legs-stompy" || partId === "legs-tall";
+}
+
+function isCritterMouthId(partId: string): partId is CritterMouthId {
+  return partId === "mouth-smile" || partId === "mouth-o";
 }
 
 function useOwnedCritterModels(): CritterModelSources {

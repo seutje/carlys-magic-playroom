@@ -29,6 +29,7 @@ export const CRITTER_MODEL_PATHS: Readonly<Record<CritterModelId, string>> = {
 export const CRITTER_MODEL_IDS = Object.keys(CRITTER_MODEL_PATHS) as CritterModelId[];
 
 export type CritterLegId = Extract<CritterPartDefinition["id"], `legs-${string}`>;
+export type CritterMouthId = Extract<CritterPartDefinition["id"], `mouth-${string}`>;
 export type CritterComponentSource = "model" | "fallback";
 
 const BODY_LEG_SOCKET_Y: Readonly<Record<CritterBodyDefinition["id"], number>> = {
@@ -67,6 +68,13 @@ export function getCritterLegPositionY(
 ): number {
   const attachmentY = source === "model" ? LEG_MODEL_ATTACHMENT_Y[legId] : 0;
   return BODY_LEG_SOCKET_Y[bodyId] + LEG_CONNECTION_OVERLAP - attachmentY;
+}
+
+/** Keeps fallback torus mouths front-facing and turns the half arc into an upward smile. */
+export function getCritterMouthFallbackRotation(
+  mouthId: CritterMouthId,
+): [x: number, y: number, z: number] {
+  return [0, 0, mouthId === "mouth-smile" ? Math.PI : 0];
 }
 
 /** Loads component files independently so one missing choice does not hide the others. */

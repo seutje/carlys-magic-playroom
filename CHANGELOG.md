@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Resolve CMP-006 by keeping primitive Critter mouths camera-facing, orienting the smile arc
+  upward, and adding true missing-model smile/round visual regression coverage.
 - Resolve CMP-005 by aligning Critter leg models and primitive fallbacks to typed body-specific
   attachment planes, with round, tall, and missing-model visual regression coverage.
 - Address CMP-004 with regenerated, perceptually contrasted Musical Corner cues, corrected
