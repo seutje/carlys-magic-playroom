@@ -13,6 +13,12 @@ import type { CritterBodyDefinition, CritterPartDefinition } from "./critter.typ
 export type CritterModelId = `body-${CritterBodyDefinition["id"]}` | CritterPartDefinition["id"];
 
 export const CRITTER_BODY_MATERIAL = "CMP_Critter_Body";
+export const CRITTER_LEG_MATERIAL = "CMP_Critter_Dark";
+
+const CRITTER_COLORABLE_MATERIALS: ReadonlySet<string> = new Set([
+  CRITTER_BODY_MATERIAL,
+  CRITTER_LEG_MATERIAL,
+]);
 
 export const CRITTER_MODEL_PATHS: Readonly<Record<CritterModelId, string>> = {
   "body-round": "models/critter/body-round.glb",
@@ -103,13 +109,13 @@ export async function loadCritterModels(
 }
 
 /** Clones materials per visible component while retaining the source GLB's immutable geometry. */
-export function createCritterModelInstance(source: Group, bodyColor?: string): Group {
+export function createCritterModelInstance(source: Group, critterColor?: string): Group {
   const instance = source.clone(true);
   instance.traverse((object) => {
     if (!("material" in object) || !isMaterialValue(object.material)) return;
     object.material = Array.isArray(object.material)
-      ? object.material.map((material) => cloneMaterial(material, bodyColor))
-      : cloneMaterial(object.material, bodyColor);
+      ? object.material.map((material) => cloneMaterial(material, critterColor))
+      : cloneMaterial(object.material, critterColor);
   });
   return instance;
 }
@@ -138,14 +144,14 @@ export function disposeCritterModelSources(sources: CritterModelSources): void {
   });
 }
 
-function cloneMaterial(material: Material, bodyColor?: string): Material {
+function cloneMaterial(material: Material, critterColor?: string): Material {
   const clone = material.clone();
   if (
-    bodyColor !== undefined &&
-    clone.name === CRITTER_BODY_MATERIAL &&
+    critterColor !== undefined &&
+    CRITTER_COLORABLE_MATERIALS.has(clone.name) &&
     clone instanceof MeshStandardMaterial
   ) {
-    clone.color.set(bodyColor);
+    clone.color.set(critterColor);
   }
   return clone;
 }

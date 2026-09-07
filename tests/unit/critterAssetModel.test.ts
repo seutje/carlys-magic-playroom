@@ -3,6 +3,7 @@ import { BoxGeometry, Group, Mesh, MeshStandardMaterial } from "three";
 import {
   createCritterModelInstance,
   CRITTER_BODY_MATERIAL,
+  CRITTER_LEG_MATERIAL,
   CRITTER_MODEL_IDS,
   CRITTER_MODEL_PATHS,
   disposeCritterModelInstance,
@@ -88,6 +89,38 @@ describe("critter component models", () => {
 
     disposeCritterModelInstance(instance);
     material.dispose();
+    geometry.dispose();
+  });
+
+  it("tints leg shafts with the critter color while preserving leg accents", () => {
+    const source = new Group();
+    const geometry = new BoxGeometry();
+    const shaftMaterial = new MeshStandardMaterial({ color: "#59496b" });
+    shaftMaterial.name = CRITTER_LEG_MATERIAL;
+    const accentMaterial = new MeshStandardMaterial({ color: "#ee82a2" });
+    accentMaterial.name = "CMP_Critter_Pink";
+    source.add(new Mesh(geometry, shaftMaterial), new Mesh(geometry, accentMaterial));
+
+    const instance = createCritterModelInstance(source, "#66bd9a");
+    const shaft = instance.children[0];
+    const accent = instance.children[1];
+    expect(shaft).toBeInstanceOf(Mesh);
+    expect(accent).toBeInstanceOf(Mesh);
+    if (
+      !(shaft instanceof Mesh) ||
+      !(shaft.material instanceof MeshStandardMaterial) ||
+      !(accent instanceof Mesh) ||
+      !(accent.material instanceof MeshStandardMaterial)
+    ) {
+      return;
+    }
+    expect(shaft.material.color.getHexString()).toBe("66bd9a");
+    expect(accent.material.color.getHexString()).toBe("ee82a2");
+    expect(shaftMaterial.color.getHexString()).toBe("59496b");
+
+    disposeCritterModelInstance(instance);
+    shaftMaterial.dispose();
+    accentMaterial.dispose();
     geometry.dispose();
   });
 });

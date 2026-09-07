@@ -3329,3 +3329,33 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - Blender changes were unnecessary because both bundled mouth GLBs already face the camera; only
   the procedural fallback applied the incorrect rotation.
+
+### 2026-09-07 — Resolve CMP-007 Build-a-Critter leg color synchronization
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- Extended the existing cloned-material color contract to the loaded leg-shaft material.
+- Passed the selected body color to loaded and primitive fallback legs while retaining leg accents.
+- Added focused unit coverage for live recoloring, source immutability, and accent preservation.
+- Changed the deterministic completed-Critter flow to select mint after attaching legs, protecting
+  live color synchronization at desktop and tablet viewports.
+
+**In progress:**
+- Phase 10 remains open outside this focused issue.
+
+**Verified:**
+- Formatting, lint, strict typecheck, 124 unit/integration tests, and production build budgets pass.
+- All 42 desktop/touch-tablet E2E tests pass serially under `/carlys-magic-playroom/`.
+- All four low-quality room-lifecycle and playroom performance checks pass.
+- Loaded and fallback Critter baselines were visually inspected at desktop and tablet viewports.
+
+**Blocked:**
+- None.
+
+**Notes:**
+- Assembly, compatibility, persistence, and saved-creature schemas are unchanged; this is a
+  renderer-only correction.
+- A 10-worker E2E attempt hit environment contention in unrelated flows; the complete serial rerun
+  passed and is the recorded validation result.

@@ -310,6 +310,11 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
 
   await expect(page.getByText("Your critter is ready!")).toBeVisible();
   await expect(page.getByText("Saved critters: 1")).toBeVisible();
+  await page.getByRole("button", { name: "mint", exact: true }).click();
+  await expect(page.getByRole("button", { name: "mint", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   await expect(page).toHaveScreenshot("critter-complete-fixed-seed.png", {
     animations: "disabled",
     maxDiffPixelRatio: 0.01,

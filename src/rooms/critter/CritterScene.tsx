@@ -66,6 +66,7 @@ function Critter({
   const group = useRef<Group>(null);
   const legs = creature.parts.legs;
   const mouth = creature.parts.mouth;
+  const critterColor = BODY_COLORS[creature.color];
   useFrame(({ clock }) => {
     if (!group.current || !creature.reaction || reducedMotion) return;
     const wave = Math.sin(clock.elapsedTime * 10);
@@ -78,8 +79,8 @@ function Critter({
     <group ref={group} position={[-0.5, -0.05, 0]} scale={0.88}>
       <CritterComponentModel
         source={models[`body-${creature.bodyId}`]}
-        bodyColor={BODY_COLORS[creature.color]}
-        fallback={<BodyFallback bodyId={creature.bodyId} color={BODY_COLORS[creature.color]} />}
+        critterColor={critterColor}
+        fallback={<BodyFallback bodyId={creature.bodyId} color={critterColor} />}
       />
       <Pattern pattern={creature.pattern} />
       {creature.parts.eyes ? (
@@ -106,7 +107,11 @@ function Critter({
             0,
           ]}
         >
-          <CritterComponentModel source={models[legs]} fallback={<LegsFallback partId={legs} />} />
+          <CritterComponentModel
+            source={models[legs]}
+            critterColor={critterColor}
+            fallback={<LegsFallback partId={legs} color={critterColor} />}
+          />
         </group>
       ) : null}
       {creature.reaction === "sparkle" || (reducedMotion && creature.reaction) ? (
@@ -125,16 +130,16 @@ function Critter({
 
 function CritterComponentModel({
   source,
-  bodyColor,
+  critterColor,
   fallback,
 }: {
   readonly source: Group | undefined;
-  readonly bodyColor?: string;
+  readonly critterColor?: string;
   readonly fallback: React.ReactNode;
 }) {
   const instance = useMemo(
-    () => (source ? createCritterModelInstance(source, bodyColor) : undefined),
-    [bodyColor, source],
+    () => (source ? createCritterModelInstance(source, critterColor) : undefined),
+    [critterColor, source],
   );
   useEffect(
     () => () => {
@@ -187,7 +192,13 @@ function MouthFallback({ partId }: { readonly partId: CritterMouthId }) {
   );
 }
 
-function LegsFallback({ partId }: { readonly partId: CritterLegId }) {
+function LegsFallback({
+  partId,
+  color,
+}: {
+  readonly partId: CritterLegId;
+  readonly color: string;
+}) {
   const height = partId === "legs-tall" ? 1.25 : partId === "legs-stompy" ? 0.55 : 0.8;
   const radius = partId === "legs-stompy" ? 0.3 : 0.2;
   return (
@@ -195,7 +206,7 @@ function LegsFallback({ partId }: { readonly partId: CritterLegId }) {
       {[-0.65, 0.65].map((x) => (
         <mesh key={x} position={[x, -height / 2 - radius, 0]}>
           <capsuleGeometry args={[radius, height, 6, 12]} />
-          <meshStandardMaterial color="#59496b" />
+          <meshStandardMaterial color={color} />
         </mesh>
       ))}
     </group>

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Resolve CMP-007 by keeping loaded and fallback Critter legs synchronized with the selected body
+  color while preserving shoe and toe accents.
 - Resolve CMP-006 by keeping primitive Critter mouths camera-facing, orienting the smile arc
   upward, and adding true missing-model smile/round visual regression coverage.
 - Resolve CMP-005 by aligning Critter leg models and primitive fallbacks to typed body-specific
