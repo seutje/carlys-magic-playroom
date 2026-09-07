@@ -28,6 +28,22 @@ export const CRITTER_MODEL_PATHS: Readonly<Record<CritterModelId, string>> = {
 
 export const CRITTER_MODEL_IDS = Object.keys(CRITTER_MODEL_PATHS) as CritterModelId[];
 
+export type CritterLegId = Extract<CritterPartDefinition["id"], `legs-${string}`>;
+export type CritterComponentSource = "model" | "fallback";
+
+const BODY_LEG_SOCKET_Y: Readonly<Record<CritterBodyDefinition["id"], number>> = {
+  round: -1.06,
+  tall: -1.22,
+};
+
+const LEG_MODEL_ATTACHMENT_Y: Readonly<Record<CritterLegId, number>> = {
+  "legs-bouncy": 0.125,
+  "legs-stompy": 0.14,
+  "legs-tall": 0.14,
+};
+
+const LEG_CONNECTION_OVERLAP = 0.08;
+
 export type CritterModelSources = Partial<Readonly<Record<CritterModelId, Group>>>;
 
 export interface CritterModelLoader {
@@ -37,6 +53,20 @@ export interface CritterModelLoader {
 export interface CritterModelLoadResult {
   readonly models: CritterModelSources;
   readonly failedIds: readonly CritterModelId[];
+}
+
+/**
+ * Places a leg component's top attachment plane just inside the selected body's lower surface.
+ * Fallback legs are authored with their attachment plane at local y=0; bundled GLBs retain their
+ * exported origins, so their measured top anchors are removed here instead of mutating the assets.
+ */
+export function getCritterLegPositionY(
+  bodyId: CritterBodyDefinition["id"],
+  legId: CritterLegId,
+  source: CritterComponentSource,
+): number {
+  const attachmentY = source === "model" ? LEG_MODEL_ATTACHMENT_Y[legId] : 0;
+  return BODY_LEG_SOCKET_Y[bodyId] + LEG_CONNECTION_OVERLAP - attachmentY;
 }
 
 /** Loads component files independently so one missing choice does not hide the others. */

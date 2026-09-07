@@ -111,6 +111,9 @@ test("keeps the train activity playable when its models are unavailable", async 
 test("keeps critter assembly playable when its component models are unavailable", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: undefined });
+  });
   await page.route("**/models/critter/*.glb", (route) => route.abort("failed"));
   await page.goto("./");
   await page.getByRole("button", { name: "Play" }).click();
@@ -120,6 +123,10 @@ test("keeps critter assembly playable when its component models are unavailable"
   await page.getByRole("button", { name: "Choose mouth-smile" }).click();
   await page.getByRole("button", { name: "Choose legs-bouncy" }).click();
   await expect(page.getByText("Your critter is ready!")).toBeVisible();
+  await expect(page).toHaveScreenshot("critter-fallback-complete.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
 });
 
 test("keeps musical matching playable when its instrument models are unavailable", async ({
@@ -304,6 +311,14 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
   await expect
     .poll(() => collapseRepeated(voiceRequests), { timeout: 6_000 })
     .toEqual(["choose-eyes", "choose-mouth", "choose-legs", "critter-ready"]);
+
+  await page.getByRole("button", { name: "Tall Body" }).click();
+  await page.getByRole("button", { name: "Choose legs-tall" }).click();
+  await expect(page.getByText("Saved critters: 1")).toBeVisible();
+  await expect(page).toHaveScreenshot("critter-tall-complete-fixed-seed.png", {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.01,
+  });
 
   await page.reload();
   await page.getByRole("button", { name: "Play" }).click();

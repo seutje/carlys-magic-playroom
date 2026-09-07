@@ -6,11 +6,36 @@ import {
   CRITTER_MODEL_IDS,
   CRITTER_MODEL_PATHS,
   disposeCritterModelInstance,
+  getCritterLegPositionY,
   loadCritterModels,
   type CritterModelLoader,
 } from "../../src/rooms/critter/critter.model";
 
 describe("critter component models", () => {
+  it("aligns every valid leg source to the selected body's attachment plane", () => {
+    const expectedConnectionY = { round: -0.98, tall: -1.14 } as const;
+    const modelAttachmentY = {
+      "legs-bouncy": 0.125,
+      "legs-stompy": 0.14,
+      "legs-tall": 0.14,
+    } as const;
+    const validCombinations = [
+      ["round", "legs-bouncy"],
+      ["round", "legs-stompy"],
+      ["tall", "legs-bouncy"],
+      ["tall", "legs-tall"],
+    ] as const;
+
+    validCombinations.forEach(([bodyId, legId]) => {
+      expect(getCritterLegPositionY(bodyId, legId, "model") + modelAttachmentY[legId]).toBeCloseTo(
+        expectedConnectionY[bodyId],
+      );
+      expect(getCritterLegPositionY(bodyId, legId, "fallback")).toBeCloseTo(
+        expectedConnectionY[bodyId],
+      );
+    });
+  });
+
   it("loads every component from a base-path-aware public asset URL", async () => {
     const loadAsync = vi.fn().mockImplementation(() => Promise.resolve({ scene: new Group() }));
     const result = await loadCritterModels({ loadAsync });

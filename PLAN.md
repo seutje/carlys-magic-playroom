@@ -3273,3 +3273,31 @@ Every agent session that changes implementation status should add an entry.
 **Notes:**
 - Watchdogs still own all state progression; per-frame work only interpolates the current output
   pose. Low quality retains the focal halo while optional sparkles follow the quality budget.
+
+### 2026-09-07 — Resolve CMP-005 Build-a-Critter leg connection
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- Replaced the shared fixed leg offset with typed body socket and measured GLB leg-anchor data.
+- Normalized primitive body and leg fallbacks to the same attachment-plane contract.
+- Added all-combination unit coverage and round, tall, and missing-model visual baselines.
+
+**In progress:**
+- Phase 10 remains open outside this focused issue.
+
+**Verified:**
+- Formatting, lint, strict typecheck, 122 unit/integration tests, and production build budgets pass.
+- All 42 desktop/touch-tablet E2E tests pass under `/carlys-magic-playroom/`.
+- The low-quality all-room lifecycle performance tests pass on desktop and tablet.
+- The local Pages preview returned HTTP 200 at `/carlys-magic-playroom/`.
+
+**Blocked:**
+- None for CMP-005. The separate unchanged desktop playroom-only performance sample measured 18.6
+  ms and 18.8 ms against its 18.5 ms threshold; the same environment variance is already recorded
+  for CMP-002.
+
+**Notes:**
+- Blender changes were unnecessary because the component geometry and origins were internally
+  consistent; the defect was in the renderer's one-size-fits-all placement.

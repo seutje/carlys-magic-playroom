@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Resolve CMP-005 by aligning Critter leg models and primitive fallbacks to typed body-specific
+  attachment planes, with round, tall, and missing-model visual regression coverage.
 - Address CMP-004 with regenerated, perceptually contrasted Musical Corner cues, corrected
   loud/soft dynamics, reproducible local synthesis, and decoded-audio regression coverage; final
   physical-speaker listening approval remains recorded as pending.

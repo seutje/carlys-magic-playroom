@@ -9,7 +9,9 @@ import {
   createCritterModelInstance,
   disposeCritterModelInstance,
   disposeCritterModelSources,
+  getCritterLegPositionY,
   loadCritterModels,
+  type CritterLegId,
   type CritterModelId,
   type CritterModelSources,
 } from "./critter.model";
@@ -60,6 +62,7 @@ function Critter({
   models,
 }: CritterSceneProps & { readonly models: CritterModelSources }) {
   const group = useRef<Group>(null);
+  const legs = creature.parts.legs;
   useFrame(({ clock }) => {
     if (!group.current || !creature.reaction || reducedMotion) return;
     const wave = Math.sin(clock.elapsedTime * 10);
@@ -92,12 +95,15 @@ function Critter({
           />
         </group>
       ) : null}
-      {creature.parts.legs ? (
-        <group position={[0, -1.2, 0]}>
-          <CritterComponentModel
-            source={models[creature.parts.legs]}
-            fallback={<LegsFallback partId={creature.parts.legs} />}
-          />
+      {legs && isCritterLegId(legs) ? (
+        <group
+          position={[
+            0,
+            getCritterLegPositionY(creature.bodyId, legs, models[legs] ? "model" : "fallback"),
+            0,
+          ]}
+        >
+          <CritterComponentModel source={models[legs]} fallback={<LegsFallback partId={legs} />} />
         </group>
       ) : null}
       {creature.reaction === "sparkle" || (reducedMotion && creature.reaction) ? (
@@ -143,10 +149,11 @@ function BodyFallback({
   readonly bodyId: CritterAssemblyState["bodyId"];
   readonly color: string;
 }) {
-  const bodyScale: [number, number, number] = bodyId === "tall" ? [1.15, 1.5, 1] : [1.4, 1.2, 1];
+  const bodyScale: [number, number, number] =
+    bodyId === "tall" ? [1.08, 1.48, 0.9] : [1.35, 1.18, 0.92];
   return (
     <mesh scale={bodyScale}>
-      <sphereGeometry args={[1.3, 28, 20]} />
+      <sphereGeometry args={[1, 28, 20]} />
       <meshStandardMaterial color={color} roughness={0.7} />
     </mesh>
   );
@@ -176,18 +183,23 @@ function MouthFallback({ round }: { readonly round: boolean }) {
   );
 }
 
-function LegsFallback({ partId }: { readonly partId: string }) {
+function LegsFallback({ partId }: { readonly partId: CritterLegId }) {
   const height = partId === "legs-tall" ? 1.25 : partId === "legs-stompy" ? 0.55 : 0.8;
+  const radius = partId === "legs-stompy" ? 0.3 : 0.2;
   return (
     <group>
       {[-0.65, 0.65].map((x) => (
-        <mesh key={x} position={[x, -height / 2, 0]}>
-          <capsuleGeometry args={[partId === "legs-stompy" ? 0.3 : 0.2, height, 6, 12]} />
+        <mesh key={x} position={[x, -height / 2 - radius, 0]}>
+          <capsuleGeometry args={[radius, height, 6, 12]} />
           <meshStandardMaterial color="#59496b" />
         </mesh>
       ))}
     </group>
   );
+}
+
+function isCritterLegId(partId: string): partId is CritterLegId {
+  return partId === "legs-bouncy" || partId === "legs-stompy" || partId === "legs-tall";
 }
 
 function useOwnedCritterModels(): CritterModelSources {
