@@ -13,6 +13,34 @@ test("loads the startup shell from the repository subpath", async ({ page }) => 
   await expect(page.locator("main")).toHaveCSS("min-height", /\d+px/);
 });
 
+test("starts the soundtrack loop from the Play gesture at 80% volume", async ({ page }) => {
+  await page.addInitScript(() => {
+    const soundtrackAttempts: { source: string; loop: boolean; volume: number }[] = [];
+    Object.defineProperty(window, "__soundtrackAttempts", { value: soundtrackAttempts });
+    HTMLMediaElement.prototype.play = function () {
+      soundtrackAttempts.push({ source: this.src, loop: this.loop, volume: this.volume });
+      return Promise.resolve();
+    };
+  });
+  await page.goto("./");
+
+  await page.getByRole("button", { name: "Play" }).click();
+
+  const attempts = await page.evaluate(
+    () =>
+      (
+        window as typeof window & {
+          __soundtrackAttempts: { source: string; loop: boolean; volume: number }[];
+        }
+      ).__soundtrackAttempts,
+  );
+  expect(attempts).toContainEqual({
+    source: expect.stringContaining("/carlys-magic-playroom/audio/music/soundtrack.mp3"),
+    loop: true,
+    volume: 0.8,
+  });
+});
+
 test("serves every Musical Corner cue format from the repository subpath", async ({ request }) => {
   for (const soundId of MUSIC_SOUND_IDS) {
     for (const format of ["ogg", "mp3"] as const) {

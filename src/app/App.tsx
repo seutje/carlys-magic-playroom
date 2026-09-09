@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useReducer, useRef, useState } from "react";
 
+import { BackgroundMusicController } from "../engine/audio/backgroundMusic";
 import { audioService, type AudioAvailability } from "../engine/audio/audioService";
 import { BuildDiagnostics } from "../engine/diagnostics/BuildDiagnostics";
 import { QualityProvider } from "../engine/rendering/QualityProvider";
@@ -48,6 +49,7 @@ function AppContent() {
   const [parentUnlocked, setParentUnlocked] = useState(false);
   const settingsButton = useRef<HTMLButtonElement>(null);
   const [replayCount, setReplayCount] = useState(0);
+  const [backgroundMusic] = useState(() => new BackgroundMusicController());
   const startup = useStartupResources();
   const reducedMotion = useReducedMotion();
   const { settings } = useSettings();
@@ -64,7 +66,10 @@ function AppContent() {
     audioService.setMuted(settings.muted);
     audioService.setMasterVolume(settings.masterVolume);
     audioService.setChannelVolumes(settings.musicVolume, settings.speechVolume);
-  }, [settings.masterVolume, settings.musicVolume, settings.muted, settings.speechVolume]);
+    backgroundMusic.updateSettings(settings);
+  }, [backgroundMusic, settings]);
+
+  useEffect(() => () => backgroundMusic.stop(), [backgroundMusic]);
 
   useEffect(() => {
     if (view.kind !== "transitioning") return;
@@ -74,9 +79,10 @@ function AppContent() {
   }, [cancelAll, reducedMotion, schedule, view]);
 
   const startPlay = useCallback(() => {
+    backgroundMusic.start(settings);
     void audioService.initialize().then(setAudioAvailability);
     dispatch({ type: "PLAY" });
-  }, []);
+  }, [backgroundMusic, settings]);
 
   const selectRoom = useCallback(
     (roomId: RoomId) => {

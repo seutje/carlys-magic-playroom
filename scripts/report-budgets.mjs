@@ -46,9 +46,12 @@ const rooms = Object.entries(manifest)
     file: item.file,
     bytes: item.file ? (measurements.find((value) => value.file === item.file)?.bytes ?? 0) : 0,
   }));
-const audioBytes = measurements
-  .filter((item) => item.file.startsWith("audio/") && /\.(?:mp3|ogg)$/.test(item.file))
-  .reduce((total, item) => total + item.bytes, 0);
+const audio = measurements.filter(
+  (item) => item.file.startsWith("audio/") && /\.(?:mp3|ogg)$/.test(item.file),
+);
+const soundtrack = audio.find((item) => item.file === "audio/music/soundtrack.mp3");
+const audioBytes = audio.reduce((total, item) => total + item.bytes, 0);
+const cueAudioBytes = audioBytes - (soundtrack?.bytes ?? 0);
 const modelBytes = measurements
   .filter((item) => item.file.startsWith("models/") && item.file.endsWith(".glb"))
   .reduce((total, item) => total + item.bytes, 0);
@@ -70,7 +73,8 @@ const limits = {
   initialBytes: 300_000,
   initialGzipBytes: 100_000,
   roomBytes: 40_000,
-  audioBytes: 600_000,
+  cueAudioBytes: 600_000,
+  soundtrackBytes: 3_000_000,
   modelBytes: 4_000_000,
   sharedThreeExceptionBytes: 900_000,
 };
@@ -80,7 +84,10 @@ const violations = [
   ...rooms
     .filter((room) => room.bytes > limits.roomBytes)
     .map((room) => `${room.room} chunk ${room.bytes}`),
-  audioBytes > limits.audioBytes ? `audio bytes ${audioBytes}` : null,
+  cueAudioBytes > limits.cueAudioBytes ? `cue audio bytes ${cueAudioBytes}` : null,
+  soundtrack && soundtrack.bytes > limits.soundtrackBytes
+    ? `soundtrack bytes ${soundtrack.bytes}`
+    : null,
   modelBytes > limits.modelBytes ? `model bytes ${modelBytes}` : null,
   sharedThree && sharedThree.bytes > limits.sharedThreeExceptionBytes
     ? `shared 3D exception ${sharedThree.bytes}`
@@ -97,19 +104,31 @@ const report = {
   rooms,
   assets: {
     audioBytes,
+    cueAudioBytes,
     modelBytes,
     majorAssets,
     duplicateGroups: duplicateGroups.map((group) => group.map((item) => item.file)),
   },
-  exceptions: sharedThree
-    ? [
-        {
-          file: sharedThree.file,
-          bytes: sharedThree.bytes,
-          reason: "Shared declarative WebGL runtime, lazy-loaded only after Play.",
-        },
-      ]
-    : [],
+  exceptions: [
+    ...(soundtrack
+      ? [
+          {
+            file: soundtrack.file,
+            bytes: soundtrack.bytes,
+            reason: "App-wide soundtrack, requested after Play and cached for offline use.",
+          },
+        ]
+      : []),
+    ...(sharedThree
+      ? [
+          {
+            file: sharedThree.file,
+            bytes: sharedThree.bytes,
+            reason: "Shared declarative WebGL runtime, lazy-loaded only after Play.",
+          },
+        ]
+      : []),
+  ],
   limits,
   violations,
 };
