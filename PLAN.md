@@ -3359,3 +3359,42 @@ Every agent session that changes implementation status should add an entry.
   renderer-only correction.
 - A 10-worker E2E attempt hit environment contention in unrelated flows; the complete serial rerun
   passed and is the recorded validation result.
+
+### 2026-10-17 — Rebuild garden models with higher polygon counts
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- Doubled the aggregate GLB hard budget from 4,000,000 to 8,000,000 bytes as requested.
+- Used the live Blender MCP Python connection to rebuild seed, sprout, bud, flower, sun,
+  cloud, and bee in a separate scene, preserving the user's existing Blender scenes.
+- Added smooth rounded geometry, curved stems, tapered leaves with midribs, alternating
+  petals, eye highlights, and bee wing veins. Each model has 5,600–20,256 triangles and
+  3–8 material batches; no runtime textures, subdivision, or decimation are required.
+- Retained existing asset paths, oversized input colliders, DOM controls, local fallbacks,
+  audio, reduced-motion behavior, activity rules, and save formats.
+- Added the reproducible Blender authoring script, asset measurements/provenance, seven
+  export regression cases, and refreshed four desktop/tablet garden visual baselines.
+
+**Verified:**
+- Blender material preview and desktop/tablet in-game garden screenshots inspected.
+- Lint, strict typecheck, 134 unit/integration tests, and root production build pass.
+- Garden GLBs total 1,946,184 bytes; all GLBs total 3,804,792 bytes against the new 8 MB limit.
+- Focused garden completion and screenshot update pass on desktop and touch-tablet emulation
+  under `/carlys-magic-playroom/`.
+- Full `npm run test:e2e -- --workers=2` passes all 44 desktop/tablet checks, including
+  offline loading, local progress, partial asset loss, and reduced-motion interaction.
+- `npm run test:performance` passes all four desktop/tablet room-lifecycle and playroom
+  frame-budget checks, including bounded heap growth after repeated garden visits.
+- `npm run preview:pages` builds and serves the repository subpath; HTTP checks return 200
+  for the entry, manifest, service worker, and each of the seven garden GLBs.
+
+**Blocked:**
+- None for this asset rebuild.
+
+**Notes:**
+- The connected Blender add-on reports an older protocol; Python execution, export, and
+  material previews work. No add-on installation or external asset service was required.
+- Browser commands require execution outside the filesystem sandbox because its network
+  restrictions prevent the local preview server from binding to 127.0.0.1:4173.

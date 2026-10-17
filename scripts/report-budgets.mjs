@@ -75,7 +75,7 @@ const limits = {
   roomBytes: 40_000,
   cueAudioBytes: 600_000,
   soundtrackBytes: 3_000_000,
-  modelBytes: 4_000_000,
+  modelBytes: 8_000_000,
   sharedThreeExceptionBytes: 900_000,
 };
 const violations = [
