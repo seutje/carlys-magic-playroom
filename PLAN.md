@@ -3398,3 +3398,40 @@ Every agent session that changes implementation status should add an entry.
   material previews work. No add-on installation or external asset service was required.
 - Browser commands require execution outside the filesystem sandbox because its network
   restrictions prevent the local preview server from binding to 127.0.0.1:4173.
+
+### 2026-10-17 — Fix the garden CI test deadline
+
+**Agent or developer:** Codex
+**Commit or branch:** Working tree
+
+**Completed:**
+- Addressed the reported tablet CI failure at the second garden completion: the entire
+  two-round flow exhausted Playwright's default 30-second test deadline.
+- Assigned this multi-round, screenshot/audio/persistence flow a scoped 60-second budget,
+  matching the existing shape-factory test. Assertion timeouts and visual tolerances stay intact.
+- Made every 3D garden tap assert exactly one growth-step advancement before proceeding.
+  The tablet project now uses touchscreen taps; desktop continues to use mouse clicks.
+- Parked the synthetic mouse cursor before both visual comparisons so DOM setup clicks
+  cannot leave newly mounted completion buttons hovered after subsequent touchscreen taps.
+- Kept the production models, activity state transitions, and persistence behavior intact.
+
+**Verified:**
+- `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test` (134 tests),
+  and `npm run build` pass.
+- `CI=true npm run test:e2e -- --grep 'completes three-step garden' --repeat-each=3`
+  passes all six runs (three desktop and three touch-tablet), with no retries or baseline updates.
+- `CI=true npm run test:e2e` passes all 44 desktop/tablet tests with CI's single-worker
+  configuration and no retries; Playwright builds and serves `npm run preview:pages` under
+  `/carlys-magic-playroom/`.
+- `npm run test:performance` passes all four desktop/tablet checks.
+- Final `git diff --check` and formatting checks pass.
+
+**Blocked:**
+- None locally. The GitHub-hosted workflow has not been rerun from this session.
+
+**Notes:**
+- The first focused launch found a preview server left over from the prior model validation;
+  it was stopped. A second launch collided with the concurrent root build in `dist`.
+  Remaining browser/build validation runs sequentially.
+- The first actual-touch run exposed the completion button's synthetic mouse hover in the
+  tablet snapshot; cursor normalization fixes it without changing baselines or tolerances.

@@ -368,6 +368,9 @@ test("assembles, replaces, reacts, and reloads a fixed critter", async ({ page }
 });
 
 test("completes three-step garden tasks safely", async ({ page }) => {
+  // Two rounds, model loading, screenshots, audio, and a persistence reload can exceed
+  // 30 seconds on software-rendered tablet CI. Keep each assertion's timeout bounded.
+  test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const voiceRequests: string[] = [];
   page.on("request", (request) => {
@@ -391,6 +394,9 @@ test("completes three-step garden tasks safely", async ({ page }) => {
   await tapExpectedGardenModel(page);
   await tapExpectedGardenModel(page);
   await expect(page.getByText("Garden games: 1")).toBeVisible();
+  // DOM setup clicks leave a synthetic mouse cursor behind on touch projects.
+  // Park it before visual comparisons so newly mounted controls are not hovered.
+  await page.mouse.move(0, 0);
   await expect(page).toHaveScreenshot("garden-growth.png", {
     animations: "disabled",
     maxDiffPixelRatio: 0.01,
@@ -401,6 +407,7 @@ test("completes three-step garden tasks safely", async ({ page }) => {
   await tapExpectedGardenModel(page);
   await tapExpectedGardenModel(page);
   await expect(page.getByText("Garden games: 2")).toBeVisible();
+  await page.mouse.move(0, 0);
   await expect(page).toHaveScreenshot("garden-bee.png", {
     animations: "disabled",
     maxDiffPixelRatio: 0.01,
@@ -603,14 +610,24 @@ async function tapExpectedMusicInstrument(page: Page) {
 
 async function tapExpectedGardenModel(page: Page) {
   await expect(page.getByRole("button", { name: "Pause garden" })).toBeEnabled();
+  const growth = page.locator(".garden-levels span", { hasText: /^Growth / });
+  const previousGrowth = await growth.innerText();
+  const nextGrowth = {
+    "Growth 0/3": "Growth 1/3",
+    "Growth 1/3": "Growth 2/3",
+    "Growth 2/3": "Growth 3/3",
+  }[previousGrowth];
+  if (!nextGrowth) throw new Error(`Garden is not ready to grow: ${previousGrowth}`);
   const wantsWater = await page.getByText("Tap the rain cloud.", { exact: true }).isVisible();
   const canvas = page.locator(".garden-canvas canvas");
   const bounds = await canvas.boundingBox();
   if (!bounds) throw new Error("Garden canvas is unavailable");
-  await page.mouse.click(
-    bounds.x + bounds.width * (wantsWater ? 0.76 : 0.25),
-    bounds.y + bounds.height * 0.16,
-  );
+  const x = bounds.x + bounds.width * (wantsWater ? 0.76 : 0.25);
+  const y = bounds.y + bounds.height * 0.16;
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await page.touchscreen.tap(x, y);
+  else await page.mouse.click(x, y);
+  // Attribute missed or rejected input to this step before choosing the next helper.
+  await expect(growth).toHaveText(nextGrowth);
 }
 
 async function unlockParentArea(page: Page) {
